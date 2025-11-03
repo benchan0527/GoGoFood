@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "573144535219",
+    "project_id": "gogofood-a697b",
+    "storage_bucket": "gogofood-a697b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573144535219:android:de8e72841a2a60536c60c6",
+        "android_client_info": {
+          "package_name": "com.group14.foodordering"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnO9Pj24OxbSzzIhfW4pmwFTgPE4Y1Uro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

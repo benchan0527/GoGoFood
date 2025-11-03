@@ -1,0 +1,274 @@
+﻿1. Group No (state your group number here):
+14
+2. Group Members
+Member No
+	Student Email
+	FirstName
+	Surname
+	Present (Y/N)
+	1
+	s1295504@live.hkmu.edu.hk
+	Shing Kit
+	Lui
+	Y
+	2
+	s1318885@live.hkmu.edu.hk
+	On Tai
+	Hung
+	Y
+	3
+	s1318886@live.hkmu.edu.hk
+	Ching Hong
+	Chan
+	Y
+	4
+	s1324424@live.hkmu.edu.hk
+	Holly Lei
+	Stephenson
+	Y
+	5
+	s1402940@live.hkmu.edu.hk
+	Siu Hin
+	Chak
+	Y
+	6
+	s1403099@live.hkmu.edu.hk
+	Kai Ho
+	Wan
+	Y
+	7
+	s1410340@live.hkmu.edu.hk
+	Tsz Fung
+	Wong
+	Y
+	8
+	s1410394@live.hkmu.edu.hk
+	Ching
+	Lo
+	Y
+	9
+	s1411205@live.hkmu.edu.hk
+	Ho Him
+	Cheung
+	Y
+	10
+	s1414286@live.hkmu.edu.hk
+	Ho Ching
+	Yu
+	Y
+	Group Project Report
+Table of Contents
+Software specification/requirement engineering.. 3
+Section 1 – Introduction. 3
+System overview: 3
+System users: 3
+System usability: 3
+Operational constraints: 3
+Section 2 - Stakeholders & Requirements. 4
+2.1 Stakeholders Analysis. 4
+Availability requirements. 4
+Response requirements. 4
+Software design.. 4
+Software implementation.. 4
+Software validation/testing.. 4
+Software evolution.. 4
+Software requirement engineering
+Section 1 – Introduction
+The Restaurant Ordering System is commissioned as a customized software product intended to streamline front-of-house (order entry, payment processing) and back-of-house (kitchen display, inventory monitoring) operations. The fundamental objective is to produce a reliable and efficient system economically and quickly.
+System overview:
+System users:
+Stakeholder
+	Role
+	
+
+	Customers (End Users)
+	
+
+	
+
+	
+
+	Placing/Receiving Orders
+	
+
+	
+
+	Usability, Speed (Response Time), Accurate Order Fulfillment
+	
+
+	Restaurant Staff (System Managers/Operators)
+	
+
+	
+
+	
+
+	Server/Waiter, Kitchen Staff
+	
+
+	
+
+	Efficiency, Error Minimization, Real-time Updates, Clear Display, Timeliness, Simplicity
+	
+
+	Restaurant Management (System Owners)
+	
+
+	
+
+	
+
+	Manager, System Administrator
+	
+
+	
+
+	Dependability, Data Integrity, Custom Reporting, Maintainability, Security, Availability
+	
+
+	System usability:
+Operational constraints:
+Section 2 - Stakeholders & Requirements
+2.1 Stakeholders Analysis
+Availability requirements
+Reliability (FR-N-2): System downtime during normal working hours (08:00–23:00) shall not exceed 10 minutes per calendar month.
+Availability (FR-N-3): If a network connection is lost, the local POS terminal shall retain functionality for order entry and cash payment processing for a minimum of 4 hours.
+Response requirements
+Speed (FR-N-1): The system shall confirm an order submission (Server to KDS notification) within 1.0 second 98% of the time, even during peak load.
+Data Exchange Requirements
+External Interoperability (FR-N-7): The system shall successfully integrate with delivery platform APIs (e.g., UberEats, DoorDash) for order ingestion and status update synchronization.
+Payment Gateway Interface (FR-PAY-303): The system shall interface securely with a third-party Payment Gateway to process card transactions.
+Accounting Integration (FR-PAY-304): The system shall automatically transmit transaction summaries to integrated Accounting Software daily.
+Functional requirements
+   * FR-OM-101 (Order Creation): The system shall allow a Server to create a new order and assign it to a table or customer ID.
+   * FR-OM-102 (Customization): The system shall allow the Server to select menu items, apply customizations (e.g., "no onion," "extra cheese"), and specify cooking details.
+   * FR-OM-103 (KDS Transmission): Upon submission, the system shall immediately transmit prepared orders to the Kitchen Display System (KDS).
+   * FR-OM-104 (Status Update): Kitchen Staff shall be able to update the order status (e.g., "Preparing," "Ready for Pickup") via the KDS.
+   * FR-OM-106 (Online Ordering): The system shall allow a Customer to place an order via an integrated online platform (web/app).
+   * FR-PAY-301 (Bill Calculation): The system shall calculate the final bill amount, including local tax and any service charges or discounts.
+   * FR-PAY-302 (Payment Types): The system shall accept and process multiple forms of payment, including credit/debit card, mobile wallet, and cash.
+   * FR-IN-201 (Real-Time Stock Tracking): The system shall automatically track component ingredient levels in real-time, based on successful order fulfillment.
+   * FR-IN-202 (Low-Stock Alert): The system shall issue a Low-Stock Alert to the Restaurant Manager when an ingredient falls below a predefined par level threshold.
+   * FR-ADM-402 (Menu Editing): The system shall provide an interface for the Restaurant Manager to modify menu item descriptions, prices, and availability.
+   * FR-ADM-403 (Access Control): The system shall implement role-based access control (RBAC), restricting functions like inventory adjustment and report generation to authorized staff roles.
+3. User Requirements
+0. Administrators Requirements
+   1. Management Requirements
+4. Safety requirements
+Software design
+Software implementation
+Software validation/testing
+Software evolution
+
+
+Agile Development Plan
+
+
+This section outlines the agile process, technology stack, and documentation plan for the development of the Restaurant Ordering System, aligning with the principles of modern software engineering.1
+
+
+Section 1: Agile Framework and Technology Stack
+
+
+1.1 Agile Framework: Scrum
+To meet the two-month deadline and accommodate the dynamic nature of application development, this project will adopt the Scrum framework. Scrum is an agile method that focuses on managing iterative development in short cycles called "sprints".1 This approach is ideal as it allows for incremental planning, frequent delivery of working software, and the flexibility to respond to changing requirements without excessive rework.1
+The key components of the Scrum process for this project are defined as follows 1:
+   * Scrum Roles: The team will consist of a Product Owner (to manage the product backlog), a Scrum Master (to facilitate the process), and the Development Team (to build the app).1
+   * Scrum Artifacts: The primary artifacts will be the Product Backlog (a prioritized list of all features as user stories), the Sprint Backlog (tasks for a single sprint), and the Potentially Shippable Increment delivered at the end of each sprint.1
+   * Scrum Ceremonies: The project will follow the standard Scrum events, including Sprint Planning, Daily Scrums, Sprint Reviews, and Sprint Retrospectives to ensure continuous progress and improvement.
+1.2 Technology Stack
+The following technology stack is recommended to build a robust and scalable Android application.
+   * Development Environment (IDE): Android Studio
+As specified, Android Studio will be the official IDE for this project, providing a complete toolset for building and debugging Android applications. The primary programming language will be Kotlin, Google's preferred language for modern Android development, and the user interface will be built using Jetpack Compose, Android's modern toolkit for creating native UIs.
+   * Database and Backend: Firebase (Cloud Firestore)
+For the backend, Firebase, a Backend-as-a-Service (BaaS) platform, is recommended. It simplifies development by providing pre-built services for authentication, data storage, and real-time updates. As a university project, the Firebase "Spark Plan" is an ideal free option, offering a generous free tier that is more than sufficient for development and testing without requiring payment information.
+Cloud Firestore is the specific database recommended over the Realtime Database because it offers a richer data model for complex data, advanced querying capabilities, and superior scalability, which are all critical for this application's requirements.
+
+
+Section 2: Development Process Table
+
+
+The two-month development timeline will be structured into four two-week sprints. This table outlines the process flow, mapping key activities and goals to each sprint based on the defined use cases.1
+Sprint
+	Duration
+	Sprint Goal
+	Key Activities & User Stories to Implement
+	Artifacts
+	Sprint 0
+	1-2 Days
+	Project Setup & Planning
+	- Establish project architecture (Client-Server, MVC).
+
+
+- Set up Android Studio and Firebase project.
+
+
+- Refine and prioritize the initial Product Backlog.
+	Initial Product Backlog
+	Sprint 1
+	2 Weeks
+	Core Ordering & Kitchen View
+	- UC-1: Customer can view the menu and place an order.
+
+
+- UC-7: Kitchen staff can see a real-time list of new orders.
+	Sprint 1 Backlog, Potentially Shippable Increment 1
+	Sprint 2
+	2 Weeks
+	Order Management & Status Tracking
+	- UC-4: Server can create a table order.
+
+
+- UC-5: Server can modify an existing order.
+
+
+- UC-3: Customer can track their order status.
+
+
+- UC-8: Kitchen staff can update an order's status.
+	Sprint 2 Backlog, Potentially Shippable Increment 2
+	Sprint 3
+	2 Weeks
+	Payment & Billing Integration
+	- UC-2: Customer can pay for an online order.
+
+
+- UC-6: Server can process a bill (including splits/discounts).
+
+
+- Implement secure payment gateway integration.
+	Sprint 3 Backlog, Potentially Shippable Increment 3
+	Sprint 4
+	2 Weeks
+	Management Features & Finalization
+	- UC-9: Manager can add/edit menu items.
+
+
+- UC-10: Manager can generate a daily sales report.
+
+
+- Final testing, bug fixing, and UI polish.
+
+
+- Prepare for deployment.
+	Sprint 4 Backlog, Final Product
+	
+
+Section 3: Required Diagrams for Final Report
+
+
+System modeling is essential for communicating the system's design and functionality.1 In accordance with the course materials, the final project report must include the following key diagrams to provide a comprehensive overview of the system 1:
+      1. Use Case Diagram:
+      * Purpose: To provide a high-level view of the system's functionality and show the interactions between external actors (Customer, Server, etc.) and the system.1
+      * Status: An initial version of this diagram has already been created.1
+      2. Architectural Diagram:
+      * Purpose: To illustrate the high-level structure of the system. This should depict the chosen architectural pattern, such as a 3-Tier Client-Server architecture, with the Android app as the client and Firebase as the backend.1 The client-side can be further detailed using the Model-View-Controller (MVC) pattern.
+      3. Class Diagram:
+      * Purpose: To model the system's static structure by showing the main object classes (e.g., Order, MenuItem, User), their attributes, and their relationships. This diagram will serve as a blueprint for the Firestore database schema.
+      4. Sequence Diagrams:
+      * Purpose: To model the system's dynamic behavior by showing the sequence of interactions between objects for specific use cases.
+      * Status: Detailed sequence diagrams for several use cases have already been developed and should be included to explain key workflows.1
+      5. Activity Diagram:
+      * Purpose: To model complex workflows that involve conditional logic, such as the Process Bill (UC-6) use case, which may involve applying discounts or splitting bills.1
+引用的著作
+      1. Lecture 1_Introduction to Software Engineering.pdf
