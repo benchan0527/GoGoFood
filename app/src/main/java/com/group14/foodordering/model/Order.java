@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 订单数据模型
- * 用于存储订单的完整信息
+ * Order data model
+ * Used to store complete order information
  */
 public class Order {
     private String orderId;
-    private String userId; // 客户ID（如果是在线订单）
-    private String tableNumber; // 桌号（如果是桌台订单）
+    private String userId; // Customer ID (if online order)
+    private String tableNumber; // Table number (if table order)
     private String orderType; // "online", "table"
     private List<OrderItem> items;
     private String status; // "pending", "preparing", "ready", "completed", "cancelled"
@@ -26,7 +26,7 @@ public class Order {
     private long createdAt;
     private long updatedAt;
 
-    // 默认构造函数
+    // Default constructor
     public Order() {
         this.items = new ArrayList<>();
         this.status = "pending";
@@ -35,7 +35,7 @@ public class Order {
         this.updatedAt = System.currentTimeMillis();
     }
 
-    // 构造函数
+    // Constructor
     public Order(String orderId, String orderType) {
         this.orderId = orderId;
         this.orderType = orderType;
@@ -184,7 +184,7 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    // 计算总价
+    // Calculate total price
     private void calculateTotal() {
         subtotal = 0.0;
         for (OrderItem item : items) {
@@ -194,7 +194,7 @@ public class Order {
         this.updatedAt = System.currentTimeMillis();
     }
 
-    // 转换为Map（用于Firestore）
+    // Convert to Map (for Firestore)
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("orderId", orderId);
@@ -202,7 +202,7 @@ public class Order {
         map.put("tableNumber", tableNumber != null ? tableNumber : "");
         map.put("orderType", orderType);
         
-        // 转换OrderItem列表
+        // Convert OrderItem list
         List<Map<String, Object>> itemsList = new ArrayList<>();
         for (OrderItem item : items) {
             itemsList.add(item.toMap());

@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 用户数据模型
- * 用于存储客户的基本信息
+ * User data model
+ * Used to store basic customer information
  */
 public class User {
     private String userId;
@@ -16,11 +16,11 @@ public class User {
     private long createdAt;
     private long updatedAt;
 
-    // 默认构造函数（Firebase需要）
+    // Default constructor (required by Firebase)
     public User() {
     }
 
-    // 完整构造函数
+    // Full constructor
     public User(String userId, String email, String name, String phone, String role) {
         this.userId = userId;
         this.email = email;
@@ -88,7 +88,7 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    // 转换为Map（用于Firestore）
+    // Convert to Map (for Firestore)
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);

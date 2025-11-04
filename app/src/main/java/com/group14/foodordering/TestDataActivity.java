@@ -15,9 +15,11 @@ import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.OrderItem;
 import com.group14.foodordering.model.User;
 import com.group14.foodordering.service.FirebaseDatabaseService;
+import com.group14.foodordering.util.FirebaseDataImporter;
 import com.group14.foodordering.util.MenuJsonParser;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,33 +45,9 @@ public class TestDataActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        // Test user creation
-        Button btnTestUser = findViewById(R.id.btnTestUser);
-        btnTestUser.setOnClickListener(v -> testCreateUser());
-
-        // Test admin creation
-        Button btnTestAdmin = findViewById(R.id.btnTestAdmin);
-        btnTestAdmin.setOnClickListener(v -> testCreateAdmin());
-
-        // Test menu item creation
-        Button btnTestMenuItem = findViewById(R.id.btnTestMenuItem);
-        btnTestMenuItem.setOnClickListener(v -> testCreateMenuItem());
-
-        // Test order creation
-        Button btnTestOrder = findViewById(R.id.btnTestOrder);
-        btnTestOrder.setOnClickListener(v -> testCreateOrder());
-
-        // Test get menu
-        Button btnGetMenu = findViewById(R.id.btnGetMenu);
-        btnGetMenu.setOnClickListener(v -> testGetMenuItems());
-
-        // Test get orders
-        Button btnGetOrders = findViewById(R.id.btnGetOrders);
-        btnGetOrders.setOnClickListener(v -> testGetPendingOrders());
-
-        // Import menu from JSON
-        Button btnImportMenu = findViewById(R.id.btnImportMenu);
-        btnImportMenu.setOnClickListener(v -> importMenuFromJson());
+        // Import complete sample data - single button for all imports
+        Button btnImportSampleData = findViewById(R.id.btnImportSampleData);
+        btnImportSampleData.setOnClickListener(v -> importSampleData());
 
         // Clear results
         Button btnClear = findViewById(R.id.btnClear);
@@ -347,6 +325,228 @@ public class TestDataActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             resultTextView.append(message + "\n");
                             Toast.makeText(TestDataActivity.this, message, Toast.LENGTH_LONG).show();
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Import complete sample data from firebase_sample_data.json
+     * Tries to read from assets first, then falls back to file system
+     */
+    private void importSampleData() {
+        resultTextView.setText("Starting complete sample data import...\n");
+        resultTextView.append("===========================================\n");
+        resultTextView.append("Searching for firebase_sample_data.json...\n\n");
+        
+        FirebaseDataImporter importer = new FirebaseDataImporter(this);
+        FirebaseDataImporter.ImportCallback callback = new FirebaseDataImporter.ImportCallback() {
+            @Override
+            public void onProgress(String message) {
+                runOnUiThread(() -> {
+                    resultTextView.append(message + "\n");
+                });
+                Log.d(TAG, message);
+            }
+
+            @Override
+            public void onCollectionComplete(String collectionName, int successCount, int failCount) {
+                String message = String.format("Collection '%s': %d succeeded, %d failed\n", 
+                        collectionName, successCount, failCount);
+                runOnUiThread(() -> {
+                    resultTextView.append(message);
+                });
+                Log.d(TAG, message);
+            }
+
+            @Override
+            public void onComplete(int totalSuccess, int totalFail) {
+                String message = String.format("\n===========================================\n" +
+                        "Import Complete!\n" +
+                        "Total: %d succeeded, %d failed\n" +
+                        "===========================================\n\n" +
+                        "All data has been imported to Firebase!\n" +
+                        "You can now:\n" +
+                        "1. Use the admin accounts to login\n" +
+                        "2. View the menu items\n" +
+                        "3. Check tables and orders\n", 
+                        totalSuccess, totalFail);
+                runOnUiThread(() -> {
+                    resultTextView.append(message);
+                    Toast.makeText(TestDataActivity.this, 
+                            "Import complete: " + totalSuccess + " succeeded, " + totalFail + " failed", 
+                            Toast.LENGTH_LONG).show();
+                });
+                Log.d(TAG, message);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                String message = "Import error: " + e.getMessage();
+                runOnUiThread(() -> {
+                    resultTextView.append(message + "\n");
+                    Toast.makeText(TestDataActivity.this, message, Toast.LENGTH_LONG).show();
+                });
+                Log.e(TAG, message, e);
+            }
+        };
+        
+        // Try to read from assets first (recommended approach)
+        boolean foundInAssets = false;
+        try {
+            // Check if file exists in assets
+            InputStream testStream = getAssets().open("firebase_sample_data.json");
+            testStream.close();
+            foundInAssets = true;
+        } catch (Exception e) {
+            Log.d(TAG, "File not found in assets, will try file system", e);
+        }
+        
+        if (foundInAssets) {
+            resultTextView.append("✓ Found file in assets folder\n");
+            resultTextView.append("Starting import from assets...\n\n");
+            importer.importFromAssets("firebase_sample_data.json", callback);
+        } else {
+            resultTextView.append("✗ Not found in assets, trying file system...\n");
+            
+            // Fallback: Try to read from information folder (for development)
+            String filePath = null;
+            
+            // Try multiple possible paths
+            File[] possiblePaths = {
+                new File(getFilesDir().getParentFile().getParentFile().getParentFile(), "information/firebase_sample_data.json"),
+                new File(getExternalFilesDir(null), "firebase_sample_data.json"),
+                new File(getFilesDir(), "firebase_sample_data.json"),
+                new File("/sdcard/Download/firebase_sample_data.json"),
+                new File("/storage/emulated/0/Download/firebase_sample_data.json")
+            };
+            
+            for (File path : possiblePaths) {
+                if (path != null && path.exists()) {
+                    filePath = path.getAbsolutePath();
+                    break;
+                }
+            }
+            
+            if (filePath == null || !new File(filePath).exists()) {
+                resultTextView.append("Error: Could not find firebase_sample_data.json file.\n");
+                resultTextView.append("Tried locations:\n");
+                resultTextView.append("  - assets/firebase_sample_data.json\n");
+                for (File path : possiblePaths) {
+                    if (path != null) {
+                        resultTextView.append("  - " + path.getAbsolutePath() + "\n");
+                    }
+                }
+                resultTextView.append("\nPlease ensure the file exists in one of these locations.\n");
+                Toast.makeText(this, "Sample data file not found", Toast.LENGTH_LONG).show();
+                return;
+            }
+            
+            resultTextView.append("✓ Found file at: " + filePath + "\n");
+            resultTextView.append("Starting import from file system...\n\n");
+            importer.importFromFile(filePath, callback);
+        }
+    }
+
+    /**
+     * Verify admin data exists and can be retrieved
+     */
+    private void verifyAdminData() {
+        resultTextView.setText("Verifying admin data...\n");
+        resultTextView.append("===========================================\n\n");
+        
+        // Test admin IDs from sample data
+        String[] adminIds = {"ADMIN001", "ADMIN002", "ADMIN003"};
+        String[] phoneNumbers = {"+1234567894", "+1234567892", "+1234567893"};
+        String[] names = {"Charlie Wang (Manager)", "Alice Johnson (Server)", "Bob Chen (Kitchen)"};
+        
+        final int[] completedCount = {0};
+        final int[] successCount = {0};
+        final int[] failCount = {0};
+        final int total = adminIds.length;
+        
+        for (int i = 0; i < adminIds.length; i++) {
+            final String adminId = adminIds[i];
+            final String phone = phoneNumbers[i];
+            final String name = names[i];
+            final int index = i;
+            
+            // Test by adminId
+            dbService.getAdminByStaffIdOrPhone(adminId, new FirebaseDatabaseService.AdminCallback() {
+                @Override
+                public void onSuccess(Admin admin) {
+                    successCount[0]++;
+                    String message = String.format("✓ Admin %d (%s):\n", index + 1, name) +
+                            "  - Found by adminId: " + adminId + " ✓\n" +
+                            "  - Name: " + admin.getName() + "\n" +
+                            "  - Phone: " + admin.getPhone() + "\n" +
+                            "  - Email: " + admin.getEmail() + "\n" +
+                            "  - Active: " + admin.isActive() + "\n" +
+                            "  - Permissions: " + java.util.Arrays.toString(admin.getPermissions()) + "\n";
+                    runOnUiThread(() -> {
+                        resultTextView.append(message);
+                    });
+                    
+                    // Test by phone number
+                    dbService.getAdminByStaffIdOrPhone(phone, new FirebaseDatabaseService.AdminCallback() {
+                        @Override
+                        public void onSuccess(Admin adminByPhone) {
+                            String phoneMessage = "  - Found by phone: " + phone + " ✓\n\n";
+                            runOnUiThread(() -> {
+                                resultTextView.append(phoneMessage);
+                            });
+                            completedCount[0]++;
+                            checkComplete();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            String phoneMessage = "  - Found by phone: " + phone + " ✗ (" + e.getMessage() + ")\n\n";
+                            runOnUiThread(() -> {
+                                resultTextView.append(phoneMessage);
+                            });
+                            completedCount[0]++;
+                            checkComplete();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    failCount[0]++;
+                    completedCount[0]++;
+                    String message = String.format("✗ Admin %d (%s):\n", index + 1, name) +
+                            "  - adminId: " + adminId + " ✗\n" +
+                            "  - Error: " + e.getMessage() + "\n\n";
+                    runOnUiThread(() -> {
+                        resultTextView.append(message);
+                    });
+                    checkComplete();
+                }
+                
+                private void checkComplete() {
+                    if (completedCount[0] == total) {
+                        String summary = String.format(
+                                "===========================================\n" +
+                                "Verification Complete!\n" +
+                                "Success: %d, Failed: %d\n" +
+                                "===========================================\n\n" +
+                                "Login Instructions:\n" +
+                                "1. Go to MainActivity\n" +
+                                "2. Click 'Admin Login' button\n" +
+                                "3. Enter one of the following:\n" +
+                                "   - ADMIN001 (or +1234567894) for Manager\n" +
+                                "   - ADMIN002 (or +1234567892) for Server\n" +
+                                "   - ADMIN003 (or +1234567893) for Kitchen\n" +
+                                "4. Password field is optional (not verified yet)\n",
+                                successCount[0], failCount[0]);
+                        runOnUiThread(() -> {
+                            resultTextView.append(summary);
+                            Toast.makeText(TestDataActivity.this,
+                                    "Verification complete: " + successCount[0] + " succeeded, " + failCount[0] + " failed",
+                                    Toast.LENGTH_LONG).show();
                         });
                     }
                 }

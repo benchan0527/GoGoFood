@@ -84,10 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
         btnTestData = findViewById(R.id.btnTestData);
         btnTestData.setOnClickListener(v -> {
-            if (isAdminLoggedIn) {
-                Intent intent = new Intent(MainActivity.this, TestDataActivity.class);
-                startActivity(intent);
-            }
+            // TestDataActivity is always accessible for importing test data
+            Intent intent = new Intent(MainActivity.this, TestDataActivity.class);
+            startActivity(intent);
         });
 
         // Admin login button
@@ -165,10 +164,12 @@ public class MainActivity extends AppCompatActivity {
      * Update visibility of admin buttons
      */
     private void updateAdminButtonsVisibility() {
+        // TestData button is always visible for importing test data
+        btnTestData.setVisibility(View.VISIBLE);
+        
         if (isAdminLoggedIn) {
             btnKitchenView.setVisibility(View.VISIBLE);
             btnTableOrder.setVisibility(View.VISIBLE);
-            btnTestData.setVisibility(View.VISIBLE);
             btnAdminLogin.setText("Admin: Logged In");
             btnAdminLogin.setOnClickListener(v -> {
                 // Logout
@@ -179,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             btnKitchenView.setVisibility(View.GONE);
             btnTableOrder.setVisibility(View.GONE);
-            btnTestData.setVisibility(View.GONE);
             btnAdminLogin.setText("Admin Login");
             btnAdminLogin.setOnClickListener(v -> showAdminLoginDialog());
         }

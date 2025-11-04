@@ -1,11 +1,13 @@
 package com.group14.foodordering.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 菜单项数据模型
- * 用于存储餐厅菜单中的菜品信息
+ * Menu item data model
+ * Used to store menu item information in the restaurant menu
  */
 public class MenuItem {
     private String itemId;
@@ -15,15 +17,15 @@ public class MenuItem {
     private String category; // "appetizer", "main", "dessert", "beverage"
     private String imageUrl;
     private boolean isAvailable;
-    private int stock; // 库存数量（可选）
+    private int stock; // Stock quantity (optional)
     private long createdAt;
     private long updatedAt;
 
-    // 默认构造函数
+    // Default constructor
     public MenuItem() {
     }
 
-    // 完整构造函数
+    // Full constructor
     public MenuItem(String itemId, String name, String description, double price, String category) {
         this.itemId = itemId;
         this.name = name;
@@ -31,7 +33,7 @@ public class MenuItem {
         this.price = price;
         this.category = category;
         this.isAvailable = true;
-        this.stock = -1; // -1表示无限制
+        this.stock = -1; // -1 means unlimited
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
     }
@@ -85,10 +87,12 @@ public class MenuItem {
         this.imageUrl = imageUrl;
     }
 
+    @PropertyName("isAvailable")
     public boolean isAvailable() {
         return isAvailable;
     }
 
+    @PropertyName("isAvailable")
     public void setAvailable(boolean available) {
         isAvailable = available;
     }
@@ -117,7 +121,7 @@ public class MenuItem {
         this.updatedAt = updatedAt;
     }
 
-    // 转换为Map（用于Firestore）
+    // Convert to Map (for Firestore)
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("itemId", itemId);
