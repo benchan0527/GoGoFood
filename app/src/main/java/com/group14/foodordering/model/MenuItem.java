@@ -1,13 +1,18 @@
 package com.group14.foodordering.model;
 
+import com.google.firebase.firestore.PropertyName;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * 菜单项数据模型
- * 用于存储餐厅菜单中的菜品信息
+ * Menu item data model
+ * Used to store menu item information in the restaurant menu
  */
-public class MenuItem {
+public class MenuItem implements Serializable {
     private String itemId;
     private String name;
     private String description;
@@ -15,15 +20,18 @@ public class MenuItem {
     private String category; // "appetizer", "main", "dessert", "beverage"
     private String imageUrl;
     private boolean isAvailable;
-    private int stock; // 库存数量（可选）
+    private boolean hasDrink; // Whether the item includes a drink option
+    private int stock; // Stock quantity (optional)
+    private List<String> modifierIds; // List of modifier IDs that apply to this item
     private long createdAt;
     private long updatedAt;
 
-    // 默认构造函数
+    // Default constructor
     public MenuItem() {
+        this.modifierIds = new ArrayList<>();
     }
 
-    // 完整构造函数
+    // Full constructor
     public MenuItem(String itemId, String name, String description, double price, String category) {
         this.itemId = itemId;
         this.name = name;
@@ -31,7 +39,8 @@ public class MenuItem {
         this.price = price;
         this.category = category;
         this.isAvailable = true;
-        this.stock = -1; // -1表示无限制
+        this.stock = -1; // -1 means unlimited
+        this.modifierIds = new ArrayList<>();
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
     }
@@ -85,10 +94,12 @@ public class MenuItem {
         this.imageUrl = imageUrl;
     }
 
+    @PropertyName("isAvailable")
     public boolean isAvailable() {
         return isAvailable;
     }
 
+    @PropertyName("isAvailable")
     public void setAvailable(boolean available) {
         isAvailable = available;
     }
@@ -117,7 +128,23 @@ public class MenuItem {
         this.updatedAt = updatedAt;
     }
 
-    // 转换为Map（用于Firestore）
+    public boolean isHasDrink() {
+        return hasDrink;
+    }
+
+    public void setHasDrink(boolean hasDrink) {
+        this.hasDrink = hasDrink;
+    }
+
+    public List<String> getModifierIds() {
+        return modifierIds;
+    }
+
+    public void setModifierIds(List<String> modifierIds) {
+        this.modifierIds = modifierIds;
+    }
+
+    // Convert to Map (for Firestore)
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("itemId", itemId);
@@ -127,7 +154,9 @@ public class MenuItem {
         map.put("category", category);
         map.put("imageUrl", imageUrl != null ? imageUrl : "");
         map.put("isAvailable", isAvailable);
+        map.put("hasDrink", hasDrink);
         map.put("stock", stock);
+        map.put("modifierIds", modifierIds != null ? modifierIds : new ArrayList<>());
         map.put("createdAt", createdAt);
         map.put("updatedAt", updatedAt);
         return map;

@@ -116,7 +116,7 @@
         android:id="@+id/orderTotalTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="总计: $0.00"
+        android:text="Total: $0.00"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#FF5722"

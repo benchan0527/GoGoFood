@@ -25,23 +25,27 @@
         <activity
             android:name=".TestDataActivity"
             android:exported="false"
-            android:label="测试数据存储" />
+            android:label="Test Data" />
         <activity
             android:name=".MenuActivity"
             android:exported="false"
-            android:label="菜单" />
+            android:label="Menu" />
         <activity
             android:name=".KitchenViewActivity"
             android:exported="false"
-            android:label="厨房视图" />
+            android:label="Kitchen View" />
         <activity
             android:name=".OrderTrackingActivity"
             android:exported="false"
-            android:label="订单跟踪" />
+            android:label="Order Tracking" />
         <activity
             android:name=".TableOrderActivity"
             android:exported="false"
-            android:label="桌台订单" />
+            android:label="Table Order" />
+        <activity
+            android:name=".DrinkSelectionActivity"
+            android:exported="false"
+            android:label="Select Drink" />
     </application>
 
 </manifest>

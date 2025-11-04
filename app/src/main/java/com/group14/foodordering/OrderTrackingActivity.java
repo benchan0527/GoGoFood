@@ -14,8 +14,8 @@ import com.group14.foodordering.service.FirebaseDatabaseService;
 import java.util.List;
 
 /**
- * 订单跟踪Activity
- * UC-3: 客户可以跟踪订单状态
+ * Order Tracking Activity
+ * UC-3: Customers can track order status
  */
 public class OrderTrackingActivity extends AppCompatActivity {
 
@@ -34,7 +34,7 @@ public class OrderTrackingActivity extends AppCompatActivity {
 
         orderId = getIntent().getStringExtra("orderId");
         if (orderId == null) {
-            Toast.makeText(this, "订单ID无效", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Invalid order ID", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -52,7 +52,7 @@ public class OrderTrackingActivity extends AppCompatActivity {
     }
 
     /**
-     * 加载订单信息
+     * Load order information
      */
     private void loadOrder() {
         dbService.getOrderById(orderId, new FirebaseDatabaseService.OrderCallback() {
@@ -63,50 +63,50 @@ public class OrderTrackingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Log.e(TAG, "加载订单失败", e);
-                Toast.makeText(OrderTrackingActivity.this, "加载订单失败: " + e.getMessage(), 
+                Log.e(TAG, "Failed to load order", e);
+                Toast.makeText(OrderTrackingActivity.this, "Failed to load order: " + e.getMessage(), 
                         Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     /**
-     * 显示订单信息
+     * Display order information
      */
     private void displayOrder(Order order) {
-        orderIdTextView.setText("订单ID: " + order.getOrderId());
+        orderIdTextView.setText("Order ID: " + order.getOrderId());
         
-        // 显示状态
-        String statusText = "状态: " + getStatusText(order.getStatus());
+        // Display status
+        String statusText = "Status: " + getStatusText(order.getStatus());
         statusTextView.setText(statusText);
 
-        // 显示订单项
-        StringBuilder itemsText = new StringBuilder("订单详情:\n\n");
+        // Display order items
+        StringBuilder itemsText = new StringBuilder("Order Details:\n\n");
         for (OrderItem item : order.getItems()) {
             itemsText.append(String.format("%s x%d - $%.2f\n", 
                     item.getMenuItemName(), item.getQuantity(), item.getTotalPrice()));
         }
         itemsTextView.setText(itemsText.toString());
 
-        // 显示总价
-        totalTextView.setText(String.format("总计: $%.2f", order.getTotal()));
+        // Display total price
+        totalTextView.setText(String.format("Total: $%.2f", order.getTotal()));
     }
 
     /**
-     * 获取状态文本
+     * Get status text
      */
     private String getStatusText(String status) {
         switch (status) {
             case "pending":
-                return "待处理";
+                return "Pending";
             case "preparing":
-                return "制作中";
+                return "Preparing";
             case "ready":
-                return "已完成";
+                return "Ready";
             case "completed":
-                return "已完成";
+                return "Completed";
             case "cancelled":
-                return "已取消";
+                return "Cancelled";
             default:
                 return status;
         }

@@ -1,28 +1,30 @@
 package com.group14.foodordering.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * 管理员数据模型
- * 扩展了User类，包含管理员特定权限
+ * Admin data model
+ * Extends User class, contains admin-specific permissions
  */
 public class Admin {
     private String adminId;
-    private String userId; // 关联到User表
+    private String userId; // Linked to User table
     private String email;
     private String name;
     private String phone;
-    private String[] permissions; // 权限列表，如 ["menu_edit", "report_view", "inventory_manage"]
+    private String[] permissions; // Permission list, e.g., ["menu_edit", "report_view", "inventory_manage"]
     private boolean isActive;
     private long createdAt;
     private long updatedAt;
 
-    // 默认构造函数
+    // Default constructor
     public Admin() {
     }
 
-    // 完整构造函数
+    // Full constructor
     public Admin(String adminId, String userId, String email, String name, String phone, String[] permissions) {
         this.adminId = adminId;
         this.userId = userId;
@@ -108,7 +110,7 @@ public class Admin {
         this.updatedAt = updatedAt;
     }
 
-    // 转换为Map（用于Firestore）
+    // Convert to Map (for Firestore)
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("adminId", adminId);
@@ -116,7 +118,16 @@ public class Admin {
         map.put("email", email);
         map.put("name", name);
         map.put("phone", phone);
-        map.put("permissions", permissions);
+        // Convert permissions array to List for Firestore compatibility
+        if (permissions != null) {
+            List<String> permissionsList = new ArrayList<>();
+            for (String permission : permissions) {
+                permissionsList.add(permission);
+            }
+            map.put("permissions", permissionsList);
+        } else {
+            map.put("permissions", new ArrayList<>());
+        }
         map.put("isActive", isActive);
         map.put("createdAt", createdAt);
         map.put("updatedAt", updatedAt);

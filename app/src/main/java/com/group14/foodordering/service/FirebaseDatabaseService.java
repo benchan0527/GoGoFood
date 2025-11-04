@@ -235,12 +235,57 @@ public class FirebaseDatabaseService {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<MenuItem> menuItems = new ArrayList<>();
+                        int totalDocs = task.getResult().size();
+                        int availableCount = 0;
+                        int nullCount = 0;
+                        int unavailableCount = 0;
+                        
+                        Log.d(TAG, "Total documents retrieved: " + totalDocs);
+                        
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            MenuItem item = document.toObject(MenuItem.class);
-                            if (item != null && item.isAvailable()) {
-                                menuItems.add(item);
+                            try {
+                                MenuItem item = document.toObject(MenuItem.class);
+                                if (item == null) {
+                                    nullCount++;
+                                    Log.w(TAG, "Failed to convert document to MenuItem: " + document.getId());
+                                    continue;
+                                }
+                                
+                                // Debug: Check if isAvailable field is being read correctly
+                                Boolean isAvailable = document.getBoolean("isAvailable");
+                                if (isAvailable == null) {
+                                    // If isAvailable field is missing, try to set it manually
+                                    isAvailable = item.isAvailable();
+                                    Log.d(TAG, "isAvailable field missing in document, using default: " + isAvailable + " for item: " + item.getItemId());
+                                }
+                                
+                                // Manually set isAvailable if it wasn't read correctly
+                                if (isAvailable != null && isAvailable != item.isAvailable()) {
+                                    item.setAvailable(isAvailable);
+                                }
+                                
+                                // Check if hasDrink field is being read correctly
+                                Boolean hasDrink = document.getBoolean("hasDrink");
+                                if (hasDrink != null && hasDrink != item.isHasDrink()) {
+                                    item.setHasDrink(hasDrink);
+                                }
+                                
+                                Log.d(TAG, "Item: " + item.getItemId() + ", Name: " + item.getName() + ", isAvailable: " + item.isAvailable() + ", hasDrink: " + item.isHasDrink());
+                                
+                                if (item.isAvailable()) {
+                                    menuItems.add(item);
+                                    availableCount++;
+                                } else {
+                                    unavailableCount++;
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error processing document: " + document.getId(), e);
+                                nullCount++;
                             }
                         }
+                        
+                        Log.d(TAG, "Menu items summary - Total: " + totalDocs + ", Available: " + availableCount + ", Unavailable: " + unavailableCount + ", Null: " + nullCount);
+                        
                         // Sort by name in memory
                         menuItems.sort((a, b) -> {
                             String nameA = a.getName() != null ? a.getName() : "";

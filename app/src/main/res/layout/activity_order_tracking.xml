@@ -11,7 +11,7 @@
         android:id="@+id/titleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="订单跟踪"
+        android:text="Order Tracking"
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -40,7 +40,7 @@
                 android:id="@+id/orderIdTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="订单ID"
+                android:text="Order ID"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -48,7 +48,7 @@
                 android:id="@+id/statusTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="状态"
+                android:text="Status"
                 android:textSize="16sp"
                 android:layout_marginTop="8dp" />
 
@@ -56,7 +56,7 @@
                 android:id="@+id/itemsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="订单项"
+                android:text="Order Items"
                 android:textSize="14sp"
                 android:layout_marginTop="8dp" />
 
@@ -64,7 +64,7 @@
                 android:id="@+id/totalTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="总计"
+                android:text="Total"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#FF5722"

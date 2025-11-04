@@ -24,7 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="菜品名称"
+                android:text="Item Name"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -50,7 +50,7 @@
                 android:id="@+id/removeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="移除" />
+                android:text="Remove" />
 
         </LinearLayout>
 
@@ -58,7 +58,7 @@
             android:id="@+id/customizationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="定制要求"
+            android:text="Customization"
             android:textSize="12sp"
             android:textColor="#666666"
             android:layout_marginTop="4dp" />

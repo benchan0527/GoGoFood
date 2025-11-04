@@ -1,0 +1,128 @@
+﻿@GUI Count for Sprints 0-3.txt 
+check information folder first 
+data store in firebase, data should load in database
+those information are in 
+"C:\Users\s1327\AndroidStudioProjects\GoGoFood\information\firebase_sample_data.json"
+"C:\Users\s1327\AndroidStudioProjects\GoGoFood\information\firebase_sample_data_import_log.txt"
+"C:\Users\s1327\AndroidStudioProjects\GoGoFood\information\FIREBASE_DATA_IMPORT_README.md"
+
+remake exist and add new gui
+here are simple image for your renfence
+main page is order page
+order food no log in request
+**ordering food** is main page with nav nar, 
+for login page, can open in navbar colume "member".
+admin/staff, etc.. also login here
+then it will have admin function can see.
+
+new gui include
+Table 1: Summary of Required GUIs by Application and Sprint
+Application
+Sprint 0
+Sprint 1
+Sprint 2
+Sprint 3
+Total by Application
+Customer Application
+5
+5
+2
+4
+13
+Server (POS) Application
+1
+0
+3
+5
+8
+Kitchen (KDS) Application
+1
+1
+1
+0
+3
+Total GUIs per Sprint
+7
+6
+6
+9
+28 (Grand Total)
+
+
+Part 2: Methodology: Defining and Quantifying a "GUI"
+
+To ensure an accurate and actionable count, a precise methodology is established. This framework defines the unit of measure and the analytical model used for this audit.
+
+Defining the Unit of Measure
+
+The user query requests a count of "pages." For the purpose of this technical audit, this term is insufficient. The project's technology stack includes Jetpack Compose 1, a component-based UI toolkit. Therefore, a "GUI" is defined as:
+Any unique screen, page, view, or distinct modal/pop-up that requires a discrete design, development, and testing effort.
+This rigorous definition is necessary because a modal pop-up—such as one for "Split Bill," as implied by UC-6 1—often contains its own complex business logic, state management, and UI components. It represents a distinct development task separate from the screen that launches it. This methodology prevents critical under-scoping of the development workload.
+
+The "Three-Application" Analytical Model
+
+A foundational finding from the Group Project Report.txt 1 is that this project does not entail one application, but rather three distinct front-end applications that communicate via the Firebase backend.1
+Failing to differentiate these three development tracks would result in a catastrophic miscalculation of the project's scope. The total GUI count is the sum of GUIs across all three applications. The analysis is therefore structured around these parallel systems:
+The Customer Application: This is the system depicted in the provided example images (Image 1, Image 2, Image 3). It is the primary interface for end-users (Customers) and fulfills user stories such as UC-1 (place order), UC-2 (pay for order), and UC-3 (track order).1
+The Server/Staff Application: This is a professional Point-of-Sale (POS) terminal, not depicted in the images. This application is used by Restaurant Staff (Server/Waiter).1 It fulfills entirely different user stories: UC-4 (create table order), UC-5 (modify order), and UC-6 (process bill).1 Its UI must be optimized for speed, error minimization, and operational efficiency, not customer-facing aesthetics.
+The Kitchen Application: This is a Kitchen Display System (KDS), also not depicted. It is used by Kitchen Staff 1 and fulfills UC-7 (see new orders) and UC-8 (update order status).1 This interface is focused on real-time data display and simple status updates.
+
+Part 3: Sprint 0 Analysis: Foundational and Prerequisite GUIs
+
+Sprint 0, "Project Setup & Planning," has no explicit user stories but is critical for establishing the "scaffolding" required for all subsequent sprints.1 The functional requirement FR-ADM-402 (Access Control) 1, which mandates role-based access control (RBAC), provides the primary justification for these foundational screens, as it proves the need for distinct login mechanisms for different user roles.
+Required GUIs for Sprint 0:
+Customer Application (Prerequisites for UC-1):
+Splash Screen: A standard loading screen for a native Android application.1
+Log In Screen: This GUI is explicitly provided in Image 2. It serves as the entry point for existing users, as required by the RBAC system.1
+Registration Screen: Logically implied by the existence of a "Log In" screen. A flow must exist for new customers to create an account.
+Forgot/Reset Password Screen: A necessary and standard component of any user authentication workflow.
+Main Application Shell: This is the core container for the entire customer app, explicitly shown in Image 1. It includes the non-functional-in-this-sprint bottom navigation bar with five tabs (Main, Coupon, Order, Member, Other). This shell must be built in Sprint 0 to host the Sprint 1 features.
+Server (POS) Application (Prerequisites for UC-4):
+6. Server/POS Login Screen: A distinct login interface for staff, separate from the customer's. This is mandated by FR-ADM-403 1 and would likely use a PIN or staff ID rather than an email.
+Kitchen (KDS) Application (Prerequisites for UC-7):
+7. KDS Login Screen: A third, distinct login portal for kitchen staff, also required by the RBAC implementation 1 to secure the KDS.
+Sprint 0 Summary: This setup sprint necessitates the creation of 7 foundational GUIs as prerequisites for any functional development.
+
+Part 4: Sprint 1 Analysis: Core Ordering and Kitchen View
+
+Sprint 1's goal is "Core Ordering & Kitchen View".1 This sprint begins functional development on the Customer and Kitchen applications.
+User Stories:
+UC-1: Customer can view the menu and place an order. 1
+UC-7: Kitchen staff can see a real-time list of new orders. 1
+GUI Breakdown for UC-1 (Customer App):
+This user story describes a multi-step user flow, not a single screen.
+8. Menu/Ordering Screen: This is the primary screen shown in Image 1. It displays the menu list, item prices, category tabs (Type1, Type2, Type3), and order type selection (Dine in, Takeaway).
+9. Restaurant Selection Screen: The "Change restaurant" link visible in Image 1 explicitly requires a separate GUI (likely a list or map view) to allow the user to select a different branch.
+10. Item Details & Customization Screen: Clicking "Order Now" from the list in Image 1 is insufficient. FR-OM-102 (Customization) 1 mandates that the system must allow users to apply customizations (e.g., "no onion," "extra cheese"). This requires a new GUI (a full page or modal) that appears after item selection but before the item is added to the cart.
+11. Shopping Cart / Order Summary Screen: After adding items, a user must be able to review their complete order, check quantities, and see a subtotal. This is a standard and necessary screen in any e-commerce flow.
+12. Order Submitted Modal: Since UC-2 (Payment) is not scheduled until Sprint 3 1, the "place an order" flow for Sprint 1 must conclude with a simple, non-financial submission. This GUI would be a simple "Order Submitted!" confirmation modal.
+GUI Breakdown for UC-7 (Kitchen App):
+This is the first functional GUI for the KDS, following the KDS Login (GUI #7).
+13. KDS Main Dashboard (Order-Ticket View): This screen directly fulfills UC-7 by providing the "real-time list of new orders".1 It would display incoming orders as a queue of digital "tickets" for the kitchen staff to manage.
+Sprint 1 Summary: This sprint adds 6 new GUIs to the project (5 for the Customer App, 1 for the Kitchen App).
+
+Part 5: Sprint 2 Analysis: Order Management and Status Tracking
+
+Sprint 2's goal is "Order Management & Status Tracking".1 This is the most complex sprint in the analyzed range, as it requires concurrent development on all three applications and introduces the Server (POS) app.
+User Stories:
+UC-4: Server can create a table order. 1
+UC-5: Server can modify an existing order. 1
+UC-3: Customer can track their order status. 1
+UC-8: Kitchen staff can update an order's status. 1
+GUI Breakdown for UC-4 & UC-5 (Server App):
+This is the core of the POS system, for which no visual reference exists. These GUIs must be inferred from the user stories and functional requirements.
+14. POS Main Dashboard / Table Map Screen: After logging in (GUI #6), the server needs a home screen. This would logically be a visual map of the restaurant's tables, showing their status (e.g., open, occupied). This is directly supported by FR-OM-101 (assign order to a table).1
+15. Server Order Entry Screen: This screen is the primary tool for UC-4.1 After selecting a table (from GUI #14), the server uses this interface to add menu items. It would be optimized for staff, not customers (e.g., quick-add buttons, search by item code). It would also be the interface used to edit an order, thus also supporting UC-5.
+16. Order List & Search Screen (POS): To fulfill UC-5 (modify an existing order) 1, a server must first be able to find that order. This GUI provides a list or search function for all active orders, searchable by table, customer, or time.
+GUI Breakdown for UC-3 (Customer App):
+This user story "activates" the "Order" tab from the main application shell (GUI #5, shown in Image 1).
+17. Order History List Screen: When the customer taps the "Order" tab, this GUI will be displayed, listing their pending and past orders.
+18. Live Order Status Tracker Screen: When a user taps a pending order from the list (GUI #17), they are taken to this screen. This GUI fulfills UC-3 by visualizing the order's progress (e.g., "Confirmed," "Preparing," "Ready for Pickup"). These statuses are fed from the KDS, which is updated via UC-8.1
+GUI Breakdown for UC-8 (Kitchen App):
+This user story makes the KDS (GUI #13) interactive.
+19. Ticket Detail & Update Modal: The KDS Main Dashboard (GUI #13) shows a list of tickets. UC-8 1 and FR-OM-104 1 require staff to "update the order status." Tapping a ticket must launch this new modal, which would display item details and provide the necessary buttons (e.g., "Mark as Preparing," "Mark as Ready") to update the order's state.
+Sprint 2 Summary: This critical sprint adds 6 new GUIs (3 for the Server App, 2 for the Customer App, 1 for the Kitchen App).
+
+
+we need to make Sprint 0 to 2
+

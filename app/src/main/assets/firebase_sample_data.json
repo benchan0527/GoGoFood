@@ -1,0 +1,1604 @@
+{
+  "users": [
+    {
+      "userId": "user_001",
+      "email": "john.doe@example.com",
+      "name": "John Doe",
+      "phone": "+1234567890",
+      "role": "customer",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "userId": "user_002",
+      "email": "jane.smith@example.com",
+      "name": "Jane Smith",
+      "phone": "+1234567891",
+      "role": "customer",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "userId": "user_003",
+      "email": "server01@restaurant.com",
+      "name": "Alice Johnson",
+      "phone": "+1234567892",
+      "role": "server",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "userId": "user_004",
+      "email": "chef01@restaurant.com",
+      "name": "Bob Chen",
+      "phone": "+1234567893",
+      "role": "kitchen",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "userId": "user_005",
+      "email": "manager01@restaurant.com",
+      "name": "Charlie Wang",
+      "phone": "+1234567894",
+      "role": "manager",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    }
+  ],
+  "admins": [
+    {
+      "adminId": "ADMIN001",
+      "userId": "user_005",
+      "email": "manager01@restaurant.com",
+      "name": "Charlie Wang",
+      "phone": "+1234567894",
+      "permissions": [
+        "menu_edit",
+        "report_view",
+        "inventory_manage",
+        "order_manage",
+        "user_manage"
+      ],
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "adminId": "ADMIN002",
+      "userId": "user_003",
+      "email": "server01@restaurant.com",
+      "name": "Alice Johnson",
+      "phone": "+1234567892",
+      "permissions": [
+        "order_manage",
+        "table_manage"
+      ],
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "adminId": "ADMIN003",
+      "userId": "user_004",
+      "email": "chef01@restaurant.com",
+      "name": "Bob Chen",
+      "phone": "+1234567893",
+      "permissions": [
+        "order_view",
+        "order_update"
+      ],
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    }
+  ],
+  "branches": [
+    {
+      "branchId": "branch_001",
+      "branchName": "West Street Branch",
+      "address": "123 West Street, Downtown District",
+      "phoneNumber": "+1-555-0101",
+      "geolocation": {
+        "latitude": 40.7128,
+        "longitude": -74.006
+      },
+      "openingHours": {
+        "monday": "09:00-22:00",
+        "tuesday": "09:00-22:00",
+        "wednesday": "09:00-22:00",
+        "thursday": "09:00-22:00",
+        "friday": "09:00-23:00",
+        "saturday": "10:00-23:00",
+        "sunday": "10:00-21:00"
+      },
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "branchId": "branch_002",
+      "branchName": "East Avenue Branch",
+      "address": "456 East Avenue, Uptown District",
+      "phoneNumber": "+1-555-0102",
+      "geolocation": {
+        "latitude": 40.758,
+        "longitude": -73.9855
+      },
+      "openingHours": {
+        "monday": "09:00-22:00",
+        "tuesday": "09:00-22:00",
+        "wednesday": "09:00-22:00",
+        "thursday": "09:00-22:00",
+        "friday": "09:00-23:00",
+        "saturday": "10:00-23:00",
+        "sunday": "10:00-21:00"
+      },
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    }
+  ],
+  "tables": [
+    {
+      "tableId": "table_A1",
+      "tableNumber": "A1",
+      "branchId": "branch_001",
+      "status": "available",
+      "capacity": 4,
+      "currentOrderId": "",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "tableId": "table_A2",
+      "tableNumber": "A2",
+      "branchId": "branch_001",
+      "status": "available",
+      "capacity": 4,
+      "currentOrderId": "",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "tableId": "table_A3",
+      "tableNumber": "A3",
+      "branchId": "branch_001",
+      "status": "available",
+      "capacity": 6,
+      "currentOrderId": "",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "tableId": "table_B1",
+      "tableNumber": "B1",
+      "branchId": "branch_001",
+      "status": "occupied",
+      "capacity": 2,
+      "currentOrderId": "order_001",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704153600000
+    },
+    {
+      "tableId": "table_B2",
+      "tableNumber": "B2",
+      "branchId": "branch_001",
+      "status": "needs_cleaning",
+      "capacity": 2,
+      "currentOrderId": "",
+      "createdAt": 1704067200000,
+      "updatedAt": 1704153600000
+    }
+  ],
+  "menuCategories": [
+    {
+      "categoryId": "cat_breakfast",
+      "categoryName": "Breakfast",
+      "displayName": "Breakfast",
+      "displayOrder": 0,
+      "isActive": true,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "categoryId": "cat_beverage",
+      "categoryName": "Drink",
+      "displayName": "Drink",
+      "displayOrder": 1,
+      "isActive": true,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434
+    },
+    {
+      "categoryId": "cat_lunch",
+      "categoryName": "Lunch",
+      "displayName": "Lunch",
+      "displayOrder": 2,
+      "isActive": true,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "categoryId": "cat_afternoon_tea",
+      "categoryName": "Afternoon Tea",
+      "displayName": "Afternoon Tea",
+      "displayOrder": 3,
+      "isActive": true,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "categoryId": "cat_dinner",
+      "categoryName": "Dinner",
+      "displayName": "Dinner",
+      "displayOrder": 4,
+      "isActive": true,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "categoryId": "cat_drink",
+      "categoryName": "Drink",
+      "displayName": "Drink",
+      "displayOrder": 5,
+      "isActive": true,
+      "createdAt": 1762272064434,
+      "updatedAt": 1762272064434
+    }
+  ],
+  "menuItems": [
+    {
+      "itemId": "item_017",
+      "name": "Luncheon Meat and Pan-fried Egg with Instant Noodles in Soup",
+      "description": "",
+      "price": 37.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_001"
+      ]
+    },
+    {
+      "itemId": "item_231",
+      "name": "Congee",
+      "description": "",
+      "price": 8.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557,
+      "hasDrink": false,
+      "modifierIds": [
+        "mod_002",
+        "mod_003"
+      ]
+    },
+    {
+      "itemId": "item_047",
+      "name": "Claypot Rice with Spare Ribs and Preserved Sausage",
+      "description": "",
+      "price": 54.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false,
+      "modifierIds": [
+        "mod_004",
+        "mod_005"
+      ]
+    },
+    {
+      "itemId": "item_073",
+      "name": "Rice with Pork Belly and Preserved Vegetable",
+      "description": "",
+      "price": 52.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_006"
+      ]
+    },
+    {
+      "itemId": "item_074",
+      "name": "Rice with Braised Winter Melon, Tofu and Roasted Pork Belly",
+      "description": "",
+      "price": 49.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_007"
+      ]
+    },
+    {
+      "itemId": "item_082",
+      "name": "Any 2 Bowls",
+      "description": "",
+      "price": 39.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_008"
+      ]
+    },
+    {
+      "itemId": "item_126",
+      "name": "Deep-Fried Spice Salt Chicken Leg/ Soy Sauce Chicken Leg",
+      "description": "",
+      "price": 34.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_009",
+        "mod_010",
+        "mod_011"
+      ]
+    },
+    {
+      "itemId": "item_108",
+      "name": "Grilled Bun with Pan-fried Chicken Fillet and Cheese",
+      "description": "",
+      "price": 30.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_012"
+      ]
+    },
+    {
+      "itemId": "item_114",
+      "name": "Club Sandwich(Chicken, Bacon, Fried Egg)",
+      "description": "",
+      "price": 33.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_013"
+      ]
+    },
+    {
+      "itemId": "item_115",
+      "name": "Pandan Kaya Toast with Butter",
+      "description": "",
+      "price": 30.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_014"
+      ]
+    },
+    {
+      "itemId": "item_118",
+      "name": "Assorted Cart Noodles (Beef Tripe, Fish Ball, Radish)",
+      "description": "",
+      "price": 33.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_015",
+        "mod_016"
+      ]
+    },
+    {
+      "itemId": "item_226",
+      "name": "Pineapple Bun with Butter",
+      "description": "",
+      "price": 20.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_017",
+        "mod_018"
+      ]
+    },
+    {
+      "itemId": "item_143",
+      "name": "French Toast",
+      "description": "",
+      "price": 29.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434,
+      "hasDrink": true,
+      "modifierIds": [
+        "mod_019",
+        "mod_020"
+      ]
+    },
+    {
+      "itemId": "item_018",
+      "name": "Pan-fried Chicken Fillet and Pan-fried Egg with Instant Noodles in Soup",
+      "description": "",
+      "price": 35.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_019",
+      "name": "Satay Beef and Pan-fried Egg with Instant Noodles in Soup",
+      "description": "",
+      "price": 37.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_020",
+      "name": "Satay Beef with Instant Noodles in Soup",
+      "description": "",
+      "price": 35.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_022",
+      "name": "Sandwich (Whole Portion)",
+      "description": "",
+      "price": 30.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_036",
+      "name": "Glutinous Rice with Chicken",
+      "description": "",
+      "price": 39.0,
+      "category": "breakfast",
+      "categoryId": "cat_breakfast",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_048",
+      "name": "Claypot Rice with Dried Octopus Pork Patty and Dried Squid Tube",
+      "description": "",
+      "price": 56.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_049",
+      "name": "Claypot Rice with Dried Octopus Pork Patty, Egg and Preserved Sausage",
+      "description": "",
+      "price": 56.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_055",
+      "name": "Rice with Teriyaki Beef and Deep-fried Fish Fillet",
+      "description": "",
+      "price": 51.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_056",
+      "name": "Rice with Teriyaki Beef and Chicken Fillet",
+      "description": "",
+      "price": 51.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_057",
+      "name": "Rice with Teriyaki Beef",
+      "description": "",
+      "price": 49.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_058",
+      "name": "Rice with Teriyaki Beef and Pan-fried Egg",
+      "description": "",
+      "price": 52.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_070",
+      "name": "Triple Cheese Baked Rice with Chicken in Cream Sauce",
+      "description": "",
+      "price": 50.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_071",
+      "name": "Triple Cheese Baked Rice with Chicken in Rendang Sauce(Mild Spicy)",
+      "description": "",
+      "price": 50.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_072",
+      "name": "Triple Cheese Baked Rice with Chicken in Green Curry",
+      "description": "",
+      "price": 50.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_077",
+      "name": "Duck Leg, Mandarin Orange Peel and Winter Melon with Rice in Soup",
+      "description": "",
+      "price": 47.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_078",
+      "name": "Chicken Leg, Yam and Snow Fungus with Rice in Soup",
+      "description": "",
+      "price": 47.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_079",
+      "name": "Chicken Leg, Mushroom and Vegetables with Rice in Soup",
+      "description": "",
+      "price": 47.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_080",
+      "name": "Pork Tripe, Spare Ribs, Pepper with Rice in Soup",
+      "description": "",
+      "price": 47.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_091",
+      "name": "Mixed Grill with Rice",
+      "description": "",
+      "price": 50.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_092",
+      "name": "BBQ Pork and Pan-fried Egg with Rice",
+      "description": "",
+      "price": 48.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_093",
+      "name": "BBQ Pork and Scrambled Eggs with Rice",
+      "description": "",
+      "price": 48.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_095",
+      "name": "BBQ Pork, Soy Sauce Mid-joint Chicken Wing, Vietnamese Pork Sausage and Marinated Egg (half) with Rice",
+      "description": "",
+      "price": 49.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_096",
+      "name": "BBQ Pork and Soy Sauce Chicken Leg with Rice",
+      "description": "",
+      "price": 56.0,
+      "category": "lunch",
+      "categoryId": "cat_lunch",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_099",
+      "name": "Hot Coffee with Tea",
+      "description": "",
+      "price": 12.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_100",
+      "name": "Hot Lemon Tea",
+      "description": "",
+      "price": 12.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_101",
+      "name": "Hot Lemon Water",
+      "description": "",
+      "price": 12.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_102",
+      "name": "Iced Milk Tea",
+      "description": "",
+      "price": 15.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_103",
+      "name": "Iced Lemon Tea",
+      "description": "",
+      "price": 15.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_104",
+      "name": "Iced Lemon Water",
+      "description": "",
+      "price": 15.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_105",
+      "name": "Iced Horlick",
+      "description": "",
+      "price": 15.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_106",
+      "name": "Iced Ovaltine",
+      "description": "",
+      "price": 15.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_107",
+      "name": "Grilled Bun with Pan-fried Pork Chop +Hot Drink",
+      "description": "",
+      "price": 30.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_147",
+      "name": "Sliced Egg with Salad Dressing Roll(Mini)",
+      "description": "",
+      "price": 23.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_154",
+      "name": "BBQ Honey Chicken Wing (2pcs)",
+      "description": "",
+      "price": 36.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_190",
+      "name": "Rice with Teriyaki Beef, Deep-fried Fish Fillet and Chicken Fillet",
+      "description": "",
+      "price": 56.0,
+      "category": "dinner",
+      "categoryId": "cat_dinner",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_227",
+      "name": "Red Bean Fizzy",
+      "description": "",
+      "price": 9.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_228",
+      "name": "Shredded Pork and Preserved Vegetables with Rice Vermicelli in Soup (Mini)",
+      "description": "",
+      "price": 12.0,
+      "category": "afternoon_tea",
+      "categoryId": "cat_afternoon_tea",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557,
+      "hasDrink": true
+    },
+    {
+      "itemId": "item_229",
+      "name": "Iced Green Tea",
+      "description": "",
+      "price": 5.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557,
+      "hasDrink": false
+    },
+    {
+      "itemId": "item_230",
+      "name": "Chinese Tea",
+      "description": "",
+      "price": 0.0,
+      "category": "beverage",
+      "categoryId": "cat_beverage",
+      "imageUrl": "",
+      "isAvailable": true,
+      "stock": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557,
+      "hasDrink": false
+    }
+  ],
+  "itemModifiers": [
+    {
+      "modifierId": "mod_size",
+      "modifierGroup": "Size",
+      "menuItemIds": [
+        "item_005"
+      ],
+      "options": [
+        {
+          "optionName": "Small",
+          "additionalPrice": 0.0
+        },
+        {
+          "optionName": "Large",
+          "additionalPrice": 2.0
+        }
+      ],
+      "isRequired": false,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "modifierId": "mod_addons",
+      "modifierGroup": "Add-ons",
+      "menuItemIds": [
+        "item_001",
+        "item_002"
+      ],
+      "options": [
+        {
+          "optionName": "Extra Sauce",
+          "additionalPrice": 1.5
+        },
+        {
+          "optionName": "Extra Vegetables",
+          "additionalPrice": 2.0
+        }
+      ],
+      "isRequired": false,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "modifierId": "mod_001",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_017"
+      ],
+      "options": [
+        {
+          "optionName": "Iced Green Tea",
+          "additionalPrice": 0.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_002",
+      "modifierGroup": "Proteins",
+      "menuItemIds": [
+        "item_231"
+      ],
+      "options": [
+        {
+          "optionName": "Fish Siu Mai",
+          "additionalPrice": 11.5,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "modifierId": "mod_003",
+      "modifierGroup": "Desserts",
+      "menuItemIds": [
+        "item_231"
+      ],
+      "options": [
+        {
+          "optionName": "Pan-fried Turnip Cake",
+          "additionalPrice": 11.5,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "modifierId": "mod_004",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_047"
+      ],
+      "options": [
+        {
+          "optionName": "Steamed Baby Cabbage/Vegetables of the day",
+          "additionalPrice": 8.25,
+          "isAvailable": true
+        },
+        {
+          "optionName": "Iced Green Tea",
+          "additionalPrice": 6.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_005",
+      "modifierGroup": "Sides",
+      "menuItemIds": [
+        "item_047"
+      ],
+      "options": [
+        {
+          "optionName": "Cilantro, Tofu and Minced Pork Soup",
+          "additionalPrice": 9.5,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_006",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_073"
+      ],
+      "options": [
+        {
+          "optionName": "Iced Red Bean Milk Tea (16oz)",
+          "additionalPrice": 4.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_007",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_074"
+      ],
+      "options": [
+        {
+          "optionName": "Iced Red Bean Milk Tea (16oz)",
+          "additionalPrice": 4.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_008",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_082"
+      ],
+      "options": [
+        {
+          "optionName": "Steamed Baby Cabbage of the Day",
+          "additionalPrice": 6.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_009",
+      "modifierGroup": "Sides",
+      "menuItemIds": [
+        "item_126"
+      ],
+      "options": [
+        {
+          "optionName": "Crispy Sausages, Shredded Pork and Preserved Vegetables with Rice Vermicelli in Soup (Mini)",
+          "additionalPrice": 6.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_010",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_126"
+      ],
+      "options": [
+        {
+          "optionName": "Red Bean Fizzy",
+          "additionalPrice": 5.0,
+          "isAvailable": true
+        },
+        {
+          "optionName": "\"Coca-Cola\" (12oz)",
+          "additionalPrice": 6.75,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_011",
+      "modifierGroup": "Add-ons",
+      "menuItemIds": [
+        "item_126"
+      ],
+      "options": [
+        {
+          "optionName": "Ar Wood Bolognese (mini)",
+          "additionalPrice": 7.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_012",
+      "modifierGroup": "Sides",
+      "menuItemIds": [
+        "item_108"
+      ],
+      "options": [
+        {
+          "optionName": "Shredded Pork and Preserved Vegetables with Rice Vermicelli in Soup(Mini)",
+          "additionalPrice": 7.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_013",
+      "modifierGroup": "Proteins",
+      "menuItemIds": [
+        "item_114"
+      ],
+      "options": [
+        {
+          "optionName": "BBQ Honey Chicken Wing",
+          "additionalPrice": 5.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_014",
+      "modifierGroup": "Sides",
+      "menuItemIds": [
+        "item_115"
+      ],
+      "options": [
+        {
+          "optionName": "Shredded Pork and Preserved Vegetables with Rice Vermicelli in Soup(Mini)",
+          "additionalPrice": 7.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_015",
+      "modifierGroup": "Proteins",
+      "menuItemIds": [
+        "item_118"
+      ],
+      "options": [
+        {
+          "optionName": "Marinated Mid-joint Chicken Wings",
+          "additionalPrice": 5.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_016",
+      "modifierGroup": "Desserts",
+      "menuItemIds": [
+        "item_118"
+      ],
+      "options": [
+        {
+          "optionName": "Red Bean Rice Pudding",
+          "additionalPrice": 3.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162556,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_017",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_226"
+      ],
+      "options": [
+        {
+          "optionName": "Red Bean Fizzy",
+          "additionalPrice": 9.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "modifierId": "mod_018",
+      "modifierGroup": "Sides",
+      "menuItemIds": [
+        "item_226"
+      ],
+      "options": [
+        {
+          "optionName": "Satay Beef with Instant Noodles",
+          "additionalPrice": 19.0,
+          "isAvailable": true
+        },
+        {
+          "optionName": "Shredded Pork and Preserved Vegetables with Rice Vermicelli in Soup(Mini)",
+          "additionalPrice": 12.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762267162557
+    },
+    {
+      "modifierId": "mod_019",
+      "modifierGroup": "Proteins",
+      "menuItemIds": [
+        "item_143"
+      ],
+      "options": [
+        {
+          "optionName": "BBQ Honey Chicken Wing",
+          "additionalPrice": 8.0,
+          "isAvailable": true
+        },
+        {
+          "optionName": "Deep-Fried Spice Salt Chicken Leg/ Soy Sauce Chicken Leg",
+          "additionalPrice": 12.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434
+    },
+    {
+      "modifierId": "mod_020",
+      "modifierGroup": "Beverages",
+      "menuItemIds": [
+        "item_143"
+      ],
+      "options": [
+        {
+          "optionName": "Red Bean Fizzy",
+          "additionalPrice": 5.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": false,
+      "minSelections": 0,
+      "maxSelections": -1,
+      "createdAt": 1762267162557,
+      "updatedAt": 1762272064434
+    }
+  ],
+  "ingredients": [
+    {
+      "ingredientId": "ing_001",
+      "ingredientName": "Chicken Breast",
+      "unit": "kg",
+      "currentStockLevel": 50.5,
+      "lowStockThreshold": 10.0,
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "ingredientId": "ing_002",
+      "ingredientName": "Onion",
+      "unit": "kg",
+      "currentStockLevel": 25.0,
+      "lowStockThreshold": 5.0,
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "ingredientId": "ing_003",
+      "ingredientName": "Rice",
+      "unit": "kg",
+      "currentStockLevel": 100.0,
+      "lowStockThreshold": 20.0,
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "ingredientId": "ing_004",
+      "ingredientName": "Duck",
+      "unit": "kg",
+      "currentStockLevel": 15.0,
+      "lowStockThreshold": 5.0,
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    }
+  ],
+  "orders": [
+    {
+      "orderId": "order_001",
+      "orderNumber": "1234",
+      "userId": "user_001",
+      "branchId": "branch_001",
+      "tableNumber": "B1",
+      "orderType": "table",
+      "items": [
+        {
+          "itemId": "item_001",
+          "name": "Peking Duck",
+          "quantity": 1,
+          "unitPrice": 89.0,
+          "totalPrice": 89.0,
+          "customizations": []
+        },
+        {
+          "itemId": "item_003",
+          "name": "Spring Rolls",
+          "quantity": 2,
+          "unitPrice": 12.0,
+          "totalPrice": 24.0,
+          "customizations": []
+        }
+      ],
+      "status": "preparing",
+      "subtotal": 113.0,
+      "tax": 9.04,
+      "serviceCharge": 11.3,
+      "discount": 0.0,
+      "total": 133.34,
+      "paymentMethod": "",
+      "paymentStatus": "pending",
+      "deliveryTime": "Standard (10-20 mins)",
+      "createdAt": 1704153600000,
+      "updatedAt": 1704153700000
+    }
+  ],
+  "transactions": [
+    {
+      "transactionId": "trans_001",
+      "orderId": "order_001",
+      "paymentMethod": "credit_card",
+      "amount": 133.34,
+      "transactionIdExternal": "TXN-20240101-001",
+      "status": "pending",
+      "createdAt": 1704153600000,
+      "updatedAt": 1704153600000
+    }
+  ],
+  "appConfig": {
+    "configId": "settings",
+    "taxRate": 0.08,
+    "serviceChargeRate": 0.1,
+    "supportedPaymentMethods": [
+      "cash",
+      "credit_card",
+      "debit_card",
+      "mobile_wallet"
+    ],
+    "currency": "USD",
+    "currencySymbol": "$",
+    "promotionBanner": "Welcome to GoGoFood! Enjoy 10% off on your first order.",
+    "deliveryTimeOptions": [
+      "Standard (10-20 mins)",
+      "Express (5-10 mins)",
+      "Normal (20-30 mins)"
+    ],
+    "createdAt": 1704067200000,
+    "updatedAt": 1704067200000
+  },
+  "dailySalesReports": [
+    {
+      "reportId": "report-2025-01-04",
+      "date": "2025-01-04",
+      "branchId": "branch_001",
+      "totalSales": 2500.0,
+      "totalOrders": 45,
+      "topSellingItem": {
+        "itemId": "item_002",
+        "name": "Claypot Rice",
+        "quantitySold": 25
+      },
+      "paymentMethodBreakdown": {
+        "cash": 500.0,
+        "credit_card": 1500.0,
+        "mobile_wallet": 500.0
+      },
+      "createdAt": 1704153600000,
+      "updatedAt": 1704153600000
+    }
+  ]
+}

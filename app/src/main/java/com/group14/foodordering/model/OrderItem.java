@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 订单项数据模型
- * 表示订单中的单个菜品项及其定制信息
+ * Order item data model
+ * Represents a single menu item in an order with its customization information
  */
 public class OrderItem {
     private String orderItemId;
@@ -14,14 +14,14 @@ public class OrderItem {
     private int quantity;
     private double unitPrice;
     private double totalPrice;
-    private String customization; // 定制要求，如"no onion", "extra cheese"
-    private String cookingDetails; // 烹饪要求
+    private String customization; // Customization requirements, e.g., "no onion", "extra cheese"
+    private String cookingDetails; // Cooking requirements
 
-    // 默认构造函数
+    // Default constructor
     public OrderItem() {
     }
 
-    // 完整构造函数
+    // Full constructor
     public OrderItem(String menuItemId, String menuItemName, int quantity, double unitPrice) {
         this.menuItemId = menuItemId;
         this.menuItemName = menuItemName;
@@ -97,7 +97,7 @@ public class OrderItem {
         this.cookingDetails = cookingDetails;
     }
 
-    // 转换为Map（用于Firestore）
+    // Convert to Map (for Firestore)
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("orderItemId", orderItemId != null ? orderItemId : "");

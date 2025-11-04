@@ -17,7 +17,7 @@
             android:id="@+id/orderIdTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="订单ID"
+            android:text="Order ID"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -32,14 +32,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="类型" />
+                android:text="Type" />
 
             <TextView
                 android:id="@+id/statusTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="状态"
+                android:text="Status"
                 android:gravity="end" />
 
         </LinearLayout>
@@ -48,7 +48,7 @@
             android:id="@+id/itemsTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="订单项"
+            android:text="Order Items"
             android:textSize="14sp"
             android:layout_marginTop="8dp" />
 
@@ -56,7 +56,7 @@
             android:id="@+id/totalTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="总计"
+            android:text="Total"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#FF5722"
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="开始制作" />
+                android:text="Start Preparing" />
 
             <Button
                 android:id="@+id/readyButton"
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="制作完成" />
+                android:text="Ready" />
 
         </LinearLayout>
 
