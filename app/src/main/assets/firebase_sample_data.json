@@ -399,6 +399,7 @@
       "isAvailable": true,
       "stock": -1,
       "hasDrink": true,
+      "modifierIds": ["mod_001"],
       "createdAt": 1762363071356,
       "updatedAt": 1762363071356
     },
@@ -487,7 +488,30 @@
       "updatedAt": 1762363071356
     }
   ],
-  "itemModifiers": [],
+  "itemModifiers": [
+    {
+      "modifierId": "mod_001",
+      "modifierGroup": "Sauce Choice",
+      "menuItemIds": ["item_dinner_001"],
+      "options": [
+        {
+          "optionName": "Black Pepper Sauce",
+          "additionalPrice": 0.0,
+          "isAvailable": true
+        },
+        {
+          "optionName": "Garlic Sauce",
+          "additionalPrice": 0.0,
+          "isAvailable": true
+        }
+      ],
+      "isRequired": true,
+      "minSelections": 1,
+      "maxSelections": 1,
+      "createdAt": 1762363071356,
+      "updatedAt": 1762363071356
+    }
+  ],
   "ingredients": [
     {
       "ingredientId": "ing_001",
