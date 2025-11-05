@@ -53,6 +53,13 @@ public class FirebaseDatabaseService {
         return instance;
     }
 
+    /**
+     * Get Firestore instance
+     */
+    public FirebaseFirestore getFirestore() {
+        return db;
+    }
+
     // ==================== User Operations ====================
 
     /**
