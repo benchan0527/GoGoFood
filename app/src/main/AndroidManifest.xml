@@ -46,6 +46,10 @@
             android:name=".DrinkSelectionActivity"
             android:exported="false"
             android:label="Select Drink" />
+        <activity
+            android:name=".ItemModifierSelectionActivity"
+            android:exported="false"
+            android:label="Customize Item" />
     </application>
 
 </manifest>
