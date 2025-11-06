@@ -25,7 +25,9 @@ import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.OrderItem;
 import com.group14.foodordering.service.FirebaseDatabaseService;
 import com.group14.foodordering.util.DeviceIdHelper;
+import com.group14.foodordering.util.RestaurantPreferenceHelper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -54,12 +56,17 @@ public class MenuActivity extends AppCompatActivity {
     private Button dineInButton;
     private Button takeawayButton;
     private LinearLayout typeButtonsContainer;
+    private TextView restaurantNameTextView;
+    private TextView changeRestaurantTextView;
     private String selectedOrderType = "dine_in"; // "dine_in" or "takeaway"
     private String currentTimePeriod; // "breakfast", "lunch", "afternoon_tea", "dinner"
     private String currentTimeDisplay; // "Morning", "Lunch time", "Tea Time", "Dinner"
     private String selectedCategory; // Selected category for filtering
     private List<MenuCategory> menuCategories;
     private Map<String, Button> categoryButtons;
+    
+    // Static reference for ShoppingCartActivity to access cart data
+    private static MenuActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +81,56 @@ public class MenuActivity extends AppCompatActivity {
         menuCategories = new ArrayList<>();
         categoryButtons = new HashMap<>();
 
+        instance = this;
         setupViews();
         loadMenuCategories();
         loadMenuItems();
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (instance == this) {
+            instance = null;
+        }
+    }
+    
+    /**
+     * Get cart data for ShoppingCartActivity
+     */
+    public static MenuActivity getInstance() {
+        return instance;
+    }
+    
+    /**
+     * Get cart map (returns a copy)
+     */
+    public Map<String, Integer> getCart() {
+        return new HashMap<>(cart);
+    }
+    
+    /**
+     * Get cart drink additions (returns a copy)
+     */
+    public Map<String, Double> getCartDrinkAdditions() {
+        return new HashMap<>(cartDrinkAdditions);
+    }
+    
+    /**
+     * Get all menu items (returns a copy)
+     */
+    public List<MenuItem> getAllMenuItems() {
+        return new ArrayList<>(allMenuItems);
+    }
+    
+    /**
+     * Update cart from ShoppingCartActivity
+     */
+    public void updateCart(Map<String, Integer> newCart, Map<String, Double> newCartDrinkAdditions) {
+        this.cart = newCart != null ? new HashMap<>(newCart) : new HashMap<>();
+        this.cartDrinkAdditions = newCartDrinkAdditions != null ? new HashMap<>(newCartDrinkAdditions) : new HashMap<>();
+        updateCartDisplay();
+        menuAdapter.notifyDataSetChanged();
     }
 
     private void setupViews() {
@@ -92,6 +146,8 @@ public class MenuActivity extends AppCompatActivity {
         dineInButton = findViewById(R.id.dineInButton);
         takeawayButton = findViewById(R.id.takeawayButton);
         typeButtonsContainer = findViewById(R.id.typeButtonsContainer);
+        restaurantNameTextView = findViewById(R.id.restaurantNameTextView);
+        changeRestaurantTextView = findViewById(R.id.changeRestaurantTextView);
 
         checkoutButton.setOnClickListener(v -> checkout());
         viewCartButton.setOnClickListener(v -> viewCart());
@@ -100,9 +156,18 @@ public class MenuActivity extends AppCompatActivity {
         dineInButton.setOnClickListener(v -> selectOrderType("dine_in"));
         takeawayButton.setOnClickListener(v -> selectOrderType("takeaway"));
 
+        // Setup restaurant change button
+        changeRestaurantTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, RestaurantSelectionActivity.class);
+            startActivityForResult(intent, 1002);
+        });
+
         // Determine current time period
         determineTimePeriod();
         updateOrderTypeButtons();
+
+        // Update restaurant display
+        updateRestaurantDisplay();
 
         updateCartDisplay();
     }
@@ -632,12 +697,47 @@ public class MenuActivity extends AppCompatActivity {
         Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
     }
     
+    /**
+     * Update restaurant display from preferences
+     */
+    private void updateRestaurantDisplay() {
+        String restaurantName = RestaurantPreferenceHelper.getSelectedRestaurantName(this);
+        if (restaurantName != null && !restaurantName.isEmpty()) {
+            restaurantNameTextView.setText(restaurantName);
+        } else {
+            restaurantNameTextView.setText("No restaurant selected");
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update restaurant display when returning to this activity
+        updateRestaurantDisplay();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         
+        // Handle restaurant selection result
+        if (requestCode == 1002 && resultCode == RESULT_OK) {
+            // Restaurant was selected, update display
+            updateRestaurantDisplay();
+            Toast.makeText(this, "Restaurant changed", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         if (requestCode == 1001 && resultCode == RESULT_OK) {
             if (data != null) {
+                // Check if it's from ShoppingCartActivity
+                if (data.hasExtra("cart_updated")) {
+                    // Cart was updated in ShoppingCartActivity
+                    updateCartDisplay();
+                    menuAdapter.notifyDataSetChanged();
+                    return;
+                }
+                
                 // Check if it's from ItemModifierSelectionActivity
                 MenuItem item = (MenuItem) data.getSerializableExtra(ItemModifierSelectionActivity.EXTRA_MENU_ITEM);
                 if (item != null) {
@@ -720,6 +820,15 @@ public class MenuActivity extends AppCompatActivity {
                 // Use device ID to identify the customer
                 String deviceId = DeviceIdHelper.getDeviceId(MenuActivity.this);
                 order.setUserId(deviceId);
+                
+                // Set restaurant ID from preferences
+                String restaurantId = RestaurantPreferenceHelper.getSelectedRestaurantId(MenuActivity.this);
+                if (restaurantId != null && !restaurantId.isEmpty()) {
+                    order.setRestaurantId(restaurantId);
+                } else {
+                    Toast.makeText(MenuActivity.this, "Please select a restaurant first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 // Add order items
                 for (Map.Entry<String, Integer> entry : cart.entrySet()) {
@@ -745,6 +854,14 @@ public class MenuActivity extends AppCompatActivity {
 
                 order.setTax(order.getSubtotal() * 0.1); // Assume 10% tax
                 order.setServiceCharge(0.0);
+
+                // Validate order has items before saving
+                if (order.getItems() == null || order.getItems().isEmpty()) {
+                    Toast.makeText(MenuActivity.this, "Cannot create order: no items found", 
+                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Order creation failed: order has no items after building");
+                    return;
+                }
 
                 // Save order to database
                 dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
@@ -792,34 +909,13 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
 
-        StringBuilder cartDetails = new StringBuilder("Cart Details:\n\n");
-        double totalPrice = 0.0;
-
-        for (Map.Entry<String, Integer> entry : cart.entrySet()) {
-            String itemId = entry.getKey();
-            int quantity = entry.getValue();
-
-            for (MenuItem item : allMenuItems) {
-                if (item.getItemId().equals(itemId)) {
-                    double itemPrice = item.getPrice();
-                    double drinkAddition = cartDrinkAdditions.getOrDefault(itemId, 0.0);
-                    double itemTotal = (itemPrice + drinkAddition) * quantity;
-                    totalPrice += itemTotal;
-                    String itemName = item.getName();
-                    if (drinkAddition > 0) {
-                        itemName += " (Cold Drink)";
-                    } else if (item.isHasDrink()) {
-                        itemName += " (Hot Drink)";
-                    }
-                    cartDetails.append(String.format("%s x%d - $%.2f\n", 
-                            itemName, quantity, itemTotal));
-                    break;
-                }
-            }
-        }
-
-        cartDetails.append(String.format("\nTotal: $%.2f", totalPrice));
-        Toast.makeText(this, cartDetails.toString(), Toast.LENGTH_LONG).show();
+        // Navigate to ShoppingCartActivity
+        Intent intent = new Intent(this, ShoppingCartActivity.class);
+        // Pass cart data via Intent
+        intent.putExtra("cart", (Serializable) new HashMap<>(cart));
+        intent.putExtra("cartDrinkAdditions", (Serializable) new HashMap<>(cartDrinkAdditions));
+        intent.putExtra("allMenuItems", (Serializable) new ArrayList<>(allMenuItems));
+        startActivityForResult(intent, 1001);
     }
 
     /**

@@ -313,6 +313,14 @@ public class TableOrderActivity extends AppCompatActivity {
                 order.setTax(order.getSubtotal() * 0.1);
                 order.setServiceCharge(0.0);
 
+                // Validate order has items before saving
+                if (order.getItems() == null || order.getItems().isEmpty()) {
+                    Toast.makeText(TableOrderActivity.this, "Cannot create order: no items found", 
+                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Order creation failed: order has no items after building");
+                    return;
+                }
+
                 dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
                     @Override
                     public void onSuccess(String documentId) {
@@ -364,6 +372,14 @@ public class TableOrderActivity extends AppCompatActivity {
                     order.addItem(item);
                 }
                 order.setTax(order.getSubtotal() * 0.1);
+
+                // Validate order has items before updating
+                if (order.getItems() == null || order.getItems().isEmpty()) {
+                    Toast.makeText(TableOrderActivity.this, "Cannot update order: order must have at least one item", 
+                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Order update failed: order has no items after building");
+                    return;
+                }
 
                 dbService.updateOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
                     @Override

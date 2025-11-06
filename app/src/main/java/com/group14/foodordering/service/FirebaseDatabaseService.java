@@ -19,6 +19,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.group14.foodordering.model.Admin;
 import com.group14.foodordering.model.MenuItem;
 import com.group14.foodordering.model.Order;
+import com.group14.foodordering.model.Restaurant;
 import com.group14.foodordering.model.User;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class FirebaseDatabaseService {
     private static final String COLLECTION_ADMINS = "admins";
     private static final String COLLECTION_MENU_ITEMS = "menuItems";
     private static final String COLLECTION_ORDERS = "orders";
+    private static final String COLLECTION_RESTAURANTS = "restaurants";
     private static final String COLLECTION_COUNTERS = "counters";
     private static final String COUNTER_DOC_ID = "orderCounter";
 
@@ -196,17 +198,22 @@ public class FirebaseDatabaseService {
         admin.setPhone(document.getString("phone"));
         admin.setActive(document.getBoolean("isActive") != null ? document.getBoolean("isActive") : false);
         
-        // Handle permissions conversion from List to String[]
+        // Handle permissions conversion - Firestore stores as List<String>
         Object permissionsObj = document.get("permissions");
         if (permissionsObj instanceof List) {
             @SuppressWarnings("unchecked")
             List<String> permissionsList = (List<String>) permissionsObj;
-            String[] permissions = permissionsList.toArray(new String[0]);
-            admin.setPermissions(permissions);
+            admin.setPermissions(permissionsList);
         } else if (permissionsObj instanceof String[]) {
-            admin.setPermissions((String[]) permissionsObj);
+            // Legacy support: convert String[] to List
+            String[] permissionsArray = (String[]) permissionsObj;
+            List<String> permissionsList = new ArrayList<>();
+            for (String permission : permissionsArray) {
+                permissionsList.add(permission);
+            }
+            admin.setPermissions(permissionsList);
         } else {
-            admin.setPermissions(new String[0]);
+            admin.setPermissions(new ArrayList<>());
         }
         
         Long createdAt = document.getLong("createdAt");
@@ -476,6 +483,15 @@ public class FirebaseDatabaseService {
      * Create order
      */
     public void createOrder(Order order, DatabaseCallback callback) {
+        // Validate that order has items
+        if (order == null || order.getItems() == null || order.getItems().isEmpty()) {
+            Log.e(TAG, "Cannot create order: order is null or has no items");
+            if (callback != null) {
+                callback.onFailure(new Exception("Order must contain at least one item"));
+            }
+            return;
+        }
+        
         Map<String, Object> orderMap = order.toMap();
         orderMap.put("updatedAt", System.currentTimeMillis());
         
@@ -496,6 +512,15 @@ public class FirebaseDatabaseService {
      * Update order
      */
     public void updateOrder(Order order, DatabaseCallback callback) {
+        // Validate that order has items
+        if (order == null || order.getItems() == null || order.getItems().isEmpty()) {
+            Log.e(TAG, "Cannot update order: order is null or has no items");
+            if (callback != null) {
+                callback.onFailure(new Exception("Order must contain at least one item"));
+            }
+            return;
+        }
+        
         Map<String, Object> orderMap = order.toMap();
         orderMap.put("updatedAt", System.currentTimeMillis());
         
@@ -776,6 +801,141 @@ public class FirebaseDatabaseService {
                 });
     }
 
+    // ==================== Restaurant Operations ====================
+
+    /**
+     * Get all active restaurants
+     */
+    public void getAllRestaurants(RestaurantsCallback callback) {
+        // Try query with orderBy first (requires composite index)
+        db.collection(COLLECTION_RESTAURANTS)
+                .whereEqualTo("isActive", true)
+                .orderBy("restaurantName")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Restaurant> restaurants = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Restaurant restaurant = documentToRestaurant(document);
+                                if (restaurant != null) {
+                                    restaurants.add(restaurant);
+                                }
+                            }
+                        }
+                        // Sort by name if not already sorted (fallback)
+                        restaurants.sort((r1, r2) -> {
+                            String name1 = r1.getRestaurantName() != null ? r1.getRestaurantName() : "";
+                            String name2 = r2.getRestaurantName() != null ? r2.getRestaurantName() : "";
+                            return name1.compareToIgnoreCase(name2);
+                        });
+                        if (callback != null) callback.onSuccess(restaurants);
+                    } else {
+                        Exception exception = task.getException();
+                        Log.w(TAG, "Failed to get restaurants with orderBy, trying without orderBy", exception);
+                        // If query fails (likely due to missing index), try without orderBy
+                        db.collection(COLLECTION_RESTAURANTS)
+                                .whereEqualTo("isActive", true)
+                                .get()
+                                .addOnCompleteListener(fallbackTask -> {
+                                    if (fallbackTask.isSuccessful()) {
+                                        List<Restaurant> restaurants = new ArrayList<>();
+                                        QuerySnapshot querySnapshot = fallbackTask.getResult();
+                                        if (querySnapshot != null) {
+                                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                                Restaurant restaurant = documentToRestaurant(document);
+                                                if (restaurant != null) {
+                                                    restaurants.add(restaurant);
+                                                }
+                                            }
+                                        }
+                                        // Sort by name manually
+                                        restaurants.sort((r1, r2) -> {
+                                            String name1 = r1.getRestaurantName() != null ? r1.getRestaurantName() : "";
+                                            String name2 = r2.getRestaurantName() != null ? r2.getRestaurantName() : "";
+                                            return name1.compareToIgnoreCase(name2);
+                                        });
+                                        if (callback != null) callback.onSuccess(restaurants);
+                                    } else {
+                                        Log.w(TAG, "Failed to get restaurants with filter, trying without filter", fallbackTask.getException());
+                                        // Last resort: get all restaurants without filter
+                                        db.collection(COLLECTION_RESTAURANTS)
+                                                .get()
+                                                .addOnCompleteListener(lastResortTask -> {
+                                                    if (lastResortTask.isSuccessful()) {
+                                                        List<Restaurant> restaurants = new ArrayList<>();
+                                                        QuerySnapshot querySnapshot = lastResortTask.getResult();
+                                                        if (querySnapshot != null) {
+                                                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                                                Restaurant restaurant = documentToRestaurant(document);
+                                                                // Filter by isActive in memory
+                                                                if (restaurant != null && restaurant.isActive()) {
+                                                                    restaurants.add(restaurant);
+                                                                }
+                                                            }
+                                                        }
+                                                        // Sort by name manually
+                                                        restaurants.sort((r1, r2) -> {
+                                                            String name1 = r1.getRestaurantName() != null ? r1.getRestaurantName() : "";
+                                                            String name2 = r2.getRestaurantName() != null ? r2.getRestaurantName() : "";
+                                                            return name1.compareToIgnoreCase(name2);
+                                                        });
+                                                        if (callback != null) callback.onSuccess(restaurants);
+                                                    } else {
+                                                        Log.e(TAG, "Failed to get restaurants", lastResortTask.getException());
+                                                        if (callback != null) callback.onFailure(lastResortTask.getException());
+                                                    }
+                                                });
+                                    }
+                                });
+                    }
+                });
+    }
+
+    /**
+     * Get restaurant by ID
+     */
+    public void getRestaurantById(String restaurantId, RestaurantCallback callback) {
+        db.collection(COLLECTION_RESTAURANTS)
+                .document(restaurantId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            Restaurant restaurant = documentToRestaurant(document);
+                            if (callback != null) callback.onSuccess(restaurant);
+                        } else {
+                            if (callback != null) callback.onFailure(new Exception("Restaurant not found"));
+                        }
+                    } else {
+                        Log.e(TAG, "Failed to get restaurant", task.getException());
+                        if (callback != null) callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Convert DocumentSnapshot to Restaurant
+     */
+    private Restaurant documentToRestaurant(DocumentSnapshot document) {
+        try {
+            Restaurant restaurant = new Restaurant();
+            restaurant.setRestaurantId(document.getString("restaurantId"));
+            restaurant.setRestaurantName(document.getString("restaurantName"));
+            restaurant.setAddress(document.getString("address"));
+            restaurant.setPhoneNumber(document.getString("phoneNumber"));
+            restaurant.setActive(document.getBoolean("isActive") != null && document.getBoolean("isActive"));
+            restaurant.setCreatedAt(document.getLong("createdAt") != null ? document.getLong("createdAt") : 0);
+            restaurant.setUpdatedAt(document.getLong("updatedAt") != null ? document.getLong("updatedAt") : 0);
+            return restaurant;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to convert document to Restaurant", e);
+            return null;
+        }
+    }
+
     // ==================== Callback Interfaces ====================
 
     public interface DatabaseCallback {
@@ -815,6 +975,16 @@ public class FirebaseDatabaseService {
 
     public interface OrderNumberCallback {
         void onSuccess(String orderNumber);
+        void onFailure(Exception e);
+    }
+
+    public interface RestaurantCallback {
+        void onSuccess(Restaurant restaurant);
+        void onFailure(Exception e);
+    }
+
+    public interface RestaurantsCallback {
+        void onSuccess(List<Restaurant> restaurants);
         void onFailure(Exception e);
     }
 }
