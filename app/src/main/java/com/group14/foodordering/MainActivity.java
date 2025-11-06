@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Order History button - always visible for customers
+        Button btnOrderHistory = findViewById(R.id.btnOrderHistory);
+        btnOrderHistory.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, OrderHistoryActivity.class);
+            startActivity(intent);
+        });
+
         // Admin buttons - hidden until login
         btnKitchenView = findViewById(R.id.btnKitchenView);
         btnKitchenView.setOnClickListener(v -> {
@@ -140,12 +147,19 @@ public class MainActivity extends AppCompatActivity {
         dbService.getAdminByStaffIdOrPhone(staffIdOrPhone, new FirebaseDatabaseService.AdminCallback() {
             @Override
             public void onSuccess(Admin admin) {
+                // Check if admin is null
+                if (admin == null) {
+                    Toast.makeText(MainActivity.this, "Admin data is invalid", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
                 // For now, we just check if admin exists and is active
                 // In a real app, you would verify the password here
                 if (admin.isActive()) {
                     isAdminLoggedIn = true;
                     updateAdminButtonsVisibility();
-                    Toast.makeText(MainActivity.this, "Admin login successful", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Admin login successful: " + admin.getName(), 
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Admin account is inactive", Toast.LENGTH_SHORT).show();
                 }

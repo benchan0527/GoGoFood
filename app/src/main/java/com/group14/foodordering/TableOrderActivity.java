@@ -297,31 +297,46 @@ public class TableOrderActivity extends AppCompatActivity {
             return;
         }
 
-        String orderId = "order_" + UUID.randomUUID().toString().substring(0, 8);
-        Order order = new Order(orderId, "table");
-        order.setTableNumber(currentTableNumber);
-
-        for (OrderItem item : currentOrderItems) {
-            order.addItem(item);
-        }
-
-        order.setTax(order.getSubtotal() * 0.1);
-        order.setServiceCharge(0.0);
-
-        dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
+        // Get next order number (0001-1000)
+        dbService.getNextOrderNumber(new FirebaseDatabaseService.OrderNumberCallback() {
             @Override
-            public void onSuccess(String documentId) {
-                Log.d(TAG, "Order created successfully: " + documentId);
-                Toast.makeText(TableOrderActivity.this, "Order created successfully!", Toast.LENGTH_SHORT).show();
-                currentOrderId = documentId;
-                createOrderButton.setEnabled(false);
-                updateOrderButton.setEnabled(true);
+            public void onSuccess(String orderNumber) {
+                // Create order with formatted order number
+                String orderId = orderNumber; // Use the formatted number as orderId
+                Order order = new Order(orderId, "table");
+                order.setTableNumber(currentTableNumber);
+
+                for (OrderItem item : currentOrderItems) {
+                    order.addItem(item);
+                }
+
+                order.setTax(order.getSubtotal() * 0.1);
+                order.setServiceCharge(0.0);
+
+                dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
+                    @Override
+                    public void onSuccess(String documentId) {
+                        Log.d(TAG, "Order created successfully: " + documentId);
+                        Toast.makeText(TableOrderActivity.this, "Order created successfully! Order Number: " + orderNumber, 
+                                Toast.LENGTH_SHORT).show();
+                        currentOrderId = documentId;
+                        createOrderButton.setEnabled(false);
+                        updateOrderButton.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e(TAG, "Order creation failed", e);
+                        Toast.makeText(TableOrderActivity.this, "Order creation failed: " + e.getMessage(), 
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onFailure(Exception e) {
-                Log.e(TAG, "Order creation failed", e);
-                Toast.makeText(TableOrderActivity.this, "Order creation failed: " + e.getMessage(), 
+                Log.e(TAG, "Failed to get order number", e);
+                Toast.makeText(TableOrderActivity.this, "Failed to generate order number: " + e.getMessage(), 
                         Toast.LENGTH_SHORT).show();
             }
         });

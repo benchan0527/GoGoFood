@@ -10,9 +10,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.group14.foodordering.model.Admin;
 import com.group14.foodordering.model.MenuItem;
@@ -39,6 +41,8 @@ public class FirebaseDatabaseService {
     private static final String COLLECTION_ADMINS = "admins";
     private static final String COLLECTION_MENU_ITEMS = "menuItems";
     private static final String COLLECTION_ORDERS = "orders";
+    private static final String COLLECTION_COUNTERS = "counters";
+    private static final String COUNTER_DOC_ID = "orderCounter";
 
     private static FirebaseDatabaseService instance;
 
@@ -161,8 +165,12 @@ public class FirebaseDatabaseService {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
-                            Admin admin = document.toObject(Admin.class);
-                            if (callback != null) callback.onSuccess(admin);
+                            Admin admin = documentToAdmin(document);
+                            if (admin != null) {
+                                if (callback != null) callback.onSuccess(admin);
+                            } else {
+                                if (callback != null) callback.onFailure(new Exception("Admin data is invalid"));
+                            }
                         } else {
                             if (callback != null) callback.onFailure(new Exception("Admin not found"));
                         }
@@ -170,6 +178,48 @@ public class FirebaseDatabaseService {
                         if (callback != null) callback.onFailure(task.getException());
                     }
                 });
+    }
+
+    /**
+     * Convert Admin document to Admin object, handling permissions conversion
+     */
+    private Admin documentToAdmin(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
+        }
+        
+        Admin admin = new Admin();
+        admin.setAdminId(document.getString("adminId"));
+        admin.setUserId(document.getString("userId"));
+        admin.setEmail(document.getString("email"));
+        admin.setName(document.getString("name"));
+        admin.setPhone(document.getString("phone"));
+        admin.setActive(document.getBoolean("isActive") != null ? document.getBoolean("isActive") : false);
+        
+        // Handle permissions conversion from List to String[]
+        Object permissionsObj = document.get("permissions");
+        if (permissionsObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> permissionsList = (List<String>) permissionsObj;
+            String[] permissions = permissionsList.toArray(new String[0]);
+            admin.setPermissions(permissions);
+        } else if (permissionsObj instanceof String[]) {
+            admin.setPermissions((String[]) permissionsObj);
+        } else {
+            admin.setPermissions(new String[0]);
+        }
+        
+        Long createdAt = document.getLong("createdAt");
+        if (createdAt != null) {
+            admin.setCreatedAt(createdAt);
+        }
+        
+        Long updatedAt = document.getLong("updatedAt");
+        if (updatedAt != null) {
+            admin.setUpdatedAt(updatedAt);
+        }
+        
+        return admin;
     }
 
     /**
@@ -182,13 +232,13 @@ public class FirebaseDatabaseService {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
-                        Admin admin = task.getResult().toObject(Admin.class);
+                        Admin admin = documentToAdmin(task.getResult());
                         if (admin != null && admin.isActive()) {
                             if (callback != null) callback.onSuccess(admin);
                             return;
                         }
                     }
-                    // If not found by adminId, try by phone
+                    // If not found by adminId or admin is null/inactive, try by phone
                     db.collection(COLLECTION_ADMINS)
                             .whereEqualTo("phone", staffIdOrPhone)
                             .whereEqualTo("isActive", true)
@@ -198,8 +248,12 @@ public class FirebaseDatabaseService {
                                 if (phoneTask.isSuccessful()) {
                                     QuerySnapshot querySnapshot = phoneTask.getResult();
                                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                                        Admin admin = querySnapshot.getDocuments().get(0).toObject(Admin.class);
-                                        if (callback != null) callback.onSuccess(admin);
+                                        Admin admin = documentToAdmin(querySnapshot.getDocuments().get(0));
+                                        if (admin != null) {
+                                            if (callback != null) callback.onSuccess(admin);
+                                        } else {
+                                            if (callback != null) callback.onFailure(new Exception("Admin data is invalid"));
+                                        }
                                     } else {
                                         if (callback != null) callback.onFailure(new Exception("Admin not found"));
                                     }
@@ -376,6 +430,49 @@ public class FirebaseDatabaseService {
     // ==================== Order Operations ====================
 
     /**
+     * Get next order number (0001-1000, cycles back to 0001 after 1000)
+     */
+    public void getNextOrderNumber(OrderNumberCallback callback) {
+        DocumentReference counterRef = db.collection(COLLECTION_COUNTERS).document(COUNTER_DOC_ID);
+        
+        db.runTransaction((Transaction transaction) -> {
+            DocumentSnapshot snapshot = transaction.get(counterRef);
+            long currentNumber;
+            
+            if (snapshot.exists() && snapshot.contains("currentNumber")) {
+                currentNumber = snapshot.getLong("currentNumber");
+            } else {
+                currentNumber = 0;
+            }
+            
+            // Increment and wrap around at 1000
+            currentNumber++;
+            if (currentNumber > 1000) {
+                currentNumber = 1;
+            }
+            
+            // Update the counter
+            Map<String, Object> counterData = new HashMap<>();
+            counterData.put("currentNumber", currentNumber);
+            counterData.put("updatedAt", System.currentTimeMillis());
+            transaction.set(counterRef, counterData);
+            
+            return currentNumber;
+        }).addOnSuccessListener(orderNumber -> {
+            // Format as 4-digit string (0001-1000)
+            String formattedNumber = String.format("%04d", orderNumber);
+            if (callback != null) {
+                callback.onSuccess(formattedNumber);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Failed to get next order number", e);
+            if (callback != null) {
+                callback.onFailure(e);
+            }
+        });
+    }
+
+    /**
      * Create order
      */
     public void createOrder(Order order, DatabaseCallback callback) {
@@ -426,8 +523,12 @@ public class FirebaseDatabaseService {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
-                            Order order = document.toObject(Order.class);
-                            if (callback != null) callback.onSuccess(order);
+                            Order order = documentToOrder(document);
+                            if (order != null) {
+                                if (callback != null) callback.onSuccess(order);
+                            } else {
+                                if (callback != null) callback.onFailure(new Exception("Failed to deserialize order"));
+                            }
                         } else {
                             if (callback != null) callback.onFailure(new Exception("Order not found"));
                         }
@@ -445,6 +546,7 @@ public class FirebaseDatabaseService {
         statusList.add("pending");
         statusList.add("preparing");
         
+        // Try query with orderBy first (requires composite index)
         db.collection(COLLECTION_ORDERS)
                 .whereIn("status", statusList)
                 .orderBy("createdAt", Query.Direction.ASCENDING)
@@ -452,18 +554,80 @@ public class FirebaseDatabaseService {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Order> orders = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Order order = document.toObject(Order.class);
-                            if (order != null) {
-                                orders.add(order);
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Order order = documentToOrder(document);
+                                if (order != null) {
+                                    orders.add(order);
+                                }
                             }
                         }
+                        // Sort by createdAt if not already sorted (fallback)
+                        orders.sort((o1, o2) -> Long.compare(o1.getCreatedAt(), o2.getCreatedAt()));
                         if (callback != null) callback.onSuccess(orders);
                     } else {
-                        Log.e(TAG, "Failed to get pending orders", task.getException());
-                        if (callback != null) callback.onFailure(task.getException());
+                        Exception exception = task.getException();
+                        Log.w(TAG, "Failed to get pending orders with orderBy, trying without orderBy", exception);
+                        // If query fails (likely due to missing index), try without orderBy
+                        db.collection(COLLECTION_ORDERS)
+                                .whereIn("status", statusList)
+                                .get()
+                                .addOnCompleteListener(fallbackTask -> {
+                                    if (fallbackTask.isSuccessful()) {
+                                        List<Order> orders = new ArrayList<>();
+                                        QuerySnapshot querySnapshot = fallbackTask.getResult();
+                                        if (querySnapshot != null) {
+                                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                                Order order = documentToOrder(document);
+                                                if (order != null) {
+                                                    orders.add(order);
+                                                }
+                                            }
+                                        }
+                                        // Sort by createdAt manually
+                                        orders.sort((o1, o2) -> Long.compare(o1.getCreatedAt(), o2.getCreatedAt()));
+                                        if (callback != null) callback.onSuccess(orders);
+                                    } else {
+                                        Log.e(TAG, "Failed to get pending orders", fallbackTask.getException());
+                                        if (callback != null) callback.onFailure(fallbackTask.getException());
+                                    }
+                                });
                     }
                 });
+    }
+
+    /**
+     * Convert Firestore document to Order object, handling null items
+     */
+    private Order documentToOrder(DocumentSnapshot document) {
+        if (document == null || !document.exists()) {
+            return null;
+        }
+        
+        try {
+            Order order = document.toObject(Order.class);
+            if (order == null) {
+                Log.w(TAG, "Failed to deserialize order from document: " + document.getId());
+                return null;
+            }
+            
+            // Ensure items list is not null
+            if (order.getItems() == null) {
+                order.setItems(new ArrayList<>());
+                Log.w(TAG, "Order " + order.getOrderId() + " has null items, initializing empty list");
+            }
+            
+            // Ensure orderId is set from document ID if missing
+            if (order.getOrderId() == null || order.getOrderId().isEmpty()) {
+                order.setOrderId(document.getId());
+            }
+            
+            return order;
+        } catch (Exception e) {
+            Log.e(TAG, "Error deserializing order from document: " + document.getId(), e);
+            return null;
+        }
     }
 
     /**
@@ -477,13 +641,53 @@ public class FirebaseDatabaseService {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Order> orders = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Order order = document.toObject(Order.class);
-                            orders.add(order);
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Order order = documentToOrder(document);
+                                if (order != null) {
+                                    orders.add(order);
+                                }
+                            }
                         }
                         if (callback != null) callback.onSuccess(orders);
                     } else {
                         if (callback != null) callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Listen to orders by user ID with real-time updates
+     * Returns a ListenerRegistration that should be removed when done
+     * Note: Requires Firestore composite index on (userId, createdAt)
+     * Firestore will automatically suggest creating the index if missing
+     */
+    public com.google.firebase.firestore.ListenerRegistration listenToOrdersByUserId(
+            String userId, OrdersCallback callback) {
+        return db.collection(COLLECTION_ORDERS)
+                .whereEqualTo("userId", userId)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.e(TAG, "Error listening to orders", e);
+                        // If index is missing, Firestore error will include a link to create it
+                        // Check the logcat for the index creation link
+                        if (callback != null) callback.onFailure(e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        List<Order> orders = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            Order order = documentToOrder(document);
+                            if (order != null) {
+                                orders.add(order);
+                            }
+                        }
+                        if (callback != null) callback.onSuccess(orders);
+                    } else {
+                        if (callback != null) callback.onSuccess(new ArrayList<>());
                     }
                 });
     }
@@ -500,9 +704,14 @@ public class FirebaseDatabaseService {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Order> orders = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Order order = document.toObject(Order.class);
-                            orders.add(order);
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Order order = documentToOrder(document);
+                                if (order != null) {
+                                    orders.add(order);
+                                }
+                            }
                         }
                         if (callback != null) callback.onSuccess(orders);
                     } else {
@@ -529,6 +738,41 @@ public class FirebaseDatabaseService {
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Order status update failed", e);
                     if (callback != null) callback.onFailure(e);
+                });
+    }
+
+    /**
+     * Listen to pending orders in real-time (for kitchen view)
+     * Returns a ListenerRegistration that should be removed when done
+     */
+    public ListenerRegistration listenToPendingOrders(OrdersCallback callback) {
+        List<String> statusList = new ArrayList<>();
+        statusList.add("pending");
+        statusList.add("preparing");
+        
+        // Use query without orderBy for listener (simpler, works without index)
+        // We'll sort manually in the callback
+        return db.collection(COLLECTION_ORDERS)
+                .whereIn("status", statusList)
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null) {
+                        Log.e(TAG, "Real-time listener error", error);
+                        if (callback != null) callback.onFailure(error);
+                        return;
+                    }
+                    
+                    if (snapshot != null) {
+                        List<Order> orders = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : snapshot) {
+                            Order order = documentToOrder(document);
+                            if (order != null) {
+                                orders.add(order);
+                            }
+                        }
+                        // Sort by createdAt manually (oldest first)
+                        orders.sort((o1, o2) -> Long.compare(o1.getCreatedAt(), o2.getCreatedAt()));
+                        if (callback != null) callback.onSuccess(orders);
+                    }
                 });
     }
 
@@ -566,6 +810,11 @@ public class FirebaseDatabaseService {
 
     public interface OrdersCallback {
         void onSuccess(List<Order> orders);
+        void onFailure(Exception e);
+    }
+
+    public interface OrderNumberCallback {
+        void onSuccess(String orderNumber);
         void onFailure(Exception e);
     }
 }

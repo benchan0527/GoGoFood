@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
     implementation(libs.cardview)
+    implementation(libs.swiperefreshlayout)
     
     // Firebase BOM for version management
     implementation(platform(libs.firebase.bom))

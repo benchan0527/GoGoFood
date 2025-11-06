@@ -39,6 +39,13 @@
                 android:layout_marginBottom="8dp" />
 
             <Button
+                android:id="@+id/btnOrderHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Orders"
+                android:layout_marginBottom="8dp" />
+
+            <Button
                 android:id="@+id/btnKitchenView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

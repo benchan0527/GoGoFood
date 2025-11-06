@@ -88,8 +88,20 @@ public class OrderTrackingActivity extends AppCompatActivity {
         }
         itemsTextView.setText(itemsText.toString());
 
-        // Display total price
-        totalTextView.setText(String.format("Total: $%.2f", order.getTotal()));
+        // Display price breakdown
+        StringBuilder totalText = new StringBuilder();
+        totalText.append(String.format("Subtotal: $%.2f\n", order.getSubtotal()));
+        if (order.getTax() > 0) {
+            totalText.append(String.format("Tax (10%%): $%.2f\n", order.getTax()));
+        }
+        if (order.getServiceCharge() > 0) {
+            totalText.append(String.format("Service Charge: $%.2f\n", order.getServiceCharge()));
+        }
+        if (order.getDiscount() > 0) {
+            totalText.append(String.format("Discount: -$%.2f\n", order.getDiscount()));
+        }
+        totalText.append(String.format("\nTotal: $%.2f", order.getTotal()));
+        totalTextView.setText(totalText.toString());
     }
 
     /**

@@ -39,6 +39,10 @@
             android:exported="false"
             android:label="Order Tracking" />
         <activity
+            android:name=".OrderHistoryActivity"
+            android:exported="false"
+            android:label="My Orders" />
+        <activity
             android:name=".TableOrderActivity"
             android:exported="false"
             android:label="Table Order" />

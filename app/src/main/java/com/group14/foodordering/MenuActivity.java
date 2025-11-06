@@ -24,6 +24,7 @@ import com.group14.foodordering.model.MenuItem;
 import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.OrderItem;
 import com.group14.foodordering.service.FirebaseDatabaseService;
+import com.group14.foodordering.util.DeviceIdHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -708,60 +709,75 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
 
-        // Create order
-        String orderId = "order_" + UUID.randomUUID().toString().substring(0, 8);
-        String orderType = selectedOrderType.equals("dine_in") ? "dine_in" : "takeaway";
-        Order order = new Order(orderId, orderType);
-        order.setUserId("guest_user"); // In a real app, get from logged-in user
-
-        // Add order items
-        for (Map.Entry<String, Integer> entry : cart.entrySet()) {
-            String itemId = entry.getKey();
-            int quantity = entry.getValue();
-
-            for (MenuItem item : allMenuItems) {
-                if (item.getItemId().equals(itemId)) {
-                    double itemPrice = item.getPrice();
-                    double drinkAddition = cartDrinkAdditions.getOrDefault(itemId, 0.0);
-                    String itemName = item.getName();
-                    if (drinkAddition > 0) {
-                        itemName += " (Cold Drink)";
-                    } else if (item.isHasDrink()) {
-                        itemName += " (Hot Drink)";
-                    }
-                    OrderItem orderItem = new OrderItem(itemId, itemName, quantity, itemPrice + drinkAddition);
-                    order.addItem(orderItem);
-                    break;
-                }
-            }
-        }
-
-        order.setTax(order.getSubtotal() * 0.1); // Assume 10% tax
-        order.setServiceCharge(0.0);
-
-        // Save order to database
-        dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
+        // Get next order number (0001-1000)
+        dbService.getNextOrderNumber(new FirebaseDatabaseService.OrderNumberCallback() {
             @Override
-            public void onSuccess(String documentId) {
-                Log.d(TAG, "Order created successfully: " + documentId);
-                Toast.makeText(MenuActivity.this, "Order created successfully! Order ID: " + documentId, 
-                        Toast.LENGTH_LONG).show();
-                // Clear cart
-                cart.clear();
-                cartDrinkAdditions.clear();
-                updateCartDisplay();
-                menuAdapter.notifyDataSetChanged();
-                
-                // Navigate to order tracking page
-                Intent intent = new Intent(MenuActivity.this, OrderTrackingActivity.class);
-                intent.putExtra("orderId", orderId);
-                startActivity(intent);
+            public void onSuccess(String orderNumber) {
+                // Create order with formatted order number
+                String orderId = orderNumber; // Use the formatted number as orderId
+                String orderType = selectedOrderType.equals("dine_in") ? "dine_in" : "takeaway";
+                Order order = new Order(orderId, orderType);
+                // Use device ID to identify the customer
+                String deviceId = DeviceIdHelper.getDeviceId(MenuActivity.this);
+                order.setUserId(deviceId);
+
+                // Add order items
+                for (Map.Entry<String, Integer> entry : cart.entrySet()) {
+                    String itemId = entry.getKey();
+                    int quantity = entry.getValue();
+
+                    for (MenuItem item : allMenuItems) {
+                        if (item.getItemId().equals(itemId)) {
+                            double itemPrice = item.getPrice();
+                            double drinkAddition = cartDrinkAdditions.getOrDefault(itemId, 0.0);
+                            String itemName = item.getName();
+                            if (drinkAddition > 0) {
+                                itemName += " (Cold Drink)";
+                            } else if (item.isHasDrink()) {
+                                itemName += " (Hot Drink)";
+                            }
+                            OrderItem orderItem = new OrderItem(itemId, itemName, quantity, itemPrice + drinkAddition);
+                            order.addItem(orderItem);
+                            break;
+                        }
+                    }
+                }
+
+                order.setTax(order.getSubtotal() * 0.1); // Assume 10% tax
+                order.setServiceCharge(0.0);
+
+                // Save order to database
+                dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
+                    @Override
+                    public void onSuccess(String documentId) {
+                        Log.d(TAG, "Order created successfully: " + documentId);
+                        Toast.makeText(MenuActivity.this, "Order created successfully! Order Number: " + orderNumber, 
+                                Toast.LENGTH_LONG).show();
+                        // Clear cart
+                        cart.clear();
+                        cartDrinkAdditions.clear();
+                        updateCartDisplay();
+                        menuAdapter.notifyDataSetChanged();
+                        
+                        // Navigate to order tracking page
+                        Intent intent = new Intent(MenuActivity.this, OrderTrackingActivity.class);
+                        intent.putExtra("orderId", orderId);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e(TAG, "Order creation failed", e);
+                        Toast.makeText(MenuActivity.this, "Order creation failed: " + e.getMessage(), 
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onFailure(Exception e) {
-                Log.e(TAG, "Order creation failed", e);
-                Toast.makeText(MenuActivity.this, "Order creation failed: " + e.getMessage(), 
+                Log.e(TAG, "Failed to get order number", e);
+                Toast.makeText(MenuActivity.this, "Failed to generate order number: " + e.getMessage(), 
                         Toast.LENGTH_SHORT).show();
             }
         });
