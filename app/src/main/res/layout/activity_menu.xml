@@ -73,6 +73,52 @@
 
     </LinearLayout>
 
+    <!-- Restaurant Information Section -->
+    <LinearLayout
+        android:id="@+id/restaurantInfoLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleSectionLayout">
+
+        <ImageView
+            android:id="@+id/locationIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@android:drawable/ic_menu_mylocation"
+            android:tint="#FF0000"
+            android:contentDescription="Location"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/restaurantNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="West Street Branch"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif" />
+
+        <TextView
+            android:id="@+id/changeRestaurantTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change restaurant"
+            android:textSize="14sp"
+            android:textColor="#FF6B35"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
     <!-- Dine in / Takeaway Tabs -->
     <LinearLayout
         android:id="@+id/orderTypeTabsLayout"
@@ -82,7 +128,7 @@
         android:padding="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleSectionLayout">
+        app:layout_constraintTop_toBottomOf="@+id/restaurantInfoLayout">
 
         <Button
             android:id="@+id/dineInButton"

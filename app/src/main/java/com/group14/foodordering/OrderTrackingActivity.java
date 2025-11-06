@@ -1,7 +1,9 @@
 package com.group14.foodordering;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -9,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.OrderItem;
+import com.group14.foodordering.model.Restaurant;
 import com.group14.foodordering.service.FirebaseDatabaseService;
 
 import java.util.List;
@@ -22,9 +25,12 @@ public class OrderTrackingActivity extends AppCompatActivity {
     private static final String TAG = "OrderTrackingActivity";
     private FirebaseDatabaseService dbService;
     private TextView orderIdTextView;
+    private TextView orderNumberTextView;
+    private TextView restaurantNameTextView;
     private TextView statusTextView;
     private TextView itemsTextView;
     private TextView totalTextView;
+    private Button returnToMenuButton;
     private String orderId;
 
     @Override
@@ -46,9 +52,21 @@ public class OrderTrackingActivity extends AppCompatActivity {
 
     private void setupViews() {
         orderIdTextView = findViewById(R.id.orderIdTextView);
+        orderNumberTextView = findViewById(R.id.orderNumberTextView);
+        restaurantNameTextView = findViewById(R.id.restaurantNameTextView);
         statusTextView = findViewById(R.id.statusTextView);
         itemsTextView = findViewById(R.id.itemsTextView);
         totalTextView = findViewById(R.id.totalTextView);
+        returnToMenuButton = findViewById(R.id.returnToMenuButton);
+        
+        if (returnToMenuButton != null) {
+            returnToMenuButton.setOnClickListener(v -> {
+                Intent intent = new Intent(OrderTrackingActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
     }
 
     /**
@@ -74,11 +92,46 @@ public class OrderTrackingActivity extends AppCompatActivity {
      * Display order information
      */
     private void displayOrder(Order order) {
-        orderIdTextView.setText("Order ID: " + order.getOrderId());
+        // Display order number prominently
+        String orderNumber = order.getOrderId() != null ? order.getOrderId() : "N/A";
+        if (orderNumberTextView != null) {
+            orderNumberTextView.setText("#" + orderNumber);
+        }
+        if (orderIdTextView != null) {
+            orderIdTextView.setText("Order ID: " + orderNumber);
+        }
+        
+        // Fetch and display restaurant name
+        String restaurantId = order.getRestaurantId();
+        if (restaurantNameTextView != null && restaurantId != null && !restaurantId.isEmpty()) {
+            dbService.getRestaurantById(restaurantId, new FirebaseDatabaseService.RestaurantCallback() {
+                @Override
+                public void onSuccess(Restaurant restaurant) {
+                    if (restaurant != null && restaurant.getRestaurantName() != null) {
+                        restaurantNameTextView.setText("Restaurant: " + restaurant.getRestaurantName());
+                        restaurantNameTextView.setVisibility(android.view.View.VISIBLE);
+                    } else {
+                        restaurantNameTextView.setVisibility(android.view.View.GONE);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e(TAG, "Failed to fetch restaurant name", e);
+                    if (restaurantNameTextView != null) {
+                        restaurantNameTextView.setVisibility(android.view.View.GONE);
+                    }
+                }
+            });
+        } else if (restaurantNameTextView != null) {
+            restaurantNameTextView.setVisibility(android.view.View.GONE);
+        }
         
         // Display status
         String statusText = "Status: " + getStatusText(order.getStatus());
-        statusTextView.setText(statusText);
+        if (statusTextView != null) {
+            statusTextView.setText(statusText);
+        }
 
         // Display order items
         StringBuilder itemsText = new StringBuilder("Order Details:\n\n");

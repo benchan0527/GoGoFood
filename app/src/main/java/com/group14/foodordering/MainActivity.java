@@ -21,11 +21,13 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.group14.foodordering.model.Admin;
 import com.group14.foodordering.service.FirebaseDatabaseService;
+import com.group14.foodordering.util.AdminSessionHelper;
+import com.group14.foodordering.util.PermissionManager;
+import com.group14.foodordering.util.RestaurantPreferenceHelper;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private boolean isAdminLoggedIn = false;
     private FirebaseDatabaseService dbService;
     private Button btnKitchenView;
     private Button btnTableOrder;
@@ -52,15 +54,42 @@ public class MainActivity extends AppCompatActivity {
         // Test Firebase connection
         testFirebaseConnection();
         
+        // Restore admin session if exists
+        restoreAdminSession();
+        
         // Setup navigation buttons
         setupButtons();
         updateAdminButtonsVisibility();
     }
 
+    /**
+     * Restore admin session from SharedPreferences
+     */
+    private void restoreAdminSession() {
+        if (AdminSessionHelper.isAdminLoggedIn(this)) {
+            String adminName = AdminSessionHelper.getAdminName(this);
+            Log.d(TAG, "Admin session restored: " + adminName);
+        }
+    }
+
     private void setupButtons() {
+        // Restaurant selection button - always visible
+        Button btnSelectRestaurant = findViewById(R.id.btnSelectRestaurant);
+        btnSelectRestaurant.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RestaurantSelectionActivity.class);
+            startActivity(intent);
+        });
+        
         // Customer button - always visible
         Button btnMenu = findViewById(R.id.btnMenu);
         btnMenu.setOnClickListener(v -> {
+            // Check if restaurant is selected
+            if (!RestaurantPreferenceHelper.hasSelectedRestaurant(this)) {
+                Toast.makeText(this, "Please select a restaurant first", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, RestaurantSelectionActivity.class);
+                startActivity(intent);
+                return;
+            }
             Intent intent = new Intent(MainActivity.this, MenuActivity.class);
             startActivity(intent);
         });
@@ -72,20 +101,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Admin buttons - hidden until login
+        // Admin buttons - hidden until login and permission check
         btnKitchenView = findViewById(R.id.btnKitchenView);
         btnKitchenView.setOnClickListener(v -> {
-            if (isAdminLoggedIn) {
+            // Check if admin is logged in and has permission to view orders
+            if (AdminSessionHelper.isAdminLoggedIn(this) && 
+                PermissionManager.canViewOrders(this)) {
                 Intent intent = new Intent(MainActivity.this, KitchenViewActivity.class);
                 startActivity(intent);
+            } else {
+                Toast.makeText(this, "Permission denied: You need order view permission", 
+                    Toast.LENGTH_SHORT).show();
             }
         });
 
         btnTableOrder = findViewById(R.id.btnTableOrder);
         btnTableOrder.setOnClickListener(v -> {
-            if (isAdminLoggedIn) {
+            // Check if admin is logged in and has permission to manage tables or orders
+            if (AdminSessionHelper.isAdminLoggedIn(this) && 
+                (PermissionManager.canManageTables(this) || 
+                 PermissionManager.canManageOrders(this))) {
                 Intent intent = new Intent(MainActivity.this, TableOrderActivity.class);
                 startActivity(intent);
+            } else {
+                Toast.makeText(this, "Permission denied: You need table or order management permission", 
+                    Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -156,10 +196,14 @@ public class MainActivity extends AppCompatActivity {
                 // For now, we just check if admin exists and is active
                 // In a real app, you would verify the password here
                 if (admin.isActive()) {
-                    isAdminLoggedIn = true;
+                    // Save admin session to SharedPreferences
+                    AdminSessionHelper.saveAdminSession(MainActivity.this, admin);
                     updateAdminButtonsVisibility();
-                    Toast.makeText(MainActivity.this, "Admin login successful: " + admin.getName(), 
-                            Toast.LENGTH_SHORT).show();
+                    
+                    String permissionsInfo = PermissionManager.getPermissionsString(MainActivity.this);
+                    Toast.makeText(MainActivity.this, 
+                        "Admin login successful: " + admin.getName() + "\nPermissions: " + permissionsInfo, 
+                        Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Admin account is inactive", Toast.LENGTH_SHORT).show();
                 }
@@ -175,19 +219,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Update visibility of admin buttons
+     * Update visibility of admin buttons based on login status and permissions
      */
     private void updateAdminButtonsVisibility() {
         // TestData button is always visible for importing test data
         btnTestData.setVisibility(View.VISIBLE);
         
+        boolean isAdminLoggedIn = AdminSessionHelper.isAdminLoggedIn(this);
+        
         if (isAdminLoggedIn) {
-            btnKitchenView.setVisibility(View.VISIBLE);
-            btnTableOrder.setVisibility(View.VISIBLE);
-            btnAdminLogin.setText("Admin: Logged In");
+            String adminName = AdminSessionHelper.getAdminName(this);
+            String adminInfo = adminName != null ? adminName : "Admin";
+            
+            // Show buttons based on permissions
+            boolean canViewOrders = PermissionManager.canViewOrders(this);
+            boolean canManageTables = PermissionManager.canManageTables(this);
+            boolean canManageOrders = PermissionManager.canManageOrders(this);
+            
+            btnKitchenView.setVisibility(canViewOrders ? View.VISIBLE : View.GONE);
+            btnTableOrder.setVisibility((canManageTables || canManageOrders) ? View.VISIBLE : View.GONE);
+            
+            btnAdminLogin.setText("Admin: " + adminInfo);
             btnAdminLogin.setOnClickListener(v -> {
                 // Logout
-                isAdminLoggedIn = false;
+                AdminSessionHelper.clearAdminSession(this);
                 updateAdminButtonsVisibility();
                 Toast.makeText(this, "Admin logged out", Toast.LENGTH_SHORT).show();
             });
@@ -197,6 +252,13 @@ public class MainActivity extends AppCompatActivity {
             btnAdminLogin.setText("Admin Login");
             btnAdminLogin.setOnClickListener(v -> showAdminLoginDialog());
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update button visibility when returning to this activity
+        updateAdminButtonsVisibility();
     }
 
     /**

@@ -15,7 +15,8 @@ public class Admin {
     private String email;
     private String name;
     private String phone;
-    private String[] permissions; // Permission list, e.g., ["menu_edit", "report_view", "inventory_manage"]
+    private List<String> permissions; // Permission list, e.g., ["menu_edit", "report_view", "inventory_manage"]
+    private List<String> restaurantIds; // List of restaurant IDs this admin can manage
     private boolean isActive;
     private long createdAt;
     private long updatedAt;
@@ -25,13 +26,13 @@ public class Admin {
     }
 
     // Full constructor
-    public Admin(String adminId, String userId, String email, String name, String phone, String[] permissions) {
+    public Admin(String adminId, String userId, String email, String name, String phone, List<String> permissions) {
         this.adminId = adminId;
         this.userId = userId;
         this.email = email;
         this.name = name;
         this.phone = phone;
-        this.permissions = permissions;
+        this.permissions = permissions != null ? new ArrayList<>(permissions) : new ArrayList<>();
         this.isActive = true;
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
@@ -78,12 +79,20 @@ public class Admin {
         this.phone = phone;
     }
 
-    public String[] getPermissions() {
-        return permissions;
+    public List<String> getPermissions() {
+        return permissions != null ? new ArrayList<>(permissions) : new ArrayList<>();
     }
 
-    public void setPermissions(String[] permissions) {
-        this.permissions = permissions;
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions != null ? new ArrayList<>(permissions) : new ArrayList<>();
+    }
+
+    public List<String> getRestaurantIds() {
+        return restaurantIds;
+    }
+
+    public void setRestaurantIds(List<String> restaurantIds) {
+        this.restaurantIds = restaurantIds;
     }
 
     public boolean isActive() {
@@ -118,15 +127,17 @@ public class Admin {
         map.put("email", email);
         map.put("name", name);
         map.put("phone", phone);
-        // Convert permissions array to List for Firestore compatibility
-        if (permissions != null) {
-            List<String> permissionsList = new ArrayList<>();
-            for (String permission : permissions) {
-                permissionsList.add(permission);
-            }
-            map.put("permissions", permissionsList);
+        // Permissions is already a List, so use it directly
+        if (permissions != null && !permissions.isEmpty()) {
+            map.put("permissions", new ArrayList<>(permissions));
         } else {
             map.put("permissions", new ArrayList<>());
+        }
+        // Convert restaurantIds list
+        if (restaurantIds != null) {
+            map.put("restaurantIds", restaurantIds);
+        } else {
+            map.put("restaurantIds", new ArrayList<>());
         }
         map.put("isActive", isActive);
         map.put("createdAt", createdAt);

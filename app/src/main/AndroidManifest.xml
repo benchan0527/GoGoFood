@@ -54,6 +54,14 @@
             android:name=".ItemModifierSelectionActivity"
             android:exported="false"
             android:label="Customize Item" />
+        <activity
+            android:name=".RestaurantSelectionActivity"
+            android:exported="false"
+            android:label="Select Restaurant" />
+        <activity
+            android:name=".ShoppingCartActivity"
+            android:exported="false"
+            android:label="Shopping Cart" />
     </application>
 
 </manifest>

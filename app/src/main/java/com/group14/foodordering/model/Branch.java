@@ -10,6 +10,7 @@ import java.util.Map;
 public class Branch {
     private String branchId;
     private String branchName;
+    private String restaurantId; // Linked to Restaurant
     private String address;
     private String phoneNumber;
     private Map<String, Double> geolocation; // {latitude, longitude}
@@ -37,6 +38,20 @@ public class Branch {
         this.updatedAt = System.currentTimeMillis();
     }
 
+    // Full constructor with restaurantId
+    public Branch(String branchId, String branchName, String restaurantId, String address, String phoneNumber) {
+        this.branchId = branchId;
+        this.branchName = branchName;
+        this.restaurantId = restaurantId;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.geolocation = new HashMap<>();
+        this.openingHours = new HashMap<>();
+        this.isActive = true;
+        this.createdAt = System.currentTimeMillis();
+        this.updatedAt = System.currentTimeMillis();
+    }
+
     // Getters and Setters
     public String getBranchId() {
         return branchId;
@@ -52,6 +67,14 @@ public class Branch {
 
     public void setBranchName(String branchName) {
         this.branchName = branchName;
+    }
+
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
     }
 
     public String getAddress() {
@@ -115,6 +138,7 @@ public class Branch {
         Map<String, Object> map = new HashMap<>();
         map.put("branchId", branchId);
         map.put("branchName", branchName);
+        map.put("restaurantId", restaurantId != null ? restaurantId : "");
         map.put("address", address);
         map.put("phoneNumber", phoneNumber);
         map.put("geolocation", geolocation);

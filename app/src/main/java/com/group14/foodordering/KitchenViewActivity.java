@@ -20,13 +20,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.OrderItem;
+import com.group14.foodordering.model.Restaurant;
 import com.group14.foodordering.service.FirebaseDatabaseService;
+import com.group14.foodordering.util.AdminSessionHelper;
+import com.group14.foodordering.util.DataFilterService;
+import com.group14.foodordering.util.PermissionManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Kitchen View Activity
@@ -45,14 +51,30 @@ public class KitchenViewActivity extends AppCompatActivity {
     private Handler timeUpdateHandler;
     private Runnable timeUpdateRunnable;
     private SimpleDateFormat timeFormat;
+    private Map<String, String> restaurantNameCache; // restaurantId -> restaurantName
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kitchen_view);
 
+        // Check admin login and permissions
+        if (!AdminSessionHelper.isAdminLoggedIn(this)) {
+            Toast.makeText(this, "Please login as admin first", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        if (!PermissionManager.canViewOrders(this)) {
+            Toast.makeText(this, "Permission denied: You need order view permission", 
+                Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         dbService = FirebaseDatabaseService.getInstance();
         pendingOrders = new ArrayList<>();
+        restaurantNameCache = new HashMap<>();
         timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         timeUpdateHandler = new Handler(Looper.getMainLooper());
 
@@ -84,10 +106,15 @@ public class KitchenViewActivity extends AppCompatActivity {
         ordersListener = dbService.listenToPendingOrders(new FirebaseDatabaseService.OrdersCallback() {
             @Override
             public void onSuccess(List<Order> orders) {
+                // Filter orders by admin's restaurant access
+                List<Order> filteredOrders = DataFilterService.filterOrdersByRestaurantAccess(
+                    KitchenViewActivity.this, orders);
+                
                 pendingOrders.clear();
-                pendingOrders.addAll(orders);
+                pendingOrders.addAll(filteredOrders);
                 ordersAdapter.notifyDataSetChanged();
-                Log.d(TAG, "Orders updated via real-time listener, total: " + orders.size());
+                Log.d(TAG, "Orders updated via real-time listener, total: " + orders.size() + 
+                    ", filtered: " + filteredOrders.size());
                 
                 if (swipeRefreshLayout != null) {
                     swipeRefreshLayout.setRefreshing(false);
@@ -110,6 +137,13 @@ public class KitchenViewActivity extends AppCompatActivity {
      * Update order status
      */
     private void updateOrderStatus(String orderId, String newStatus) {
+        // Check permission before updating
+        if (!PermissionManager.canUpdateOrders(this)) {
+            Toast.makeText(this, "Permission denied: You need order update permission", 
+                Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         dbService.updateOrderStatus(orderId, newStatus, new FirebaseDatabaseService.DatabaseCallback() {
             @Override
             public void onSuccess(String documentId) {
@@ -221,6 +255,7 @@ public class KitchenViewActivity extends AppCompatActivity {
             TextView orderIdTextView;
             TextView orderTypeTextView;
             TextView tableNumberTextView;
+            TextView restaurantNameTextView;
             TextView statusBadge;
             TextView timeTextView;
             TextView elapsedTimeTextView;
@@ -235,6 +270,7 @@ public class KitchenViewActivity extends AppCompatActivity {
                 orderIdTextView = itemView.findViewById(R.id.orderIdTextView);
                 orderTypeTextView = itemView.findViewById(R.id.orderTypeTextView);
                 tableNumberTextView = itemView.findViewById(R.id.tableNumberTextView);
+                restaurantNameTextView = itemView.findViewById(R.id.restaurantNameTextView);
                 statusBadge = itemView.findViewById(R.id.statusBadge);
                 timeTextView = itemView.findViewById(R.id.timeTextView);
                 elapsedTimeTextView = itemView.findViewById(R.id.elapsedTimeTextView);
@@ -272,6 +308,41 @@ public class KitchenViewActivity extends AppCompatActivity {
                         tableNumberTextView.setVisibility(View.VISIBLE);
                     } else {
                         tableNumberTextView.setVisibility(View.GONE);
+                    }
+                }
+                
+                // Set restaurant name
+                if (restaurantNameTextView != null) {
+                    String restaurantId = order.getRestaurantId();
+                    if (restaurantId != null && !restaurantId.isEmpty()) {
+                        String restaurantName = restaurantNameCache.get(restaurantId);
+                        if (restaurantName != null) {
+                            restaurantNameTextView.setText(restaurantName);
+                            restaurantNameTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            // Fetch restaurant name
+                            dbService.getRestaurantById(restaurantId, new FirebaseDatabaseService.RestaurantCallback() {
+                                @Override
+                                public void onSuccess(Restaurant restaurant) {
+                                    if (restaurant != null && restaurant.getRestaurantName() != null) {
+                                        String name = restaurant.getRestaurantName();
+                                        restaurantNameCache.put(restaurantId, name);
+                                        restaurantNameTextView.setText(name);
+                                        restaurantNameTextView.setVisibility(View.VISIBLE);
+                                    } else {
+                                        restaurantNameTextView.setVisibility(View.GONE);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    Log.e(TAG, "Failed to fetch restaurant name", e);
+                                    restaurantNameTextView.setVisibility(View.GONE);
+                                }
+                            });
+                        }
+                    } else {
+                        restaurantNameTextView.setVisibility(View.GONE);
                     }
                 }
                 

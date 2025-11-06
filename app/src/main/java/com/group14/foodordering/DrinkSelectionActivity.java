@@ -335,12 +335,21 @@ public class DrinkSelectionActivity extends AppCompatActivity {
                 // Check if this drink is selected
                 boolean isSelected = selectedDrink != null && selectedDrink.getItemId().equals(drink.getItemId());
                 
-                // Set background color for selected item
+                // Clear any existing listeners to avoid conflicts
+                drinkTypeRadioGroup.setOnCheckedChangeListener(null);
+                
+                // Set background color and enable/disable radio buttons based on selection
                 if (isSelected) {
                     cardView.setCardBackgroundColor(0x30FF6B35); // Light orange background
                     cardView.setCardElevation(6f); // Higher elevation for selected
+                    
+                    // Enable radio buttons for selected drink
+                    hotRadioButton.setEnabled(true);
+                    icedRadioButton.setEnabled(true);
+                    hotRadioButton.setAlpha(1.0f);
+                    icedRadioButton.setAlpha(1.0f);
+                    
                     // Set radio button selection based on selected type
-                    drinkTypeRadioGroup.setOnCheckedChangeListener(null); // Clear listener to avoid recursion
                     if ("iced".equals(selectedDrinkType)) {
                         icedRadioButton.setChecked(true);
                     } else {
@@ -349,32 +358,44 @@ public class DrinkSelectionActivity extends AppCompatActivity {
                 } else {
                     cardView.setCardBackgroundColor(0xFFFFFFFF); // White background
                     cardView.setCardElevation(3f); // Normal elevation
-                    drinkTypeRadioGroup.setOnCheckedChangeListener(null); // Clear listener
-                    drinkTypeRadioGroup.clearCheck(); // Clear selection for unselected items
+                    
+                    // Disable radio buttons for non-selected drinks
+                    hotRadioButton.setEnabled(false);
+                    icedRadioButton.setEnabled(false);
+                    hotRadioButton.setAlpha(0.5f); // Dimmed appearance
+                    icedRadioButton.setAlpha(0.5f); // Dimmed appearance
+                    
+                    // Clear radio button selection for unselected items
+                    drinkTypeRadioGroup.clearCheck();
                 }
 
                 // Set click listener for the entire item (selects the drink)
                 itemView.setOnClickListener(v -> {
-                    selectedDrink = drink;
-                    selectedDrinkType = "hot"; // Default to hot when selecting
-                    drinkAdapter.notifyDataSetChanged();
-                    updatePriceDisplay();
+                    // Only allow selection if not already selected
+                    if (!isSelected) {
+                        selectedDrink = drink;
+                        selectedDrinkType = "hot"; // Default to hot when selecting
+                        drinkAdapter.notifyDataSetChanged();
+                        updatePriceDisplay();
+                    }
                 });
 
                 // Set radio button listeners - only work when this drink is selected
-                drinkTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-                    // Check if this drink is currently selected (may have changed)
-                    boolean currentlySelected = selectedDrink != null && selectedDrink.getItemId().equals(drink.getItemId());
-                    if (currentlySelected) {
-                        if (checkedId == hotRadioButton.getId()) {
-                            selectedDrinkType = "hot";
-                            updatePriceDisplay();
-                        } else if (checkedId == icedRadioButton.getId()) {
-                            selectedDrinkType = "iced";
-                            updatePriceDisplay();
+                if (isSelected) {
+                    drinkTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                        // Double-check this drink is still selected (may have changed)
+                        boolean currentlySelected = selectedDrink != null && selectedDrink.getItemId().equals(drink.getItemId());
+                        if (currentlySelected) {
+                            if (checkedId == hotRadioButton.getId()) {
+                                selectedDrinkType = "hot";
+                                updatePriceDisplay();
+                            } else if (checkedId == icedRadioButton.getId()) {
+                                selectedDrinkType = "iced";
+                                updatePriceDisplay();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }

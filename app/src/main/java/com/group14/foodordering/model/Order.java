@@ -12,6 +12,7 @@ import java.util.Map;
 public class Order {
     private String orderId;
     private String userId; // Customer ID (if online order)
+    private String restaurantId; // Restaurant ID
     private String tableNumber; // Table number (if table order)
     private String orderType; // "online", "table"
     private List<OrderItem> items;
@@ -66,6 +67,14 @@ public class Order {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
     }
 
     public String getTableNumber() {
@@ -199,6 +208,7 @@ public class Order {
         Map<String, Object> map = new HashMap<>();
         map.put("orderId", orderId);
         map.put("userId", userId != null ? userId : "");
+        map.put("restaurantId", restaurantId != null ? restaurantId : "");
         map.put("tableNumber", tableNumber != null ? tableNumber : "");
         map.put("orderType", orderType);
         

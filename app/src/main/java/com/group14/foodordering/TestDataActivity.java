@@ -20,6 +20,7 @@ import com.group14.foodordering.util.MenuJsonParser;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -96,7 +97,7 @@ public class TestDataActivity extends AppCompatActivity {
     private void testCreateAdmin() {
         String adminId = "admin_" + UUID.randomUUID().toString().substring(0, 8);
         String userId = "user_" + UUID.randomUUID().toString().substring(0, 8);
-        String[] permissions = {"menu_edit", "report_view", "inventory_manage"};
+        List<String> permissions = Arrays.asList("menu_edit", "report_view", "inventory_manage");
         Admin admin = new Admin(adminId, userId, "admin@example.com", "Administrator", "9876543210", permissions);
         
         dbService.createOrUpdateAdmin(admin, new FirebaseDatabaseService.DatabaseCallback() {
@@ -554,7 +555,7 @@ public class TestDataActivity extends AppCompatActivity {
                             "  - Phone: " + admin.getPhone() + "\n" +
                             "  - Email: " + admin.getEmail() + "\n" +
                             "  - Active: " + admin.isActive() + "\n" +
-                            "  - Permissions: " + java.util.Arrays.toString(admin.getPermissions()) + "\n";
+                            "  - Permissions: " + String.join(", ", admin.getPermissions()) + "\n";
                     runOnUiThread(() -> {
                         resultTextView.append(message);
                     });
