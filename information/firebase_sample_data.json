@@ -60,6 +60,10 @@
         "order_manage",
         "user_manage"
       ],
+      "restaurantIds": [
+        "rest_001",
+        "rest_002"
+      ],
       "isActive": true,
       "createdAt": 1704067200000,
       "updatedAt": 1704067200000
@@ -73,6 +77,9 @@
       "permissions": [
         "order_manage",
         "table_manage"
+      ],
+      "restaurantIds": [
+        "rest_001"
       ],
       "isActive": true,
       "createdAt": 1704067200000,
@@ -88,6 +95,29 @@
         "order_view",
         "order_update"
       ],
+      "restaurantIds": [
+        "rest_002"
+      ],
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    }
+  ],
+  "restaurants": [
+    {
+      "restaurantId": "rest_001",
+      "restaurantName": "Restaurant A",
+      "address": "Shop 3, G/F, Wing On Building, 28 Des Voeux Road Central, Central",
+      "phoneNumber": "+852-2523-4567",
+      "isActive": true,
+      "createdAt": 1704067200000,
+      "updatedAt": 1704067200000
+    },
+    {
+      "restaurantId": "rest_002",
+      "restaurantName": "Restaurant B",
+      "address": "Shop 12A, 1/F, Causeway Centre, 28 Harbour Road, Wan Chai",
+      "phoneNumber": "+852-2577-8899",
       "isActive": true,
       "createdAt": 1704067200000,
       "updatedAt": 1704067200000
@@ -97,6 +127,7 @@
     {
       "branchId": "branch_001",
       "branchName": "West Street Branch",
+      "restaurantId": "rest_001",
       "address": "123 West Street, Downtown District",
       "phoneNumber": "+1-555-0101",
       "geolocation": {
@@ -119,6 +150,7 @@
     {
       "branchId": "branch_002",
       "branchName": "East Avenue Branch",
+      "restaurantId": "rest_002",
       "address": "456 East Avenue, Uptown District",
       "phoneNumber": "+1-555-0102",
       "geolocation": {
@@ -1293,6 +1325,7 @@
       "orderId": "order_001",
       "orderNumber": "1234",
       "userId": "user_001",
+      "restaurantId": "rest_001",
       "branchId": "branch_001",
       "tableNumber": "B1",
       "orderType": "table",

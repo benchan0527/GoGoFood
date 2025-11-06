@@ -12,6 +12,7 @@ import com.group14.foodordering.model.ItemModifier;
 import com.group14.foodordering.model.MenuCategory;
 import com.group14.foodordering.model.MenuItem;
 import com.group14.foodordering.model.ModifierOption;
+import com.group14.foodordering.model.Restaurant;
 import com.group14.foodordering.model.Table;
 import com.group14.foodordering.model.User;
 
@@ -147,6 +148,13 @@ public class FirebaseDataImporter {
                 totalFail += result.fail;
             }
 
+            // Import restaurants
+            if (jsonData.has("restaurants")) {
+                ImportResult result = importRestaurants(jsonData.getJSONArray("restaurants"));
+                totalSuccess += result.success;
+                totalFail += result.fail;
+            }
+
             // Import branches
             if (jsonData.has("branches")) {
                 ImportResult result = importBranches(jsonData.getJSONArray("branches"));
@@ -255,11 +263,22 @@ public class FirebaseDataImporter {
                 admin.setPhone(adminJson.getString("phone"));
                 
                 JSONArray permissionsArray = adminJson.getJSONArray("permissions");
-                String[] permissions = new String[permissionsArray.length()];
+                List<String> permissions = new ArrayList<>();
                 for (int j = 0; j < permissionsArray.length(); j++) {
-                    permissions[j] = permissionsArray.getString(j);
+                    permissions.add(permissionsArray.getString(j));
                 }
                 admin.setPermissions(permissions);
+                
+                // Import restaurantIds if available
+                if (adminJson.has("restaurantIds")) {
+                    JSONArray restaurantIdsArray = adminJson.getJSONArray("restaurantIds");
+                    List<String> restaurantIds = new ArrayList<>();
+                    for (int j = 0; j < restaurantIdsArray.length(); j++) {
+                        restaurantIds.add(restaurantIdsArray.getString(j));
+                    }
+                    admin.setRestaurantIds(restaurantIds);
+                }
+                
                 admin.setActive(adminJson.getBoolean("isActive"));
                 admin.setCreatedAt(adminJson.getLong("createdAt"));
                 admin.setUpdatedAt(adminJson.getLong("updatedAt"));
@@ -286,6 +305,46 @@ public class FirebaseDataImporter {
     }
 
     /**
+     * Import restaurants
+     */
+    private ImportResult importRestaurants(JSONArray restaurantsArray) {
+        ImportResult result = new ImportResult();
+        callback.onProgress("Importing restaurants...");
+
+        for (int i = 0; i < restaurantsArray.length(); i++) {
+            try {
+                JSONObject restaurantJson = restaurantsArray.getJSONObject(i);
+                Restaurant restaurant = new Restaurant();
+                restaurant.setRestaurantId(restaurantJson.getString("restaurantId"));
+                restaurant.setRestaurantName(restaurantJson.getString("restaurantName"));
+                restaurant.setAddress(restaurantJson.getString("address"));
+                restaurant.setPhoneNumber(restaurantJson.getString("phoneNumber"));
+                restaurant.setActive(restaurantJson.getBoolean("isActive"));
+                restaurant.setCreatedAt(restaurantJson.getLong("createdAt"));
+                restaurant.setUpdatedAt(restaurantJson.getLong("updatedAt"));
+
+                db.collection("restaurants")
+                    .document(restaurant.getRestaurantId())
+                    .set(restaurant.toMap())
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Restaurant imported: " + restaurant.getRestaurantId());
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Failed to import restaurant: " + restaurant.getRestaurantId(), e);
+                    });
+
+                result.success++;
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to parse restaurant", e);
+                result.fail++;
+            }
+        }
+
+        callback.onCollectionComplete("restaurants", result.success, result.fail);
+        return result;
+    }
+
+    /**
      * Import branches
      */
     private ImportResult importBranches(JSONArray branchesArray) {
@@ -298,6 +357,12 @@ public class FirebaseDataImporter {
                 Branch branch = new Branch();
                 branch.setBranchId(branchJson.getString("branchId"));
                 branch.setBranchName(branchJson.getString("branchName"));
+                
+                // Import restaurantId if available
+                if (branchJson.has("restaurantId")) {
+                    branch.setRestaurantId(branchJson.getString("restaurantId"));
+                }
+                
                 branch.setAddress(branchJson.getString("address"));
                 branch.setPhoneNumber(branchJson.getString("phoneNumber"));
                 
