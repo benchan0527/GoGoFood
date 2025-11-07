@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GoGoFood</string>
+    <string name="order_search_title">Order Search</string>
+    <string name="order_search_hint">Search by order ID, table, or customer...</string>
 </resources>

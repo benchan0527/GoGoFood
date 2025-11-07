@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -131,6 +132,133 @@ public class KitchenViewActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * Show order detail modal dialog
+     * GUI #19: Ticket Detail & Update Modal
+     */
+    private void showOrderDetailModal(Order order) {
+        if (order == null) {
+            return;
+        }
+
+        // Create custom dialog view
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_order_detail, null);
+        
+        // Initialize views
+        TextView orderIdTextView = dialogView.findViewById(R.id.dialogOrderIdTextView);
+        TextView orderTypeTextView = dialogView.findViewById(R.id.dialogOrderTypeTextView);
+        TextView tableNumberTextView = dialogView.findViewById(R.id.dialogTableNumberTextView);
+        TextView statusTextView = dialogView.findViewById(R.id.dialogStatusTextView);
+        TextView timeTextView = dialogView.findViewById(R.id.dialogTimeTextView);
+        TextView itemsTextView = dialogView.findViewById(R.id.dialogItemsTextView);
+        TextView totalTextView = dialogView.findViewById(R.id.dialogTotalTextView);
+        Button preparingButton = dialogView.findViewById(R.id.dialogPreparingButton);
+        Button readyButton = dialogView.findViewById(R.id.dialogReadyButton);
+
+        // Set order information
+        String orderId = order.getOrderId() != null ? order.getOrderId() : "N/A";
+        if (orderId.length() > 8) {
+            orderIdTextView.setText("Order #" + orderId.substring(orderId.length() - 8));
+        } else {
+            orderIdTextView.setText("Order #" + orderId);
+        }
+
+        String orderType = order.getOrderType() != null ? order.getOrderType() : "N/A";
+        String typeDisplay = "table".equalsIgnoreCase(orderType) ? "Table Order" : "Takeaway";
+        orderTypeTextView.setText(typeDisplay);
+
+        if ("table".equalsIgnoreCase(orderType) && order.getTableNumber() != null && !order.getTableNumber().isEmpty()) {
+            tableNumberTextView.setText("Table: " + order.getTableNumber());
+            tableNumberTextView.setVisibility(View.VISIBLE);
+        } else {
+            tableNumberTextView.setVisibility(View.GONE);
+        }
+
+        String status = order.getStatus() != null ? order.getStatus() : "pending";
+        statusTextView.setText(status.toUpperCase());
+        
+        // Set status color
+        int statusColor;
+        switch (status.toLowerCase()) {
+            case "pending":
+                statusColor = 0xFFF44336; // Red
+                break;
+            case "preparing":
+                statusColor = 0xFFFF9800; // Orange
+                break;
+            case "ready":
+                statusColor = 0xFF4CAF50; // Green
+                break;
+            default:
+                statusColor = 0xFF9E9E9E; // Grey
+                break;
+        }
+        statusTextView.setTextColor(statusColor);
+
+        timeTextView.setText(formatTime(order.getCreatedAt()) + " (" + formatElapsedTime(order.getCreatedAt()) + ")");
+
+        // Display order items
+        StringBuilder itemsText = new StringBuilder();
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+            for (OrderItem item : order.getItems()) {
+                if (item != null) {
+                    String itemName = item.getMenuItemName() != null ? item.getMenuItemName() : "Unknown";
+                    int quantity = item.getQuantity();
+                    itemsText.append(String.format("• %s x%d", itemName, quantity));
+                    
+                    if (item.getCustomization() != null && !item.getCustomization().trim().isEmpty()) {
+                        itemsText.append(" (").append(item.getCustomization()).append(")");
+                    }
+                    
+                    if (item.getCookingDetails() != null && !item.getCookingDetails().trim().isEmpty()) {
+                        itemsText.append(" [").append(item.getCookingDetails()).append("]");
+                    }
+                    
+                    itemsText.append("\n");
+                }
+            }
+        } else {
+            itemsText.append("No items");
+        }
+        itemsTextView.setText(itemsText.toString());
+
+        totalTextView.setText("$" + String.format("%.2f", order.getTotal()));
+
+        // Set button states and listeners
+        if ("pending".equals(status)) {
+            preparingButton.setEnabled(true);
+            preparingButton.setAlpha(1.0f);
+            preparingButton.setOnClickListener(v -> {
+                updateOrderStatus(order.getOrderId(), "preparing");
+                // Dialog will be dismissed by the real-time update
+            });
+            readyButton.setEnabled(false);
+            readyButton.setAlpha(0.5f);
+        } else if ("preparing".equals(status)) {
+            preparingButton.setEnabled(false);
+            preparingButton.setAlpha(0.5f);
+            readyButton.setEnabled(true);
+            readyButton.setAlpha(1.0f);
+            readyButton.setOnClickListener(v -> {
+                updateOrderStatus(order.getOrderId(), "ready");
+                // Dialog will be dismissed by the real-time update
+            });
+        } else {
+            preparingButton.setEnabled(false);
+            preparingButton.setAlpha(0.5f);
+            readyButton.setEnabled(false);
+            readyButton.setAlpha(0.5f);
+        }
+
+        // Create and show dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+        builder.setTitle("Order Details");
+        builder.setPositiveButton("Close", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /**
@@ -416,12 +544,18 @@ public class KitchenViewActivity extends AppCompatActivity {
                 
                 totalTextView.setText(String.format("$%.2f", order.getTotal()));
 
+                // Set item click listener to show detail modal
+                itemView.setOnClickListener(v -> showOrderDetailModal(order));
+
                 // Set buttons based on current status
                 if ("pending".equals(status)) {
                     if (preparingButton != null) {
                         preparingButton.setEnabled(true);
                         preparingButton.setAlpha(1.0f);
-                        preparingButton.setOnClickListener(v -> updateOrderStatus(order.getOrderId(), "preparing"));
+                        preparingButton.setOnClickListener(v -> {
+                            v.setClickable(false); // Prevent double click
+                            updateOrderStatus(order.getOrderId(), "preparing");
+                        });
                     }
                     if (readyButton != null) {
                         readyButton.setEnabled(false);

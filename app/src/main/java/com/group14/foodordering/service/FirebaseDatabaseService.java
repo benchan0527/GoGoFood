@@ -2,11 +2,6 @@ package com.group14.foodordering.service;
 
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -15,19 +10,20 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
-import com.google.firebase.firestore.WriteBatch;
 import com.group14.foodordering.model.Admin;
 import com.group14.foodordering.model.MenuItem;
 import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.Restaurant;
+import com.group14.foodordering.model.Table;
 import com.group14.foodordering.model.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
 
 /**
  * Firebase database service class
@@ -35,7 +31,7 @@ import androidx.annotation.NonNull;
  */
 public class FirebaseDatabaseService {
     private static final String TAG = "FirebaseDatabaseService";
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
     
     // Collection names
     private static final String COLLECTION_USERS = "users";
@@ -43,6 +39,7 @@ public class FirebaseDatabaseService {
     private static final String COLLECTION_MENU_ITEMS = "menuItems";
     private static final String COLLECTION_ORDERS = "orders";
     private static final String COLLECTION_RESTAURANTS = "restaurants";
+    private static final String COLLECTION_TABLES = "tables";
     private static final String COLLECTION_COUNTERS = "counters";
     private static final String COUNTER_DOC_ID = "orderCounter";
 
@@ -239,7 +236,8 @@ public class FirebaseDatabaseService {
         admin.setEmail(document.getString("email"));
         admin.setName(document.getString("name"));
         admin.setPhone(document.getString("phone"));
-        admin.setActive(document.getBoolean("isActive") != null ? document.getBoolean("isActive") : false);
+        Boolean isActive = document.getBoolean("isActive");
+        admin.setActive(isActive != null && isActive);
         
         // Handle permissions conversion - Firestore stores as List<String>
         Object permissionsObj = document.get("permissions");
@@ -251,9 +249,7 @@ public class FirebaseDatabaseService {
             // Legacy support: convert String[] to List
             String[] permissionsArray = (String[]) permissionsObj;
             List<String> permissionsList = new ArrayList<>();
-            for (String permission : permissionsArray) {
-                permissionsList.add(permission);
-            }
+            Collections.addAll(permissionsList, permissionsArray);
             admin.setPermissions(permissionsList);
         } else {
             admin.setPermissions(new ArrayList<>());
@@ -269,9 +265,7 @@ public class FirebaseDatabaseService {
             // Legacy support: convert String[] to List
             String[] restaurantIdsArray = (String[]) restaurantIdsObj;
             List<String> restaurantIdsList = new ArrayList<>();
-            for (String restaurantId : restaurantIdsArray) {
-                restaurantIdsList.add(restaurantId);
-            }
+            Collections.addAll(restaurantIdsList, restaurantIdsArray);
             admin.setRestaurantIds(restaurantIdsList);
         } else {
             admin.setRestaurantIds(new ArrayList<>());
@@ -433,7 +427,7 @@ public class FirebaseDatabaseService {
                                 }
                                 
                                 // Manually set isAvailable if it wasn't read correctly
-                                if (isAvailable != null && isAvailable != item.isAvailable()) {
+                                if (isAvailable != null && !isAvailable.equals(item.isAvailable())) {
                                     item.setAvailable(isAvailable);
                                 }
                                 
@@ -552,7 +546,8 @@ public class FirebaseDatabaseService {
             long currentNumber;
             
             if (snapshot.exists() && snapshot.contains("currentNumber")) {
-                currentNumber = snapshot.getLong("currentNumber");
+                Long currentNumberObj = snapshot.getLong("currentNumber");
+                currentNumber = currentNumberObj != null ? currentNumberObj : 0;
             } else {
                 currentNumber = 0;
             }
@@ -572,7 +567,7 @@ public class FirebaseDatabaseService {
             return currentNumber;
         }).addOnSuccessListener(orderNumber -> {
             // Format as 4-digit string (0001-1000)
-            String formattedNumber = String.format("%04d", orderNumber);
+            String formattedNumber = String.format(Locale.getDefault(), "%04d", orderNumber);
             if (callback != null) {
                 callback.onSuccess(formattedNumber);
             }
@@ -694,7 +689,7 @@ public class FirebaseDatabaseService {
                             }
                         }
                         // Sort by createdAt if not already sorted (fallback)
-                        orders.sort((o1, o2) -> Long.compare(o1.getCreatedAt(), o2.getCreatedAt()));
+                        orders.sort(Comparator.comparingLong(Order::getCreatedAt));
                         if (callback != null) callback.onSuccess(orders);
                     } else {
                         Exception exception = task.getException();
@@ -716,7 +711,7 @@ public class FirebaseDatabaseService {
                                             }
                                         }
                                         // Sort by createdAt manually
-                                        orders.sort((o1, o2) -> Long.compare(o1.getCreatedAt(), o2.getCreatedAt()));
+                                        orders.sort(Comparator.comparingLong(Order::getCreatedAt));
                                         if (callback != null) callback.onSuccess(orders);
                                     } else {
                                         Log.e(TAG, "Failed to get pending orders", fallbackTask.getException());
@@ -900,7 +895,7 @@ public class FirebaseDatabaseService {
                             }
                         }
                         // Sort by createdAt manually (oldest first)
-                        orders.sort((o1, o2) -> Long.compare(o1.getCreatedAt(), o2.getCreatedAt()));
+                        orders.sort(Comparator.comparingLong(Order::getCreatedAt));
                         if (callback != null) callback.onSuccess(orders);
                     }
                 });
@@ -1031,9 +1026,12 @@ public class FirebaseDatabaseService {
             restaurant.setRestaurantName(document.getString("restaurantName"));
             restaurant.setAddress(document.getString("address"));
             restaurant.setPhoneNumber(document.getString("phoneNumber"));
-            restaurant.setActive(document.getBoolean("isActive") != null && document.getBoolean("isActive"));
-            restaurant.setCreatedAt(document.getLong("createdAt") != null ? document.getLong("createdAt") : 0);
-            restaurant.setUpdatedAt(document.getLong("updatedAt") != null ? document.getLong("updatedAt") : 0);
+            Boolean isActive = document.getBoolean("isActive");
+            restaurant.setActive(isActive != null && isActive);
+            Long createdAt = document.getLong("createdAt");
+            restaurant.setCreatedAt(createdAt != null ? createdAt : 0);
+            Long updatedAt = document.getLong("updatedAt");
+            restaurant.setUpdatedAt(updatedAt != null ? updatedAt : 0);
             return restaurant;
         } catch (Exception e) {
             Log.e(TAG, "Failed to convert document to Restaurant", e);
@@ -1096,6 +1094,292 @@ public class FirebaseDatabaseService {
     public interface RestaurantsCallback {
         void onSuccess(List<Restaurant> restaurants);
         void onFailure(Exception e);
+    }
+
+    public interface TablesCallback {
+        void onSuccess(List<Table> tables);
+        void onFailure(Exception e);
+    }
+
+    // ==================== Table Operations ====================
+
+    /**
+     * Get all tables by branch ID
+     */
+    public void getTablesByBranchId(String branchId, TablesCallback callback) {
+        db.collection(COLLECTION_TABLES)
+                .whereEqualTo("branchId", branchId)
+                .orderBy("tableNumber")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Table> tables = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Table table = documentToTable(document);
+                                if (table != null) {
+                                    tables.add(table);
+                                }
+                            }
+                        }
+                        // Sort by table number if not already sorted
+                        tables.sort((t1, t2) -> {
+                            String num1 = t1.getTableNumber() != null ? t1.getTableNumber() : "";
+                            String num2 = t2.getTableNumber() != null ? t2.getTableNumber() : "";
+                            return num1.compareToIgnoreCase(num2);
+                        });
+                        if (callback != null) callback.onSuccess(tables);
+                    } else {
+                        Exception exception = task.getException();
+                        Log.w(TAG, "Failed to get tables with orderBy, trying without orderBy", exception);
+                        // Fallback: try without orderBy
+                        db.collection(COLLECTION_TABLES)
+                                .whereEqualTo("branchId", branchId)
+                                .get()
+                                .addOnCompleteListener(fallbackTask -> {
+                                    if (fallbackTask.isSuccessful()) {
+                                        List<Table> tables = new ArrayList<>();
+                                        QuerySnapshot querySnapshot = fallbackTask.getResult();
+                                        if (querySnapshot != null) {
+                                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                                Table table = documentToTable(document);
+                                                if (table != null) {
+                                                    tables.add(table);
+                                                }
+                                            }
+                                        }
+                                        // Sort by table number manually
+                                        tables.sort((t1, t2) -> {
+                                            String num1 = t1.getTableNumber() != null ? t1.getTableNumber() : "";
+                                            String num2 = t2.getTableNumber() != null ? t2.getTableNumber() : "";
+                                            return num1.compareToIgnoreCase(num2);
+                                        });
+                                        if (callback != null) callback.onSuccess(tables);
+                                    } else {
+                                        Log.e(TAG, "Failed to get tables", fallbackTask.getException());
+                                        if (callback != null) callback.onFailure(fallbackTask.getException());
+                                    }
+                                });
+                    }
+                });
+    }
+
+    /**
+     * Listen to tables by branch ID with real-time updates
+     * Returns a ListenerRegistration that should be removed when done
+     */
+    public ListenerRegistration listenToTablesByBranchId(String branchId, TablesCallback callback) {
+        return db.collection(COLLECTION_TABLES)
+                .whereEqualTo("branchId", branchId)
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.e(TAG, "Error listening to tables", e);
+                        if (callback != null) callback.onFailure(e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        List<Table> tables = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            Table table = documentToTable(document);
+                            if (table != null) {
+                                tables.add(table);
+                            }
+                        }
+                        // Sort by table number
+                        tables.sort((t1, t2) -> {
+                            String num1 = t1.getTableNumber() != null ? t1.getTableNumber() : "";
+                            String num2 = t2.getTableNumber() != null ? t2.getTableNumber() : "";
+                            return num1.compareToIgnoreCase(num2);
+                        });
+                        if (callback != null) callback.onSuccess(tables);
+                    } else {
+                        if (callback != null) callback.onSuccess(new ArrayList<>());
+                    }
+                });
+    }
+
+    /**
+     * Update table status
+     */
+    public void updateTableStatus(String tableId, String status, DatabaseCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", status);
+        updates.put("updatedAt", System.currentTimeMillis());
+
+        db.collection(COLLECTION_TABLES)
+                .document(tableId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Table status updated successfully: " + tableId + " -> " + status);
+                    if (callback != null) callback.onSuccess(tableId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Table status update failed", e);
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
+    /**
+     * Update table current order ID
+     */
+    public void updateTableCurrentOrderId(String tableId, String orderId, DatabaseCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("currentOrderId", orderId != null ? orderId : "");
+        updates.put("updatedAt", System.currentTimeMillis());
+        // Update status based on orderId
+        if (orderId != null && !orderId.isEmpty()) {
+            updates.put("status", "occupied");
+        } else {
+            updates.put("status", "available");
+        }
+
+        db.collection(COLLECTION_TABLES)
+                .document(tableId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Table order ID updated successfully: " + tableId);
+                    if (callback != null) callback.onSuccess(tableId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Table order ID update failed", e);
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
+    /**
+     * Get table by ID
+     */
+    public void getTableById(String tableId, TableCallback callback) {
+        db.collection(COLLECTION_TABLES)
+                .document(tableId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            Table table = documentToTable(document);
+                            if (callback != null) callback.onSuccess(table);
+                        } else {
+                            if (callback != null) callback.onFailure(new Exception("Table not found"));
+                        }
+                    } else {
+                        Log.e(TAG, "Failed to get table", task.getException());
+                        if (callback != null) callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Convert DocumentSnapshot to Table
+     */
+    private Table documentToTable(DocumentSnapshot document) {
+        try {
+            Table table = new Table();
+            table.setTableId(document.getString("tableId"));
+            table.setTableNumber(document.getString("tableNumber"));
+            table.setBranchId(document.getString("branchId"));
+            table.setStatus(document.getString("status"));
+            Long capacity = document.getLong("capacity");
+            table.setCapacity(capacity != null ? capacity.intValue() : 4);
+            table.setCurrentOrderId(document.getString("currentOrderId") != null ? document.getString("currentOrderId") : "");
+            Long createdAt = document.getLong("createdAt");
+            table.setCreatedAt(createdAt != null ? createdAt : 0);
+            Long updatedAt = document.getLong("updatedAt");
+            table.setUpdatedAt(updatedAt != null ? updatedAt : 0);
+            return table;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to convert document to Table", e);
+            return null;
+        }
+    }
+
+    public interface TableCallback {
+        void onSuccess(Table table);
+        void onFailure(Exception e);
+    }
+
+    // ==================== Order Search Operations ====================
+
+    /**
+     * Search orders by various criteria
+     */
+    public void searchOrders(String searchQuery, String statusFilter, OrdersCallback callback) {
+        Query query = db.collection(COLLECTION_ORDERS);
+
+        // Apply status filter if provided
+        if (statusFilter != null && !statusFilter.isEmpty() && !statusFilter.equals("all")) {
+            query = query.whereEqualTo("status", statusFilter);
+        }
+
+        query.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Order> orders = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Order order = documentToOrder(document);
+                                if (order != null) {
+                                    // Apply search query filter if provided
+                                    if (searchQuery == null || searchQuery.isEmpty()) {
+                                        orders.add(order);
+                                    } else {
+                                        String queryLower = searchQuery.toLowerCase();
+                                        // Search in order ID, table number, customer name
+                                        boolean matches = (order.getOrderId() != null && order.getOrderId().toLowerCase().contains(queryLower))
+                                                || (order.getTableNumber() != null && order.getTableNumber().toLowerCase().contains(queryLower))
+                                                || (order.getUserId() != null && order.getUserId().toLowerCase().contains(queryLower));
+                                        if (matches) {
+                                            orders.add(order);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Sort by createdAt descending (newest first)
+                        orders.sort((o1, o2) -> Long.compare(o2.getCreatedAt(), o1.getCreatedAt()));
+                        if (callback != null) callback.onSuccess(orders);
+                    } else {
+                        Log.e(TAG, "Failed to search orders", task.getException());
+                        if (callback != null) callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Get all active orders (pending, preparing, ready)
+     */
+    public void getAllActiveOrders(OrdersCallback callback) {
+        List<String> statusList = new ArrayList<>();
+        statusList.add("pending");
+        statusList.add("preparing");
+        statusList.add("ready");
+
+        db.collection(COLLECTION_ORDERS)
+                .whereIn("status", statusList)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Order> orders = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Order order = documentToOrder(document);
+                                if (order != null) {
+                                    orders.add(order);
+                                }
+                            }
+                        }
+                        // Sort by createdAt descending (newest first)
+                        orders.sort((o1, o2) -> Long.compare(o2.getCreatedAt(), o1.getCreatedAt()));
+                        if (callback != null) callback.onSuccess(orders);
+                    } else {
+                        Log.e(TAG, "Failed to get active orders", task.getException());
+                        if (callback != null) callback.onFailure(task.getException());
+                    }
+                });
     }
 }
 

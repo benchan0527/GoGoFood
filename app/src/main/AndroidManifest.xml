@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GoGoFood">
         <activity
-            android:name=".MainActivity"
+            android:name=".CustomerMainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="Admin Panel" />
         <activity
             android:name=".TestDataActivity"
             android:exported="false"
@@ -47,6 +50,14 @@
             android:exported="false"
             android:label="Table Order" />
         <activity
+            android:name=".TableMapActivity"
+            android:exported="false"
+            android:label="Table Map" />
+        <activity
+            android:name=".OrderSearchActivity"
+            android:exported="false"
+            android:label="Order Search" />
+        <activity
             android:name=".DrinkSelectionActivity"
             android:exported="false"
             android:label="Select Drink" />
@@ -62,10 +73,6 @@
             android:name=".ShoppingCartActivity"
             android:exported="false"
             android:label="Shopping Cart" />
-        <activity
-            android:name=".CustomerMainActivity"
-            android:exported="false"
-            android:label="FoodGoGo" />
         <activity
             android:name=".MemberActivity"
             android:exported="false"

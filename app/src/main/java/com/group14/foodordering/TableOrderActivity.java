@@ -63,7 +63,26 @@ public class TableOrderActivity extends AppCompatActivity {
 
         setupViews();
         loadMenuItems();
-        promptTableNumber();
+        
+        // Check if table number is passed from intent (from TableMapActivity or OrderSearchActivity)
+        String tableNumber = getIntent().getStringExtra("tableNumber");
+        String orderId = getIntent().getStringExtra("orderId");
+        
+        if (tableNumber != null && !tableNumber.isEmpty()) {
+            // Table number provided, use it directly
+            currentTableNumber = tableNumber;
+            tableNumberTextView.setText("Table: " + tableNumber);
+            if (orderId != null && !orderId.isEmpty()) {
+                // Load specific order
+                loadOrderById(orderId);
+            } else {
+                // Load existing orders for this table
+                loadExistingOrdersForTable(tableNumber);
+            }
+        } else {
+            // No table number provided, prompt for it
+            promptTableNumber();
+        }
     }
 
     private void setupViews() {
@@ -83,11 +102,69 @@ public class TableOrderActivity extends AppCompatActivity {
         orderItemsAdapter = new OrderItemsAdapter();
         orderItemsRecyclerView.setAdapter(orderItemsAdapter);
 
-        createOrderButton.setOnClickListener(v -> createOrder());
-        updateOrderButton.setOnClickListener(v -> updateOrder());
+        createOrderButton.setOnClickListener(v -> {
+            if (createOrderButton.isEnabled()) {
+                createOrder();
+            } else {
+                showDisabledButtonMessage("Create Order", 
+                        "Please load an existing order first, or wait for the system to enable this button.");
+            }
+        });
+        
+        updateOrderButton.setOnClickListener(v -> {
+            if (updateOrderButton.isEnabled()) {
+                updateOrder();
+            } else {
+                showDisabledButtonMessage("Update Order", 
+                        "No order is currently loaded. Please load an existing order first.");
+            }
+        });
+        
         loadExistingOrderButton.setOnClickListener(v -> promptLoadOrder());
 
         updateOrderButton.setEnabled(false);
+    }
+
+    /**
+     * Show message when a disabled button is clicked
+     */
+    private void showDisabledButtonMessage(String buttonName, String reason) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(buttonName + " Button Disabled");
+        builder.setMessage(reason + "\n\n" +
+                "Current status:\n" +
+                "• Create Order: " + (createOrderButton.isEnabled() ? "Enabled" : "Disabled") + "\n" +
+                "• Update Order: " + (updateOrderButton.isEnabled() ? "Enabled" : "Disabled") + "\n" +
+                "• Load Existing Order: Always available");
+        builder.setPositiveButton("OK", null);
+        builder.show();
+    }
+
+    /**
+     * Enable create order mode - clear current order and enable Create Order button
+     */
+    private void enableCreateOrderMode() {
+        currentOrderId = null;
+        currentOrderItems.clear();
+        orderItemsAdapter.notifyDataSetChanged();
+        updateTotal();
+        createOrderButton.setEnabled(true);
+        updateOrderButton.setEnabled(false);
+    }
+
+    /**
+     * Show explanation for button states when user cancels order selection
+     */
+    private void showButtonStateExplanation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Button Status");
+        builder.setMessage("Since you cancelled the order selection:\n\n" +
+                "• Create Order button is enabled - You can create a new order\n" +
+                "• Update Order button is disabled - No order is currently loaded\n" +
+                "• Load Existing Order button is always available - You can load an order anytime\n\n" +
+                "Please select an order to load, or click 'Create New Order' to start a new order.");
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
 
     /**
@@ -128,12 +205,23 @@ public class TableOrderActivity extends AppCompatActivity {
                 if (!orders.isEmpty()) {
                     // Show dialog for user to select order to load
                     showOrderSelectionDialog(orders);
+                } else {
+                    // No existing orders, enable Create Order button
+                    enableCreateOrderMode();
+                    Toast.makeText(TableOrderActivity.this, 
+                            "No existing orders found for this table. You can now create a new order.", 
+                            Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.d(TAG, "No existing orders for this table");
+                // No existing orders, enable Create Order button
+                enableCreateOrderMode();
+                Toast.makeText(TableOrderActivity.this, 
+                        "No existing orders found for this table. You can now create a new order.", 
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -155,7 +243,15 @@ public class TableOrderActivity extends AppCompatActivity {
             loadOrder(orders.get(which));
         });
         builder.setNegativeButton("Create New Order", (dialog, which) -> {
-            // Create new order
+            // Enable create order mode
+            enableCreateOrderMode();
+            Toast.makeText(TableOrderActivity.this, 
+                    "Create Order button is now enabled. You can create a new order.", 
+                    Toast.LENGTH_SHORT).show();
+        });
+        builder.setNeutralButton("Cancel", (dialog, which) -> {
+            // User cancelled, show message explaining button states
+            showButtonStateExplanation();
         });
         builder.show();
     }
@@ -196,6 +292,33 @@ public class TableOrderActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    /**
+     * Load order by ID
+     */
+    private void loadOrderById(String orderId) {
+        dbService.getOrderById(orderId, new FirebaseDatabaseService.OrderCallback() {
+            @Override
+            public void onSuccess(Order order) {
+                if (order.getTableNumber() != null && order.getTableNumber().equals(currentTableNumber)) {
+                    loadOrder(order);
+                } else {
+                    // Update table number if different
+                    if (order.getTableNumber() != null && !order.getTableNumber().isEmpty()) {
+                        currentTableNumber = order.getTableNumber();
+                        tableNumberTextView.setText("Table: " + currentTableNumber);
+                    }
+                    loadOrder(order);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(TableOrderActivity.this, 
+                        "Failed to load order: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

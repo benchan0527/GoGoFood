@@ -856,6 +856,46 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
 
+        // If dine-in order, prompt for table number first
+        if (selectedOrderType.equals("dine_in")) {
+            promptTableNumberForDineIn();
+        } else {
+            // For takeaway, proceed directly
+            proceedWithOrderCreation(null);
+        }
+    }
+
+    /**
+     * Prompt for table number for dine-in orders
+     */
+    private void promptTableNumberForDineIn() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("Select Table Number");
+        builder.setMessage("Please enter your table number for dine-in order");
+
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
+        input.setHint("Enter table number (e.g., A1, B3, 12)");
+        builder.setView(input);
+
+        builder.setPositiveButton("Confirm", (dialog, which) -> {
+            String tableNumber = input.getText().toString().trim();
+            if (!tableNumber.isEmpty()) {
+                proceedWithOrderCreation(tableNumber);
+            } else {
+                Toast.makeText(MenuActivity.this, "Table number cannot be empty", Toast.LENGTH_SHORT).show();
+                promptTableNumberForDineIn(); // Prompt again
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    /**
+     * Proceed with order creation after table number is confirmed (if dine-in)
+     */
+    private void proceedWithOrderCreation(String tableNumber) {
         // Get next order number (0001-1000)
         dbService.getNextOrderNumber(new FirebaseDatabaseService.OrderNumberCallback() {
             @Override
@@ -869,6 +909,11 @@ public class MenuActivity extends AppCompatActivity {
                     ? CustomerSessionHelper.getUserId(MenuActivity.this) 
                     : DeviceIdHelper.getDeviceId(MenuActivity.this);
                 order.setUserId(userId);
+                
+                // Set table number for dine-in orders
+                if (selectedOrderType.equals("dine_in") && tableNumber != null && !tableNumber.isEmpty()) {
+                    order.setTableNumber(tableNumber);
+                }
                 
                 // Set restaurant ID from preferences
                 String restaurantId = RestaurantPreferenceHelper.getSelectedRestaurantId(MenuActivity.this);

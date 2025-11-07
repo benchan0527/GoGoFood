@@ -20,9 +20,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.group14.foodordering.model.Admin;
 import com.group14.foodordering.model.Restaurant;
 import com.group14.foodordering.service.FirebaseDatabaseService;
@@ -44,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private Button btnPermissionManagement;
     private Button btnAdminLogin;
     private Button btnLogout;
-    private BottomNavigationView bottomNavigationView;
     private LinearLayout adminRestaurantSelectorLayout;
     private Spinner spinnerRestaurantSelector;
     private List<Restaurant> accessibleRestaurants;
@@ -60,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
         
         dbService = FirebaseDatabaseService.getInstance();
         
-        // Check if admin is logged in, if not redirect to customer main screen
+        // MainActivity is admin-only, should only be accessed when admin is logged in
+        // If not logged in, redirect to customer main screen
         if (!AdminSessionHelper.isAdminLoggedIn(this)) {
-            // Redirect to customer main screen
             Intent intent = new Intent(MainActivity.this, CustomerMainActivity.class);
             startActivity(intent);
             finish();
@@ -85,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         
         // Setup navigation buttons
         setupButtons();
-        // Setup bottom navigation
-        setupBottomNavigation();
         // Setup restaurant selector
         setupRestaurantSelector();
         updateAdminButtonsVisibility();
@@ -103,33 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        // Restaurant selection button - always visible
-        Button btnSelectRestaurant = findViewById(R.id.btnSelectRestaurant);
-        btnSelectRestaurant.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RestaurantSelectionActivity.class);
-            startActivity(intent);
-        });
-        
-        // Customer button - always visible
-        Button btnMenu = findViewById(R.id.btnMenu);
-        btnMenu.setOnClickListener(v -> {
-            // Check if restaurant is selected
-            if (!RestaurantPreferenceHelper.hasSelectedRestaurant(this)) {
-                Toast.makeText(this, "Please select a restaurant first", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, RestaurantSelectionActivity.class);
-                startActivity(intent);
-                return;
-            }
-            Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-            startActivity(intent);
-        });
-
-        // Order History button - always visible for customers
-        Button btnOrderHistory = findViewById(R.id.btnOrderHistory);
-        btnOrderHistory.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, OrderHistoryActivity.class);
-            startActivity(intent);
-        });
+        // Admin-only buttons - no user buttons here
 
         // Admin buttons - hidden until login and permission check
         btnKitchenView = findViewById(R.id.btnKitchenView);
@@ -151,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
             if (AdminSessionHelper.isAdminLoggedIn(this) && 
                 (PermissionManager.canManageTables(this) || 
                  PermissionManager.canManageOrders(this))) {
-                Intent intent = new Intent(MainActivity.this, TableOrderActivity.class);
+                // Navigate to TableMapActivity instead of directly to TableOrderActivity
+                Intent intent = new Intent(MainActivity.this, TableMapActivity.class);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Permission denied: You need table or order management permission", 
@@ -298,54 +268,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     
-    /**
-     * Setup bottom navigation bar
-     */
-    private void setupBottomNavigation() {
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            
-            if (itemId == R.id.nav_admin_main) {
-                // Already on main page, do nothing
-                return true;
-            } else if (itemId == R.id.nav_kitchen_view) {
-                if (AdminSessionHelper.isAdminLoggedIn(this) && 
-                    PermissionManager.canViewOrders(this)) {
-                    Intent intent = new Intent(MainActivity.this, KitchenViewActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "Permission denied: You need order view permission", 
-                        Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            } else if (itemId == R.id.nav_table_order) {
-                if (AdminSessionHelper.isAdminLoggedIn(this) && 
-                    (PermissionManager.canManageTables(this) || 
-                     PermissionManager.canManageOrders(this))) {
-                    Intent intent = new Intent(MainActivity.this, TableOrderActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "Permission denied: You need table or order management permission", 
-                        Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            } else if (itemId == R.id.nav_test_data) {
-                Intent intent = new Intent(MainActivity.this, TestDataActivity.class);
-                startActivity(intent);
-                return true;
-            } else if (itemId == R.id.nav_logout) {
-                handleLogout();
-                return true;
-            }
-            
-            return false;
-        });
-        
-        // Set the main menu item as selected by default
-        bottomNavigationView.setSelectedItemId(R.id.nav_admin_main);
-    }
     
     /**
      * Handle logout action
@@ -410,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Login admin using staff ID or phone
      */
-    private void loginAdmin(String staffIdOrPhone, String password) {
+    private void loginAdmin(String staffIdOrPhone, @SuppressWarnings("unused") String password) {
         dbService.getAdminByStaffIdOrPhone(staffIdOrPhone, new FirebaseDatabaseService.AdminCallback() {
             @Override
             public void onSuccess(Admin admin) {
@@ -517,11 +439,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            
-            // Show bottom navigation
-            if (bottomNavigationView != null) {
-                bottomNavigationView.setVisibility(View.VISIBLE);
-            }
         } else {
             btnKitchenView.setVisibility(View.GONE);
             btnTableOrder.setVisibility(View.GONE);
@@ -532,11 +449,6 @@ public class MainActivity extends AppCompatActivity {
             // Hide restaurant selector
             if (adminRestaurantSelectorLayout != null) {
                 adminRestaurantSelectorLayout.setVisibility(View.GONE);
-            }
-            
-            // Hide bottom navigation when not logged in
-            if (bottomNavigationView != null) {
-                bottomNavigationView.setVisibility(View.GONE);
             }
         }
     }
@@ -571,7 +483,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void testFirebaseConnection() {
         try {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
             Log.d(TAG, "Firebase Firestore instance created successfully");
             Toast.makeText(this, "Firebase connected successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {

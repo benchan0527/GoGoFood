@@ -2,14 +2,14 @@ package com.group14.foodordering;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.group14.foodordering.util.AdminSessionHelper;
 import com.group14.foodordering.util.RestaurantPreferenceHelper;
 
 /**
@@ -22,6 +22,7 @@ public class CustomerMainActivity extends AppCompatActivity {
     private Button btnSelectRestaurant;
     private Button btnViewMenu;
     private Button btnOrderHistory;
+    private Button btnAdminPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class CustomerMainActivity extends AppCompatActivity {
         btnSelectRestaurant = findViewById(R.id.btnSelectRestaurant);
         btnViewMenu = findViewById(R.id.btnViewMenu);
         btnOrderHistory = findViewById(R.id.btnOrderHistory);
+        btnAdminPanel = findViewById(R.id.btnAdminPanel);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         btnSelectRestaurant.setOnClickListener(v -> {
@@ -58,6 +60,26 @@ public class CustomerMainActivity extends AppCompatActivity {
             Intent intent = new Intent(CustomerMainActivity.this, OrderHistoryActivity.class);
             startActivity(intent);
         });
+
+        btnAdminPanel.setOnClickListener(v -> {
+            if (AdminSessionHelper.isAdminLoggedIn(this)) {
+                Intent intent = new Intent(CustomerMainActivity.this, MainActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Please login as admin first", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Show admin panel button if admin is logged in
+        updateAdminButtonVisibility();
+    }
+
+    private void updateAdminButtonVisibility() {
+        if (AdminSessionHelper.isAdminLoggedIn(this)) {
+            btnAdminPanel.setVisibility(View.VISIBLE);
+        } else {
+            btnAdminPanel.setVisibility(View.GONE);
+        }
     }
 
     private void setupBottomNavigation() {
@@ -105,6 +127,8 @@ public class CustomerMainActivity extends AppCompatActivity {
         super.onResume();
         // Update bottom navigation selection when returning to this activity
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
+        // Update admin button visibility
+        updateAdminButtonVisibility();
     }
 }
 
