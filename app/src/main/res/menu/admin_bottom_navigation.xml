@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_admin_main"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Main" />
+    
+    <item
+        android:id="@+id/nav_kitchen_view"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Kitchen" />
+    
+    <item
+        android:id="@+id/nav_table_order"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Tables" />
+    
+    <item
+        android:id="@+id/nav_test_data"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="Test Data" />
+    
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Logout" />
+</menu>
+

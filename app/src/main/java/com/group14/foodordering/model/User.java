@@ -13,6 +13,7 @@ public class User {
     private String name;
     private String phone;
     private String role; // "customer", "server", "kitchen", "admin"
+    private int points; // Customer points/score (for customers only)
     private long createdAt;
     private long updatedAt;
 
@@ -27,6 +28,7 @@ public class User {
         this.name = name;
         this.phone = phone;
         this.role = role;
+        this.points = 0; // Initialize points to 0
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
     }
@@ -72,6 +74,19 @@ public class User {
         this.role = role;
     }
 
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public void addPoints(int pointsToAdd) {
+        this.points += pointsToAdd;
+        this.updatedAt = System.currentTimeMillis();
+    }
+
     public long getCreatedAt() {
         return createdAt;
     }
@@ -96,6 +111,7 @@ public class User {
         map.put("name", name);
         map.put("phone", phone);
         map.put("role", role);
+        map.put("points", points);
         map.put("createdAt", createdAt);
         map.put("updatedAt", updatedAt);
         return map;

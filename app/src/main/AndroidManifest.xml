@@ -62,6 +62,18 @@
             android:name=".ShoppingCartActivity"
             android:exported="false"
             android:label="Shopping Cart" />
+        <activity
+            android:name=".CustomerMainActivity"
+            android:exported="false"
+            android:label="FoodGoGo" />
+        <activity
+            android:name=".MemberActivity"
+            android:exported="false"
+            android:label="Member" />
+        <activity
+            android:name=".PermissionManagementActivity"
+            android:exported="false"
+            android:label="Permission Management" />
     </application>
 
 </manifest>

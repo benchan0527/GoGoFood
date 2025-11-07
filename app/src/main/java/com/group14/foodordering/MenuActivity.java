@@ -18,12 +18,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group14.foodordering.model.MenuCategory;
 import com.group14.foodordering.model.MenuItem;
 import com.group14.foodordering.model.Order;
 import com.group14.foodordering.model.OrderItem;
+import com.group14.foodordering.model.User;
 import com.group14.foodordering.service.FirebaseDatabaseService;
+import com.group14.foodordering.util.CustomerSessionHelper;
 import com.group14.foodordering.util.DeviceIdHelper;
 import com.group14.foodordering.util.RestaurantPreferenceHelper;
 
@@ -64,6 +67,7 @@ public class MenuActivity extends AppCompatActivity {
     private String selectedCategory; // Selected category for filtering
     private List<MenuCategory> menuCategories;
     private Map<String, Button> categoryButtons;
+    private BottomNavigationView bottomNavigationView;
     
     // Static reference for ShoppingCartActivity to access cart data
     private static MenuActivity instance;
@@ -83,6 +87,7 @@ public class MenuActivity extends AppCompatActivity {
 
         instance = this;
         setupViews();
+        setupBottomNavigation();
         loadMenuCategories();
         loadMenuItems();
     }
@@ -170,6 +175,48 @@ public class MenuActivity extends AppCompatActivity {
         updateRestaurantDisplay();
 
         updateCartDisplay();
+    }
+    
+    /**
+     * Setup bottom navigation bar
+     */
+    private void setupBottomNavigation() {
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        if (bottomNavigationView == null) {
+            return;
+        }
+        
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            
+            if (itemId == R.id.nav_main) {
+                // Navigate to customer main screen
+                Intent intent = new Intent(MenuActivity.this, CustomerMainActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.nav_coupon) {
+                // Coupon feature - placeholder for now
+                Toast.makeText(this, "Coupon feature coming soon", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.nav_order) {
+                // Already on order screen
+                return true;
+            } else if (itemId == R.id.nav_member) {
+                // Navigate to member screen
+                Intent intent = new Intent(MenuActivity.this, MemberActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.nav_other) {
+                // Other features - placeholder for now
+                Toast.makeText(this, "Other features coming soon", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            
+            return false;
+        });
+        
+        // Set order as selected by default
+        bottomNavigationView.setSelectedItemId(R.id.nav_order);
     }
 
     /**
@@ -817,9 +864,11 @@ public class MenuActivity extends AppCompatActivity {
                 String orderId = orderNumber; // Use the formatted number as orderId
                 String orderType = selectedOrderType.equals("dine_in") ? "dine_in" : "takeaway";
                 Order order = new Order(orderId, orderType);
-                // Use device ID to identify the customer
-                String deviceId = DeviceIdHelper.getDeviceId(MenuActivity.this);
-                order.setUserId(deviceId);
+                // Use logged-in user ID if available, otherwise use device ID
+                String userId = CustomerSessionHelper.isCustomerLoggedIn(MenuActivity.this) 
+                    ? CustomerSessionHelper.getUserId(MenuActivity.this) 
+                    : DeviceIdHelper.getDeviceId(MenuActivity.this);
+                order.setUserId(userId);
                 
                 // Set restaurant ID from preferences
                 String restaurantId = RestaurantPreferenceHelper.getSelectedRestaurantId(MenuActivity.this);
@@ -868,6 +917,18 @@ public class MenuActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(String documentId) {
                         Log.d(TAG, "Order created successfully: " + documentId);
+                        
+                        // Update customer points only if customer is logged in
+                        // Points = 1 point per dollar spent (rounded down)
+                        if (CustomerSessionHelper.isCustomerLoggedIn(MenuActivity.this)) {
+                            String loggedInUserId = CustomerSessionHelper.getUserId(MenuActivity.this);
+                            if (loggedInUserId != null) {
+                                updateCustomerPoints(loggedInUserId, (int) order.getTotal());
+                            }
+                        } else {
+                            Log.d(TAG, "Customer not logged in, points will not be saved");
+                        }
+                        
                         Toast.makeText(MenuActivity.this, "Order created successfully! Order Number: " + orderNumber, 
                                 Toast.LENGTH_LONG).show();
                         // Clear cart
@@ -896,6 +957,54 @@ public class MenuActivity extends AppCompatActivity {
                 Log.e(TAG, "Failed to get order number", e);
                 Toast.makeText(MenuActivity.this, "Failed to generate order number: " + e.getMessage(), 
                         Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Update customer points after order creation
+     * Points = 1 point per dollar spent (rounded down)
+     * Only updates points for logged-in customers
+     */
+    private void updateCustomerPoints(String userId, int pointsToAdd) {
+        if (pointsToAdd <= 0) {
+            return;
+        }
+        
+        // Only update points if customer is logged in
+        if (!CustomerSessionHelper.isCustomerLoggedIn(this)) {
+            Log.d(TAG, "Customer not logged in, skipping points update");
+            return;
+        }
+        
+        // Get existing user and update points
+        dbService.getUserById(userId, new FirebaseDatabaseService.UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                if (user != null) {
+                    // User exists, update points
+                    user.addPoints(pointsToAdd);
+                    dbService.createOrUpdateUser(user, new FirebaseDatabaseService.DatabaseCallback() {
+                        @Override
+                        public void onSuccess(String userId) {
+                            Log.d(TAG, "Customer points updated: " + user.getPoints() + " points");
+                            // Update session with new points
+                            CustomerSessionHelper.updateUserPoints(MenuActivity.this, user.getPoints());
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e(TAG, "Failed to update customer points", e);
+                        }
+                    });
+                } else {
+                    Log.e(TAG, "User not found for points update: " + userId);
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to get user for points update", e);
             }
         });
     }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_main"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Main" />
+    
+    <item
+        android:id="@+id/nav_coupon"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Coupon" />
+    
+    <item
+        android:id="@+id/nav_order"
+        android:icon="@mipmap/ic_launcher"
+        android:title="Order" />
+    
+    <item
+        android:id="@+id/nav_member"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Member" />
+    
+    <item
+        android:id="@+id/nav_other"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title="Other" />
+</menu>
+

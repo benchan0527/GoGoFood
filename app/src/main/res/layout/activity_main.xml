@@ -8,9 +8,10 @@
     tools:context=".MainActivity">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -30,6 +31,33 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="24dp" />
+
+            <!-- Admin Restaurant Selector (shown when admin has multiple restaurants) -->
+            <LinearLayout
+                android:id="@+id/adminRestaurantSelectorLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp"
+                android:background="@android:drawable/dialog_holo_light_frame">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Restaurant:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerRestaurantSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnSelectRestaurant"
@@ -77,13 +105,45 @@
                 android:visibility="gone" />
 
             <Button
+                android:id="@+id/btnPermissionManagement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Permission Management"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <Button
                 android:id="@+id/btnAdminLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Admin Login"
                 android:layout_marginBottom="8dp" />
 
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logout"
+                android:backgroundTint="#FF6B35"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
         </LinearLayout>
     </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:menu="@menu/admin_bottom_navigation"
+        app:itemIconTint="@color/bottom_nav_selector"
+        app:itemTextColor="@color/bottom_nav_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

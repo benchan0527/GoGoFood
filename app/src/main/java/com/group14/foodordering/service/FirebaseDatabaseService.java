@@ -134,6 +134,49 @@ public class FirebaseDatabaseService {
                 });
     }
 
+    /**
+     * Get user by phone number
+     */
+    public void getUserByPhone(String phone, UserCallback callback) {
+        db.collection(COLLECTION_USERS)
+                .whereEqualTo("phone", phone)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                            User user = document.toObject(User.class);
+                            if (callback != null) callback.onSuccess(user);
+                        } else {
+                            if (callback != null) callback.onFailure(new Exception("User not found"));
+                        }
+                    } else {
+                        if (callback != null) callback.onFailure(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Get user by email or phone for login
+     */
+    public void getUserByEmailOrPhone(String emailOrPhone, UserCallback callback) {
+        // Try by email first
+        getUserByEmail(emailOrPhone, new UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                if (callback != null) callback.onSuccess(user);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // If not found by email, try by phone
+                getUserByPhone(emailOrPhone, callback);
+            }
+        });
+    }
+
     // ==================== Admin Operations ====================
 
     /**
@@ -216,6 +259,24 @@ public class FirebaseDatabaseService {
             admin.setPermissions(new ArrayList<>());
         }
         
+        // Handle restaurantIds conversion
+        Object restaurantIdsObj = document.get("restaurantIds");
+        if (restaurantIdsObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> restaurantIdsList = (List<String>) restaurantIdsObj;
+            admin.setRestaurantIds(restaurantIdsList);
+        } else if (restaurantIdsObj instanceof String[]) {
+            // Legacy support: convert String[] to List
+            String[] restaurantIdsArray = (String[]) restaurantIdsObj;
+            List<String> restaurantIdsList = new ArrayList<>();
+            for (String restaurantId : restaurantIdsArray) {
+                restaurantIdsList.add(restaurantId);
+            }
+            admin.setRestaurantIds(restaurantIdsList);
+        } else {
+            admin.setRestaurantIds(new ArrayList<>());
+        }
+        
         Long createdAt = document.getLong("createdAt");
         if (createdAt != null) {
             admin.setCreatedAt(createdAt);
@@ -230,7 +291,7 @@ public class FirebaseDatabaseService {
     }
 
     /**
-     * Get admin by adminId (staff ID) or phone for login
+     * Get admin by adminId (staff ID), email, or phone for login
      */
     public void getAdminByStaffIdOrPhone(String staffIdOrPhone, AdminCallback callback) {
         // Try by adminId first
@@ -258,16 +319,60 @@ public class FirebaseDatabaseService {
                                         Admin admin = documentToAdmin(querySnapshot.getDocuments().get(0));
                                         if (admin != null) {
                                             if (callback != null) callback.onSuccess(admin);
-                                        } else {
-                                            if (callback != null) callback.onFailure(new Exception("Admin data is invalid"));
+                                            return;
                                         }
-                                    } else {
-                                        if (callback != null) callback.onFailure(new Exception("Admin not found"));
                                     }
-                                } else {
-                                    if (callback != null) callback.onFailure(phoneTask.getException());
                                 }
+                                // If not found by phone, try by email
+                                db.collection(COLLECTION_ADMINS)
+                                        .whereEqualTo("email", staffIdOrPhone)
+                                        .whereEqualTo("isActive", true)
+                                        .limit(1)
+                                        .get()
+                                        .addOnCompleteListener(emailTask -> {
+                                            if (emailTask.isSuccessful()) {
+                                                QuerySnapshot emailSnapshot = emailTask.getResult();
+                                                if (emailSnapshot != null && !emailSnapshot.isEmpty()) {
+                                                    Admin admin = documentToAdmin(emailSnapshot.getDocuments().get(0));
+                                                    if (admin != null) {
+                                                        if (callback != null) callback.onSuccess(admin);
+                                                    } else {
+                                                        if (callback != null) callback.onFailure(new Exception("Admin data is invalid"));
+                                                    }
+                                                } else {
+                                                    if (callback != null) callback.onFailure(new Exception("Admin not found"));
+                                                }
+                                            } else {
+                                                if (callback != null) callback.onFailure(emailTask.getException());
+                                            }
+                                        });
                             });
+                });
+    }
+
+    /**
+     * Get all admins
+     */
+    public void getAllAdmins(AdminsCallback callback) {
+        db.collection(COLLECTION_ADMINS)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Admin> admins = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                Admin admin = documentToAdmin(document);
+                                if (admin != null) {
+                                    admins.add(admin);
+                                }
+                            }
+                        }
+                        if (callback != null) callback.onSuccess(admins);
+                    } else {
+                        Log.e(TAG, "Failed to get admins", task.getException());
+                        if (callback != null) callback.onFailure(task.getException());
+                    }
                 });
     }
 
@@ -950,6 +1055,11 @@ public class FirebaseDatabaseService {
 
     public interface AdminCallback {
         void onSuccess(Admin admin);
+        void onFailure(Exception e);
+    }
+
+    public interface AdminsCallback {
+        void onSuccess(List<Admin> admins);
         void onFailure(Exception e);
     }
 

@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -17,13 +20,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.group14.foodordering.model.Admin;
+import com.group14.foodordering.model.Restaurant;
 import com.group14.foodordering.service.FirebaseDatabaseService;
+import com.group14.foodordering.util.AdminRoleHelper;
 import com.group14.foodordering.util.AdminSessionHelper;
 import com.group14.foodordering.util.PermissionManager;
 import com.group14.foodordering.util.RestaurantPreferenceHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +41,15 @@ public class MainActivity extends AppCompatActivity {
     private Button btnKitchenView;
     private Button btnTableOrder;
     private Button btnTestData;
+    private Button btnPermissionManagement;
     private Button btnAdminLogin;
+    private Button btnLogout;
+    private BottomNavigationView bottomNavigationView;
+    private LinearLayout adminRestaurantSelectorLayout;
+    private Spinner spinnerRestaurantSelector;
+    private List<Restaurant> accessibleRestaurants;
+    private ArrayAdapter<Restaurant> restaurantAdapter;
+    private boolean isInitializingSpinner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +59,15 @@ public class MainActivity extends AppCompatActivity {
         initializeFirebase();
         
         dbService = FirebaseDatabaseService.getInstance();
+        
+        // Check if admin is logged in, if not redirect to customer main screen
+        if (!AdminSessionHelper.isAdminLoggedIn(this)) {
+            // Redirect to customer main screen
+            Intent intent = new Intent(MainActivity.this, CustomerMainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -59,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
         
         // Setup navigation buttons
         setupButtons();
+        // Setup bottom navigation
+        setupBottomNavigation();
+        // Setup restaurant selector
+        setupRestaurantSelector();
         updateAdminButtonsVisibility();
     }
 
@@ -136,9 +166,206 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Permission Management button
+        btnPermissionManagement = findViewById(R.id.btnPermissionManagement);
+        btnPermissionManagement.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, PermissionManagementActivity.class);
+            startActivity(intent);
+        });
+
         // Admin login button
         btnAdminLogin = findViewById(R.id.btnAdminLogin);
         btnAdminLogin.setOnClickListener(v -> showAdminLoginDialog());
+        
+        // Logout button
+        btnLogout = findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(v -> handleLogout());
+        
+        // Restaurant selector UI
+        adminRestaurantSelectorLayout = findViewById(R.id.adminRestaurantSelectorLayout);
+        spinnerRestaurantSelector = findViewById(R.id.spinnerRestaurantSelector);
+    }
+    
+    /**
+     * Setup restaurant selector for admin
+     */
+    private void setupRestaurantSelector() {
+        accessibleRestaurants = new ArrayList<>();
+        
+        // Create adapter for spinner
+        restaurantAdapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_spinner_item, 
+            accessibleRestaurants);
+        restaurantAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRestaurantSelector.setAdapter(restaurantAdapter);
+        
+        // Handle restaurant selection
+        spinnerRestaurantSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Skip if we're initializing (programmatic selection)
+                if (isInitializingSpinner) {
+                    return;
+                }
+                
+                if (position >= 0 && position < accessibleRestaurants.size()) {
+                    Restaurant selectedRestaurant = accessibleRestaurants.get(position);
+                    AdminSessionHelper.setAdminSelectedRestaurantId(MainActivity.this, 
+                        selectedRestaurant.getRestaurantId());
+                    AdminSessionHelper.setAdminSelectedRestaurantName(MainActivity.this, 
+                        selectedRestaurant.getRestaurantName());
+                    Log.d(TAG, "Admin selected restaurant: " + selectedRestaurant.getRestaurantName());
+                    Toast.makeText(MainActivity.this, 
+                        "Selected: " + selectedRestaurant.getRestaurantName(), 
+                        Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+    }
+    
+    /**
+     * Load restaurants for admin based on their access level
+     */
+    private void loadAdminRestaurants() {
+        if (!AdminSessionHelper.isAdminLoggedIn(this)) {
+            return;
+        }
+        
+        List<String> accessibleRestaurantIds = AdminRoleHelper.getAccessibleRestaurantIds(this);
+        
+        dbService.getAllRestaurants(new FirebaseDatabaseService.RestaurantsCallback() {
+            @Override
+            public void onSuccess(List<Restaurant> allRestaurants) {
+                accessibleRestaurants.clear();
+                
+                // Filter restaurants based on admin access
+                if (accessibleRestaurantIds == null) {
+                    // ADMIN: can access all restaurants
+                    accessibleRestaurants.addAll(allRestaurants);
+                } else {
+                    // MANAGER/STAFF: filter by accessible restaurant IDs
+                    for (Restaurant restaurant : allRestaurants) {
+                        if (accessibleRestaurantIds.contains(restaurant.getRestaurantId())) {
+                            accessibleRestaurants.add(restaurant);
+                        }
+                    }
+                }
+                
+                restaurantAdapter.notifyDataSetChanged();
+                
+                // For ADMIN/MANAGER, try to restore previously selected restaurant
+                if (!accessibleRestaurants.isEmpty()) {
+                    isInitializingSpinner = true;
+                    String selectedRestaurantId = AdminSessionHelper.getAdminSelectedRestaurantId(MainActivity.this);
+                    boolean found = false;
+                    
+                    if (selectedRestaurantId != null) {
+                        for (int i = 0; i < accessibleRestaurants.size(); i++) {
+                            if (accessibleRestaurants.get(i).getRestaurantId().equals(selectedRestaurantId)) {
+                                spinnerRestaurantSelector.setSelection(i, false);
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // If no previous selection or not found, select first restaurant by default
+                    if (!found) {
+                        Restaurant firstRestaurant = accessibleRestaurants.get(0);
+                        AdminSessionHelper.setAdminSelectedRestaurantId(MainActivity.this, 
+                            firstRestaurant.getRestaurantId());
+                        AdminSessionHelper.setAdminSelectedRestaurantName(MainActivity.this, 
+                            firstRestaurant.getRestaurantName());
+                        spinnerRestaurantSelector.setSelection(0, false);
+                    }
+                    
+                    isInitializingSpinner = false;
+                }
+            }
+            
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to load restaurants for admin", e);
+                Toast.makeText(MainActivity.this, 
+                    "Failed to load restaurants: " + e.getMessage(), 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    /**
+     * Setup bottom navigation bar
+     */
+    private void setupBottomNavigation() {
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            
+            if (itemId == R.id.nav_admin_main) {
+                // Already on main page, do nothing
+                return true;
+            } else if (itemId == R.id.nav_kitchen_view) {
+                if (AdminSessionHelper.isAdminLoggedIn(this) && 
+                    PermissionManager.canViewOrders(this)) {
+                    Intent intent = new Intent(MainActivity.this, KitchenViewActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Permission denied: You need order view permission", 
+                        Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            } else if (itemId == R.id.nav_table_order) {
+                if (AdminSessionHelper.isAdminLoggedIn(this) && 
+                    (PermissionManager.canManageTables(this) || 
+                     PermissionManager.canManageOrders(this))) {
+                    Intent intent = new Intent(MainActivity.this, TableOrderActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Permission denied: You need table or order management permission", 
+                        Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            } else if (itemId == R.id.nav_test_data) {
+                Intent intent = new Intent(MainActivity.this, TestDataActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.nav_logout) {
+                handleLogout();
+                return true;
+            }
+            
+            return false;
+        });
+        
+        // Set the main menu item as selected by default
+        bottomNavigationView.setSelectedItemId(R.id.nav_admin_main);
+    }
+    
+    /**
+     * Handle logout action
+     */
+    private void handleLogout() {
+        new AlertDialog.Builder(this)
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Yes", (dialog, which) -> {
+                AdminSessionHelper.clearAdminSession(this);
+                Toast.makeText(this, "Admin logged out successfully", Toast.LENGTH_SHORT).show();
+                
+                // Redirect to customer main screen
+                Intent intent = new Intent(MainActivity.this, CustomerMainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
     }
 
     /**
@@ -239,18 +466,78 @@ public class MainActivity extends AppCompatActivity {
             btnKitchenView.setVisibility(canViewOrders ? View.VISIBLE : View.GONE);
             btnTableOrder.setVisibility((canManageTables || canManageOrders) ? View.VISIBLE : View.GONE);
             
-            btnAdminLogin.setText("Admin: " + adminInfo);
+            // Show permission management button for ADMIN and MANAGER only
+            String role = AdminRoleHelper.getAdminRole(this);
+            boolean canManagePermissions = AdminRoleHelper.ROLE_ADMIN.equals(role) || 
+                                          AdminRoleHelper.ROLE_MANAGER.equals(role);
+            btnPermissionManagement.setVisibility(canManagePermissions ? View.VISIBLE : View.GONE);
+            
+            // Show logout button
+            btnLogout.setVisibility(View.VISIBLE);
+            
+            // Update admin login button text with role info
+            String roleDisplay = AdminRoleHelper.getRoleDisplayName(this);
+            btnAdminLogin.setText("Admin: " + adminInfo + " (" + roleDisplay + ")");
             btnAdminLogin.setOnClickListener(v -> {
-                // Logout
-                AdminSessionHelper.clearAdminSession(this);
-                updateAdminButtonsVisibility();
-                Toast.makeText(this, "Admin logged out", Toast.LENGTH_SHORT).show();
+                // Show admin info or allow re-login
+                showAdminLoginDialog();
             });
+            
+            // Show/hide restaurant selector based on role
+            boolean needsSelection = AdminRoleHelper.needsRestaurantSelection(this);
+            if (needsSelection && adminRestaurantSelectorLayout != null) {
+                adminRestaurantSelectorLayout.setVisibility(View.VISIBLE);
+                // Load restaurants for selection
+                loadAdminRestaurants();
+            } else {
+                if (adminRestaurantSelectorLayout != null) {
+                    adminRestaurantSelectorLayout.setVisibility(View.GONE);
+                }
+                // For STAFF, auto-select their single restaurant
+                if (AdminRoleHelper.ROLE_STAFF.equals(role)) {
+                    String staffRestaurantId = AdminRoleHelper.getStaffRestaurantId(this);
+                    if (staffRestaurantId != null) {
+                        // Load restaurant name and save it
+                        dbService.getRestaurantById(staffRestaurantId, new FirebaseDatabaseService.RestaurantCallback() {
+                            @Override
+                            public void onSuccess(Restaurant restaurant) {
+                                if (restaurant != null) {
+                                    AdminSessionHelper.setAdminSelectedRestaurantId(MainActivity.this, 
+                                        restaurant.getRestaurantId());
+                                    AdminSessionHelper.setAdminSelectedRestaurantName(MainActivity.this, 
+                                        restaurant.getRestaurantName());
+                                }
+                            }
+                            
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.e(TAG, "Failed to load staff restaurant", e);
+                            }
+                        });
+                    }
+                }
+            }
+            
+            // Show bottom navigation
+            if (bottomNavigationView != null) {
+                bottomNavigationView.setVisibility(View.VISIBLE);
+            }
         } else {
             btnKitchenView.setVisibility(View.GONE);
             btnTableOrder.setVisibility(View.GONE);
+            btnLogout.setVisibility(View.GONE);
             btnAdminLogin.setText("Admin Login");
             btnAdminLogin.setOnClickListener(v -> showAdminLoginDialog());
+            
+            // Hide restaurant selector
+            if (adminRestaurantSelectorLayout != null) {
+                adminRestaurantSelectorLayout.setVisibility(View.GONE);
+            }
+            
+            // Hide bottom navigation when not logged in
+            if (bottomNavigationView != null) {
+                bottomNavigationView.setVisibility(View.GONE);
+            }
         }
     }
 
