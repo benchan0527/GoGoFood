@@ -1,5 +1,6 @@
 package com.group14.foodordering.model;
 
+import java.util.Locale;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class User {
     // Full constructor
     public User(String userId, String email, String name, String phone, String role) {
         this.userId = userId;
-        this.email = email;
+        this.email = email != null ? email.toLowerCase(Locale.ROOT) : null;
         this.name = name;
         this.phone = phone;
         this.role = role;
@@ -47,7 +48,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email != null ? email.toLowerCase(Locale.ROOT) : null;
     }
 
     public String getName() {

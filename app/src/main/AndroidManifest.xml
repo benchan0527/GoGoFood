@@ -81,6 +81,18 @@
             android:name=".PermissionManagementActivity"
             android:exported="false"
             android:label="Permission Management" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:label="Register" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:label="Forgot Password" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:label="Login" />
     </application>
 
 </manifest>

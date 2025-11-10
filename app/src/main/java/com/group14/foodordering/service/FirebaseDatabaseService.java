@@ -111,8 +111,9 @@ public class FirebaseDatabaseService {
      * Get user by email
      */
     public void getUserByEmail(String email, UserCallback callback) {
+        String normalized = email != null ? email.toLowerCase(Locale.ROOT) : null;
         db.collection(COLLECTION_USERS)
-                .whereEqualTo("email", email)
+                .whereEqualTo("email", normalized)
                 .limit(1)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -160,7 +161,10 @@ public class FirebaseDatabaseService {
      */
     public void getUserByEmailOrPhone(String emailOrPhone, UserCallback callback) {
         // Try by email first
-        getUserByEmail(emailOrPhone, new UserCallback() {
+        String normalized = emailOrPhone != null && emailOrPhone.contains("@")
+                ? emailOrPhone.toLowerCase(Locale.ROOT)
+                : emailOrPhone;
+        getUserByEmail(normalized, new UserCallback() {
             @Override
             public void onSuccess(User user) {
                 if (callback != null) callback.onSuccess(user);
@@ -318,8 +322,9 @@ public class FirebaseDatabaseService {
                                     }
                                 }
                                 // If not found by phone, try by email
+                                String normalized = staffIdOrPhone != null ? staffIdOrPhone.toLowerCase(Locale.ROOT) : null;
                                 db.collection(COLLECTION_ADMINS)
-                                        .whereEqualTo("email", staffIdOrPhone)
+                                        .whereEqualTo("email", normalized)
                                         .whereEqualTo("isActive", true)
                                         .limit(1)
                                         .get()

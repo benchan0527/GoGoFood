@@ -68,8 +68,10 @@ public class MemberActivity extends AppCompatActivity {
 
         // Check if customer is logged in
         if (!CustomerSessionHelper.isCustomerLoggedIn(this)) {
-            // Show login screen
-            showLoginDialog();
+            // Navigate to full-screen login
+            Intent intent = new Intent(MemberActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
             return;
         }
 
@@ -157,75 +159,7 @@ public class MemberActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.nav_member);
     }
 
-    /**
-     * Show login dialog for customers
-     */
-    private void showLoginDialog() {
-        setContentView(R.layout.activity_member);
-        setupViews();
-        setupBottomNavigation();
-        
-        // Hide member info and order history initially
-        findViewById(R.id.memberInfoCard).setVisibility(View.GONE);
-        findViewById(R.id.orderHistoryLabel).setVisibility(View.GONE);
-        orderHistoryRecyclerView.setVisibility(View.GONE);
-        
-        // Show login dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Login");
-        builder.setCancelable(false);
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(50, 40, 50, 10);
-
-        final EditText emailOrPhoneInput = new EditText(this);
-        emailOrPhoneInput.setHint("Email or Phone");
-        emailOrPhoneInput.setInputType(InputType.TYPE_CLASS_TEXT);
-        layout.addView(emailOrPhoneInput);
-
-        final EditText passwordInput = new EditText(this);
-        passwordInput.setHint("Password (optional)");
-        passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(passwordInput);
-
-        TextView noteText = new TextView(this);
-        noteText.setText("Note: Password verification is not implemented yet. You can login with email or phone only.");
-        noteText.setTextSize(12);
-        noteText.setPadding(0, 16, 0, 0);
-        layout.addView(noteText);
-
-        builder.setView(layout);
-
-        // Create dialog first
-        loginDialog = builder.create();
-        
-        // Set custom button handlers to prevent auto-dismiss
-        loginDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Login", (dialog, which) -> {
-            // Do nothing here, we'll handle it manually
-        });
-        
-        loginDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
-            // Go back to previous screen
-            finish();
-        });
-        
-        loginDialog.show();
-        
-        // Override the positive button click to prevent auto-dismiss
-        loginDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String emailOrPhone = emailOrPhoneInput.getText().toString().trim();
-            String password = passwordInput.getText().toString().trim();
-            
-            if (emailOrPhone.isEmpty()) {
-                Toast.makeText(this, "Email or Phone is required", Toast.LENGTH_SHORT).show();
-                // Don't close dialog, let user try again
-                return;
-            }
-            
-            loginCustomer(emailOrPhone, password);
-        });
-    }
+    // Login UI moved to LoginActivity
 
     /**
      * Login customer using email or phone
@@ -247,10 +181,6 @@ public class MemberActivity extends AppCompatActivity {
                     // For admin/staff, they should use admin login
                     Toast.makeText(MemberActivity.this, 
                         "Please use Admin Login for staff accounts", Toast.LENGTH_SHORT).show();
-                    // Close login dialog first
-                    if (loginDialog != null && loginDialog.isShowing()) {
-                        loginDialog.dismiss();
-                    }
                     // Redirect to MainActivity for admin login
                     Intent intent = new Intent(MemberActivity.this, MainActivity.class);
                     startActivity(intent);
@@ -260,11 +190,6 @@ public class MemberActivity extends AppCompatActivity {
                 
                 // Save customer session (use commit to ensure synchronous save)
                 CustomerSessionHelper.saveCustomerSession(MemberActivity.this, user);
-                
-                // Close login dialog
-                if (loginDialog != null && loginDialog.isShowing()) {
-                    loginDialog.dismiss();
-                }
                 
                 // Show member page
                 findViewById(R.id.memberInfoCard).setVisibility(View.VISIBLE);
@@ -301,11 +226,6 @@ public class MemberActivity extends AppCompatActivity {
                 
                 // Admin found, save session and redirect to MainActivity
                 AdminSessionHelper.saveAdminSession(MemberActivity.this, admin);
-                
-                // Close login dialog
-                if (loginDialog != null && loginDialog.isShowing()) {
-                    loginDialog.dismiss();
-                }
                 
                 // Redirect to MainActivity for admin
                 Intent intent = new Intent(MemberActivity.this, MainActivity.class);
@@ -447,8 +367,9 @@ public class MemberActivity extends AppCompatActivity {
         
         // Check if customer is logged in
         if (!CustomerSessionHelper.isCustomerLoggedIn(this)) {
-            // Show login screen
-            showLoginDialog();
+            Intent intent = new Intent(MemberActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
             return;
         }
         

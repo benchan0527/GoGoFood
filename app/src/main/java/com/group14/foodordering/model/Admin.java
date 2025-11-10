@@ -1,5 +1,6 @@
 package com.group14.foodordering.model;
 
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ public class Admin {
     public Admin(String adminId, String userId, String email, String name, String phone, List<String> permissions) {
         this.adminId = adminId;
         this.userId = userId;
-        this.email = email;
+        this.email = email != null ? email.toLowerCase(Locale.ROOT) : null;
         this.name = name;
         this.phone = phone;
         this.permissions = permissions != null ? new ArrayList<>(permissions) : new ArrayList<>();
@@ -60,7 +61,7 @@ public class Admin {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email != null ? email.toLowerCase(Locale.ROOT) : null;
     }
 
     public String getName() {
