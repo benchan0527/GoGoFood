@@ -93,6 +93,14 @@
             android:name=".LoginActivity"
             android:exported="false"
             android:label="Login" />
+        <activity
+            android:name=".MenuManagementActivity"
+            android:exported="false"
+            android:label="Menu Management" />
+        <activity
+            android:name=".MenuItemEditorActivity"
+            android:exported="false"
+            android:label="Menu Item Editor" />
     </application>
 
 </manifest>

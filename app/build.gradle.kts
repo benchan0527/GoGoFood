@@ -34,6 +34,11 @@ android {
     }
 }
 
+// Show detailed deprecation/unchecked warnings during Java compilation
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
+}
+
 dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)

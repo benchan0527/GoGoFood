@@ -93,6 +93,14 @@
                 android:visibility="gone" />
 
             <Button
+                android:id="@+id/btnMenuManagement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Menu Management"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <Button
                 android:id="@+id/btnAdminLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

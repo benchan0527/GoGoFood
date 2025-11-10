@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnTableOrder;
     private Button btnTestData;
     private Button btnPermissionManagement;
+    private Button btnMenuManagement;
     private Button btnAdminLogin;
     private Button btnLogout;
     private LinearLayout adminRestaurantSelectorLayout;
@@ -141,6 +142,17 @@ public class MainActivity extends AppCompatActivity {
         btnPermissionManagement.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, PermissionManagementActivity.class);
             startActivity(intent);
+        });
+
+        // Menu Management button
+        btnMenuManagement = findViewById(R.id.btnMenuManagement);
+        btnMenuManagement.setOnClickListener(v -> {
+            if (PermissionManager.canEditMenu(this)) {
+                Intent intent = new Intent(MainActivity.this, MenuManagementActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Permission denied: You need menu edit permission", Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Admin login button
@@ -384,9 +396,13 @@ public class MainActivity extends AppCompatActivity {
             boolean canViewOrders = PermissionManager.canViewOrders(this);
             boolean canManageTables = PermissionManager.canManageTables(this);
             boolean canManageOrders = PermissionManager.canManageOrders(this);
+            boolean canEditMenu = PermissionManager.canEditMenu(this);
             
             btnKitchenView.setVisibility(canViewOrders ? View.VISIBLE : View.GONE);
             btnTableOrder.setVisibility((canManageTables || canManageOrders) ? View.VISIBLE : View.GONE);
+            if (btnMenuManagement != null) {
+                btnMenuManagement.setVisibility(canEditMenu ? View.VISIBLE : View.GONE);
+            }
             
             // Show permission management button for ADMIN and MANAGER only
             String role = AdminRoleHelper.getAdminRole(this);

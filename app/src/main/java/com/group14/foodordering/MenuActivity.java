@@ -764,6 +764,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         
