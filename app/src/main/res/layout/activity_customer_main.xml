@@ -79,6 +79,14 @@
                     android:layout_marginBottom="24dp" />
 
                 <Button
+                    android:id="@+id/btnTestDataPublic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Load Test Data"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="16dp" />
+
+                <Button
                     android:id="@+id/btnSelectRestaurant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

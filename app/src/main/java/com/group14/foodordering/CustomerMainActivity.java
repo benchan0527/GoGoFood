@@ -19,6 +19,7 @@ import com.group14.foodordering.util.RestaurantPreferenceHelper;
 public class CustomerMainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
+    private Button btnTestDataPublic;
     private Button btnSelectRestaurant;
     private Button btnViewMenu;
     private Button btnOrderHistory;
@@ -34,11 +35,17 @@ public class CustomerMainActivity extends AppCompatActivity {
     }
 
     private void setupViews() {
+        btnTestDataPublic = findViewById(R.id.btnTestDataPublic);
         btnSelectRestaurant = findViewById(R.id.btnSelectRestaurant);
         btnViewMenu = findViewById(R.id.btnViewMenu);
         btnOrderHistory = findViewById(R.id.btnOrderHistory);
         btnAdminPanel = findViewById(R.id.btnAdminPanel);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+        btnTestDataPublic.setOnClickListener(v -> {
+            Intent intent = new Intent(CustomerMainActivity.this, TestDataActivity.class);
+            startActivity(intent);
+        });
 
         btnSelectRestaurant.setOnClickListener(v -> {
             Intent intent = new Intent(CustomerMainActivity.this, RestaurantSelectionActivity.class);

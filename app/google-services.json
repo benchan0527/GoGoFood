@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "573144535219",
-    "project_id": "gogofood-a697b",
-    "storage_bucket": "gogofood-a697b.firebasestorage.app"
+    "project_number": "854269940845",
+    "project_id": "foodgogo-2ab60",
+    "storage_bucket": "foodgogo-2ab60.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:573144535219:android:de8e72841a2a60536c60c6",
+        "mobilesdk_app_id": "1:854269940845:android:1adc17cfa58b35cab4db64",
         "android_client_info": {
           "package_name": "com.group14.foodordering"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDnO9Pj24OxbSzzIhfW4pmwFTgPE4Y1Uro"
+          "current_key": "AIzaSyBOZ0bti-SvAs91m0RdNGe5kWBlDQORBNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854269940845:android:c0008015b2f7c20fb4db64",
+        "android_client_info": {
+          "package_name": "com.group14.restaurantordering"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOZ0bti-SvAs91m0RdNGe5kWBlDQORBNI"
         }
       ],
       "services": {
