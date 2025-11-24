@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.firebase.perf)
 }
 
 android {
@@ -55,6 +56,7 @@ dependencies {
     
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.firebase.perf)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

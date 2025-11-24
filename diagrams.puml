@@ -1,0 +1,715 @@
+@startuml Use Case Diagram
+!theme plain
+skinparam actorStyle awesome
+skinparam usecaseStyle rectangle
+
+title GoGoFood System - Use Case Diagram
+
+actor Customer
+actor KitchenStaff
+actor Server
+actor Manager
+actor SystemAdmin
+
+rectangle "GoGoFood System" {
+  ' Customer Use Cases
+  usecase UC1 "View Menu and Place Order" as UC1
+  usecase UC2 "Pay for Online Order" as UC2
+  usecase UC3 "Track Order Status" as UC3
+  
+  ' Kitchen Staff Use Cases
+  usecase UC7 "View Real-time Order List" as UC7
+  usecase UC8 "Update Order Status" as UC8
+  
+  ' Server Use Cases
+  usecase UC4 "Create Table Order" as UC4
+  usecase UC5 "Modify Existing Order" as UC5
+  usecase UC6 "Process Bill" as UC6
+  
+  ' Manager Use Cases
+  usecase UC9 "Add/Edit Menu Items" as UC9
+  usecase UC10 "Generate Sales Report" as UC10
+  usecase UC11 "Manage Staff Permissions" as UC11
+  
+  ' System Admin Use Cases
+  usecase UC12 "System Setup" as UC12
+  usecase UC13 "Import Test Data" as UC13
+  usecase UC14 "Manage Restaurants" as UC14
+  
+  ' Common Use Cases
+  usecase UC15 "Login" as UC15
+  usecase UC16 "Register" as UC16
+  usecase UC17 "Select Restaurant" as UC17
+  usecase UC18 "Customize Menu Item" as UC18
+}
+
+' Customer relationships
+Customer --> UC15
+Customer --> UC16
+Customer --> UC17
+Customer --> UC1
+Customer --> UC18
+Customer --> UC2
+Customer --> UC3
+
+' Kitchen Staff relationships
+KitchenStaff --> UC15
+KitchenStaff --> UC7
+KitchenStaff --> UC8
+
+' Server relationships
+Server --> UC15
+Server --> UC4
+Server --> UC5
+Server --> UC6
+
+' Manager relationships
+Manager --> UC15
+Manager --> UC9
+Manager --> UC10
+Manager --> UC11
+
+' System Admin relationships
+SystemAdmin --> UC15
+SystemAdmin --> UC12
+SystemAdmin --> UC13
+SystemAdmin --> UC14
+
+' Use case relationships
+UC1 ..> UC17 : <<include>>
+UC1 ..> UC18 : <<include>>
+UC4 ..> UC17 : <<include>>
+UC5 ..> UC4 : <<extend>>
+
+@enduml
+
+@startuml Sequence Diagram - Customer Order Placement
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam lifelineStrategy solid
+
+title Sequence Diagram: Customer Places Order (UC-1)
+
+actor Customer
+participant "Customer App" as CustomerApp
+participant "MenuActivity" as Menu
+participant "ShoppingCartActivity" as Cart
+participant "FirebaseDatabaseService" as Service
+participant "Firestore" as DB
+participant "KitchenViewActivity" as Kitchen
+
+Customer -> CustomerApp: Launch application
+CustomerApp -> Menu: Display menu
+Menu -> Service: Load menu items
+Service -> DB: Query menuItems collection
+DB --> Service: Return menu items
+Service --> Menu: Menu items data
+Menu --> Customer: Show menu with categories
+
+Customer -> Menu: Select restaurant branch
+Menu -> Service: Load restaurant data
+Service -> DB: Query restaurants collection
+DB --> Service: Return restaurant data
+Service --> Menu: Restaurant information
+Menu --> Customer: Display selected restaurant
+
+Customer -> Menu: Select menu item
+Menu -> Menu: Show customization options
+Customer -> Menu: Customize item (modifiers, size)
+Menu -> Menu: Add to shopping cart
+Menu --> Customer: Item added confirmation
+
+Customer -> Cart: View shopping cart
+Cart -> Cart: Calculate subtotal
+Cart --> Customer: Display cart items and total
+
+Customer -> Cart: Place order
+Cart -> Service: Create order
+Service -> Service: Generate order number
+Service -> Service: Calculate totals
+Service -> DB: Save order to orders collection
+DB --> Service: Order saved successfully
+Service --> Cart: Order confirmation
+Cart --> Customer: Display order number
+Cart -> Service: Notify kitchen (real-time update)
+Service -> DB: Firestore listener triggers
+DB --> Kitchen: Real-time order notification
+Kitchen --> Kitchen: Display new order in queue
+
+@enduml
+
+@startuml Sequence Diagram - Order Status Update
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam lifelineStrategy solid
+
+title Sequence Diagram: Kitchen Updates Order Status (UC-8)
+
+participant "KitchenViewActivity" as Kitchen
+participant "FirebaseDatabaseService" as Service
+participant "Firestore" as DB
+participant "OrderTrackingActivity" as Tracking
+participant Customer
+
+Kitchen -> Kitchen: Display pending orders
+Kitchen -> Service: Listen to pending orders
+Service -> DB: Set up real-time listener
+DB --> Service: Order updates stream
+Service --> Kitchen: Display orders in queue
+
+Kitchen -> Kitchen: Select order to update
+Kitchen -> Kitchen: User clicks "Preparing" button
+Kitchen -> Service: Update order status
+Service -> Service: Validate permissions
+Service -> DB: Update order document
+DB --> Service: Update successful
+Service --> Kitchen: Status updated confirmation
+Kitchen -> Kitchen: Refresh order display
+
+DB -> DB: Firestore real-time listener triggers
+DB --> Tracking: Order status change notification
+Tracking -> Tracking: Update UI with new status
+Tracking --> Customer: Display updated status
+
+Note over Kitchen,DB: Real-time synchronization
+Note over Tracking,Customer: Customer sees update within 2 seconds
+
+@enduml
+
+@startuml Sequence Diagram - Server Creates Table Order
+!theme plain
+skinparam sequenceMessageAlign center
+skinparam lifelineStrategy solid
+
+title Sequence Diagram: Server Creates Table Order (UC-4)
+
+actor Server
+participant "TableOrderActivity" as POS
+participant "FirebaseDatabaseService" as Service
+participant "Firestore" as DB
+participant "KitchenViewActivity" as Kitchen
+
+Server -> POS: Launch POS application
+POS -> POS: Display table order interface
+Server -> POS: Enter table number
+POS -> Service: Load existing table orders
+Service -> DB: Query orders by table number
+DB --> Service: Return table orders
+Service --> POS: Table order data
+POS --> Server: Display table information
+
+Server -> POS: Select menu items
+POS -> Service: Load menu items
+Service -> DB: Query menuItems collection
+DB --> Service: Return menu items
+Service --> POS: Menu items data
+POS --> Server: Display menu for selection
+
+Server -> POS: Add items to order
+POS -> POS: Calculate order total
+POS --> Server: Display order summary
+
+Server -> POS: Submit order
+POS -> Service: Create table order
+Service -> Service: Generate order number
+Service -> Service: Assign to table
+Service -> Service: Calculate totals
+Service -> DB: Save order to orders collection
+DB --> Service: Order saved successfully
+Service --> POS: Order confirmation
+POS --> Server: Display order number
+
+Service -> DB: Firestore listener triggers
+DB --> Kitchen: Real-time order notification
+Kitchen -> Kitchen: Display new order in queue
+Kitchen --> Kitchen: Show table number and items
+
+@enduml
+
+@startuml Class Diagram
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 10
+
+title GoGoFood System - Class Diagram
+
+class Order {
+  -String orderId
+  -String userId
+  -String restaurantId
+  -String tableNumber
+  -String orderType
+  -List<OrderItem> items
+  -String status
+  -double subtotal
+  -double tax
+  -double serviceCharge
+  -double discount
+  -double total
+  -String paymentMethod
+  -String paymentStatus
+  -long createdAt
+  -long updatedAt
+  +calculateTotal()
+  +addItem(OrderItem)
+  +removeItem(OrderItem)
+  +toMap() : Map<String, Object>
+}
+
+class OrderItem {
+  -String itemId
+  -String name
+  -int quantity
+  -double unitPrice
+  -double totalPrice
+  -List<String> modifiers
+  -String drinkOption
+  +calculateTotalPrice()
+  +toMap() : Map<String, Object>
+}
+
+class MenuItem {
+  -String itemId
+  -String name
+  -String description
+  -double price
+  -String category
+  -String imageUrl
+  -boolean isAvailable
+  -boolean hasDrink
+  -int stock
+  -List<String> modifierIds
+  -long createdAt
+  -long updatedAt
+  +toMap() : Map<String, Object>
+}
+
+class ItemModifier {
+  -String modifierId
+  -String name
+  -String type
+  -boolean isRequired
+  -int minSelection
+  -int maxSelection
+  -List<ModifierOption> options
+  +toMap() : Map<String, Object>
+}
+
+class ModifierOption {
+  -String optionId
+  -String name
+  -double price
+  -boolean isDefault
+}
+
+class User {
+  -String userId
+  -String email
+  -String name
+  -String phone
+  -String restaurantId
+  -long createdAt
+  -long updatedAt
+  +toMap() : Map<String, Object>
+}
+
+class Admin {
+  -String adminId
+  -String userId
+  -String email
+  -String name
+  -String phone
+  -List<String> permissions
+  -boolean isActive
+  -long createdAt
+  -long updatedAt
+  +toMap() : Map<String, Object>
+}
+
+class Restaurant {
+  -String restaurantId
+  -String name
+  -String address
+  -String phone
+  -boolean isActive
+  -long createdAt
+  -long updatedAt
+  +toMap() : Map<String, Object>
+}
+
+class Table {
+  -String tableId
+  -String restaurantId
+  -String tableNumber
+  -int capacity
+  -String status
+  -String currentOrderId
+  -long createdAt
+  -long updatedAt
+  +toMap() : Map<String, Object>
+}
+
+class FirebaseDatabaseService {
+  -FirebaseFirestore db
+  +getInstance() : FirebaseDatabaseService
+  +createOrder(Order, Callback)
+  +updateOrderStatus(String, String, Callback)
+  +getMenuItems(Callback)
+  +getOrdersByStatus(String, Callback)
+  +listenToPendingOrders(Listener)
+}
+
+Order "1" *-- "many" OrderItem : contains
+OrderItem "1" --> "1" MenuItem : references
+MenuItem "many" --> "many" ItemModifier : has
+ItemModifier "1" *-- "many" ModifierOption : contains
+Order "1" --> "0..1" User : belongs to
+Order "1" --> "1" Restaurant : belongs to
+Order "1" --> "0..1" Table : assigned to
+Admin "1" --> "1" User : extends
+Admin "many" --> "many" Restaurant : has access
+Table "1" --> "1" Restaurant : belongs to
+FirebaseDatabaseService ..> Order : manages
+FirebaseDatabaseService ..> MenuItem : manages
+FirebaseDatabaseService ..> User : manages
+FirebaseDatabaseService ..> Admin : manages
+
+@enduml
+
+@startuml Activity Diagram - Order Processing Flow
+!theme plain
+skinparam activity {
+  BackgroundColor lightblue
+  BorderColor darkblue
+}
+
+title Activity Diagram: Order Processing Flow
+
+start
+
+:Customer browses menu;
+:Customer selects restaurant branch;
+:Customer selects menu item;
+:Customer customizes item\n(modifiers, size, drink);
+
+if (Add more items?) then (yes)
+  :Add to shopping cart;
+  :Continue browsing;
+else (no)
+  :View shopping cart;
+  :Review order items;
+  :Calculate total;
+  
+  if (Place order?) then (yes)
+    :Create order;
+    :Generate order number;
+    :Save to Firestore;
+    :Send to Kitchen Display System;
+    
+    :Order status: PENDING;
+    
+    :Kitchen receives order;
+    :Kitchen views order details;
+    
+    if (Kitchen starts preparation?) then (yes)
+      :Update status to PREPARING;
+      :Notify customer;
+      
+      :Kitchen prepares order;
+      
+      if (Order ready?) then (yes)
+        :Update status to READY;
+        :Notify customer;
+        
+        if (Order type?) then (dine-in)
+          :Server delivers to table;
+        else (takeaway)
+          :Customer picks up order;
+        endif
+        
+        :Update status to COMPLETED;
+      else (not ready)
+        :Continue preparation;
+      endif
+    else (not started)
+      :Wait for kitchen action;
+    endif
+  else (cancel)
+    :Return to menu;
+  endif
+endif
+
+stop
+
+@enduml
+
+@startuml Activity Diagram - Order Modification Flow
+!theme plain
+skinparam activity {
+  BackgroundColor lightyellow
+  BorderColor darkorange
+}
+
+title Activity Diagram: Server Modifies Existing Order (UC-5)
+
+start
+
+:Server opens POS application;
+:Server selects table;
+:Load existing table orders;
+
+if (Order exists for table?) then (yes)
+  :Display current order;
+  :Show order items and total;
+  
+  if (Modify order?) then (yes)
+    if (Action type?) then (add item)
+      :Select menu item;
+      :Add to order;
+      :Recalculate total;
+    else (remove item)
+      :Select item to remove;
+      :Remove from order;
+      :Recalculate total;
+    else (change quantity)
+      :Select item;
+      :Update quantity;
+      :Recalculate total;
+    endif
+    
+    :Display updated order;
+    
+    if (Save changes?) then (yes)
+      :Update order in Firestore;
+      :Notify kitchen of changes;
+      :Display confirmation;
+    else (cancel)
+      :Discard changes;
+    endif
+  else (view only)
+    :Display order details;
+  endif
+else (no order)
+  :Create new table order;
+endif
+
+stop
+
+@enduml
+
+@startuml Architecture Diagram
+!theme plain
+skinparam componentStyle rectangle
+
+title GoGoFood System Architecture
+
+package "Android Client Applications" {
+  component [Customer App] as CustomerApp
+  component [Kitchen Display System] as KDS
+  component [Point of Sale System] as POS
+  
+  package "Presentation Layer (MVC)" {
+    component [Activities] as Activities
+    component [Views] as Views
+    component [Adapters] as Adapters
+  }
+  
+  package "Business Logic Layer" {
+    component [FirebaseDatabaseService] as Service
+    component [PermissionManager] as PermMgr
+    component [DataFilterService] as Filter
+  }
+  
+  package "Data Models" {
+    component [Order] as OrderModel
+    component [MenuItem] as MenuModel
+    component [User/Admin] as UserModel
+  }
+}
+
+package "Firebase Backend Services" {
+  component [Cloud Firestore] as Firestore
+  component [Firebase Authentication] as Auth
+  component [Firebase Performance] as Perf
+}
+
+package "Firestore Database" {
+  database "users" as UsersDB
+  database "admins" as AdminsDB
+  database "orders" as OrdersDB
+  database "menuItems" as MenuDB
+  database "restaurants" as RestDB
+  database "tables" as TablesDB
+}
+
+CustomerApp --> Activities
+KDS --> Activities
+POS --> Activities
+
+Activities --> Views
+Activities --> Adapters
+Activities --> Service
+Activities --> PermMgr
+
+Service --> Firestore
+Service --> Auth
+Service --> Perf
+
+Service --> OrderModel
+Service --> MenuModel
+Service --> UserModel
+
+Firestore --> UsersDB
+Firestore --> AdminsDB
+Firestore --> OrdersDB
+Firestore --> MenuDB
+Firestore --> RestDB
+Firestore --> TablesDB
+
+note right of Service
+  Real-time Listeners
+  for order synchronization
+end note
+
+note right of Firestore
+  NoSQL Document Database
+  Real-time updates
+  Scalable infrastructure
+end note
+
+@enduml
+
+@startuml Component Diagram
+!theme plain
+skinparam componentStyle rectangle
+
+title GoGoFood System - Component Diagram
+
+package "Customer Application" {
+  [CustomerMainActivity]
+  [MenuActivity]
+  [ShoppingCartActivity]
+  [OrderTrackingActivity]
+  [OrderHistoryActivity]
+  [RestaurantSelectionActivity]
+  [ItemModifierSelectionActivity]
+}
+
+package "Kitchen Application" {
+  [KitchenViewActivity]
+  [LoginActivity]
+}
+
+package "POS Application" {
+  [MainActivity]
+  [TableOrderActivity]
+  [OrderSearchActivity]
+  [MenuManagementActivity]
+  [PermissionManagementActivity]
+}
+
+package "Shared Services" {
+  [FirebaseDatabaseService]
+  [PermissionManager]
+  [DataFilterService]
+  [RestaurantPreferenceHelper]
+}
+
+package "Data Models" {
+  [Order]
+  [MenuItem]
+  [OrderItem]
+  [User]
+  [Admin]
+  [Restaurant]
+  [Table]
+}
+
+package "Firebase Backend" {
+  [Cloud Firestore]
+  [Firebase Auth]
+}
+
+[CustomerMainActivity] --> [MenuActivity]
+[MenuActivity] --> [ShoppingCartActivity]
+[MenuActivity] --> [RestaurantSelectionActivity]
+[MenuActivity] --> [ItemModifierSelectionActivity]
+[ShoppingCartActivity] --> [OrderTrackingActivity]
+[CustomerMainActivity] --> [OrderHistoryActivity]
+[OrderHistoryActivity] --> [OrderTrackingActivity]
+
+[KitchenViewActivity] --> [FirebaseDatabaseService]
+
+[MainActivity] --> [TableOrderActivity]
+[MainActivity] --> [OrderSearchActivity]
+[MainActivity] --> [MenuManagementActivity]
+[MainActivity] --> [PermissionManagementActivity]
+[TableOrderActivity] --> [FirebaseDatabaseService]
+
+[MenuActivity] --> [FirebaseDatabaseService]
+[ShoppingCartActivity] --> [FirebaseDatabaseService]
+[OrderTrackingActivity] --> [FirebaseDatabaseService]
+[OrderHistoryActivity] --> [FirebaseDatabaseService]
+[KitchenViewActivity] --> [FirebaseDatabaseService]
+[TableOrderActivity] --> [FirebaseDatabaseService]
+
+[FirebaseDatabaseService] --> [Cloud Firestore]
+[FirebaseDatabaseService] --> [Firebase Auth]
+
+[FirebaseDatabaseService] --> [Order]
+[FirebaseDatabaseService] --> [MenuItem]
+[FirebaseDatabaseService] --> [User]
+[FirebaseDatabaseService] --> [Admin]
+
+[PermissionManager] --> [Admin]
+[DataFilterService] --> [Restaurant]
+
+@enduml
+
+@startuml State Diagram - Order Status
+!theme plain
+skinparam state {
+  BackgroundColor lightgreen
+  BorderColor darkgreen
+}
+
+title State Diagram: Order Status Lifecycle
+
+[*] --> Pending : Order created
+
+Pending --> Preparing : Kitchen starts preparation
+Pending --> Cancelled : Order cancelled
+
+Preparing --> Ready : Order preparation complete
+Preparing --> Cancelled : Order cancelled
+
+Ready --> Completed : Order delivered/picked up
+Ready --> Cancelled : Order cancelled
+
+Completed --> [*]
+Cancelled --> [*]
+
+note right of Pending
+  Initial state when order
+  is first created
+end note
+
+note right of Preparing
+  Kitchen staff updates
+  status when starting
+end note
+
+note right of Ready
+  Order is ready for
+  pickup or delivery
+end note
+
+note right of Completed
+  Final state after
+  order fulfillment
+end note
+
+@enduml
+
+
+

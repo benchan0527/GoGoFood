@@ -1,0 +1,88 @@
+﻿Instance of Agile Supplementary  Development Note (Scrum)
+Dr. Ndudi Ezeamuzie
+School of Science and Technology
+• Email: nezeamuz@hkmu.edu.hk ❑Phone: 852 – 3120 2454
+
+Agile (1 of 2)
+• Agile means being able to move quickly and easily
+o Existing project management approaches do not allow people to work quickly or easily
+o Early software development projects often used a waterfall approach
+o As technology and businesses become more complex, a project management approach is needed where requirements are often unknown or continuously changing.
+• Today, Agile means an approach where requirements and solutions evolve through collaboration.
+Agile (2 of 2)
+Manifesto for Agile Software Development: https://agilemanifesto.org
+• In February 2001, a group of 17 people that called itself the Agile Alliance developed and agreed on the Manifesto for Agile Software Development
+• “We are uncovering better ways of developing software by doing it and helping others do it. Through this work we have come to value:
+o Individuals and interactions over processes and tools
+o Working software over comprehensive documentation
+o Customer collaboration over contract negotiation
+o Responding to change over following a plan “
+
+COURTESY: KATHY SCHWALBE, INFORMATION TECHNOLOGY PROJECT MANAGEMENT, NINTH EDITION. © 2019 CENGAGE (WITH AUTHORIZATION)
+Scrum (1 of 4)
+• An agile development method for completing projects with a complex and innovative scope of work.
+• A lightweight yet incredibly powerful set of values, principles, and practices.
+• Relies on cross-functional teams to deliver products and services in short cycles
+• Intro video Scrum: [10mins]
+
+COURTESY: KATHY SCHWALBE, INFORMATION TECHNOLOGY PROJECT MANAGEMENT, NINTH EDITION. © 2019 CENGAGE (WITH AUTHORIZATION)
+Scrum (2 of 4)
+
+
+COURTESY: KATHY SCHWALBE, INFORMATION TECHNOLOGY PROJECT MANAGEMENT, NINTH EDITION. © 2019 CENGAGE (WITH AUTHORIZATION)
+Scrum (3 of 4)
+
+
+
+Scrum (4 of 4)
+Essence of Scrum
+• Fast feedback
+• Quicker innovation
+• Continuous improvement
+• Rapid adaptation to change
+• More delighted customers
+• Accelerated pace from idea to delivery
+
+COURTESY: KATHY SCHWALBE, INFORMATION TECHNOLOGY PROJECT MANAGEMENT, NINTH EDITION. © 2019 CENGAGE (WITH AUTHORIZATION)
+
+Scrum Roles
+• Product owner: responsible for the business value of the project and for deciding what work to do and in what order, as documented in the product backlog
+• ScrumMaster:
+o ensures that the team is productive
+o facilitates the daily Scrum,
+o enables close cooperation across all roles and functions,
+o removes barriers that prevent the team from being effective
+• Scrum team or development team: a cross-functional team of five to nine people who organize themselves and work to produce the desired results for each sprint.
+
+COURTESY: KATHY SCHWALBE, INFORMATION TECHNOLOGY PROJECT MANAGEMENT, NINTH EDITION. © 2019 CENGAGE (WITH AUTHORIZATION)
+Scrum ❑ Sprint backlogArtifacts : highest-priority items from the product  ↑backlog 
+• Product backlog: list of features prioritized by business value
+to be completed within a sprint
+• Burndown chart: shows the cumulative work remaining in a sprint on a day-by-day basis
+Scrum Ceremonies
+• Sprint planning session: meeting with the team to select a set of work from the product backlog to deliver during a sprint
+• Daily Scrum: short meeting for the development team to share progress and challenges and plan work for the day
+• Sprint reviews: meeting in which the team demonstrates to the product owner what it has completed during the sprint
+• Sprint retrospectives: meeting in which the team looks for ways to improve the product and the process based on a review of the actual performance of the development team
+Process Group And 
+Scrum Activities  
+• Pre-initiation Process (similar to dividing the project into several smaller projects )
+o Determining roles and deciding what functionality would be delivered as part of each release
+o How many sprints will be required to complete a release
+o How many releases of software to deliver
+• Initiation Process
+o Project Charter, Stakeholder register, stakeholder management strategy, and kick-off meeting
+o Using Scrum, Joe Fleming (CEO) is the Product Owner
+o Using Scrum, Erica Bell is the Scrum Master
+Planning Process (1 of 3)
+o Team members work as a self-directed group and are coached by the Scrum master
+o Team Charter is not required (Why?)
+o Descriptions of work are identified in the product and sprint backlogs
+o Detailed work is documented in technical stories
+o The team estimates a velocity or capacity for each sprint
+
+COURTESY: KATHY SCHWALBE, INFORMATION TECHNOLOGY PROJECT MANAGEMENT, NINTH EDITION. © 2019 CENGAGE (WITH AUTHORIZATION)
+Thank you
+Office hours: D1159 (by appointment; please send e-mail) Phone: 852 – 3120 2454
+Email: nezeamuz@hkmu.edu.hk
+

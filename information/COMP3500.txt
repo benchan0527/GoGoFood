@@ -1,0 +1,283 @@
+COMP 3500 Software EngineeringFood Ordering and Tracking SystemGroup 14
+
+Fork and knife
+
+
+Project background
+
+Many small restaurants continue to use manual ordering which presents delays, errors and poor customer experience.This is presumably a chain restaurant, so it probably has individual memberships and vouchers.Our project will target the enhancement of customer experience when it comes to ordering and efficiency.(Vertical Bullet List)
+
+Stakeholder
+
+CustomerRegister, Browse, Order, TrackKitchenManage tables, Modify ordersAdminfull permission, View & update ordersManagerMenu & staff managementStaffSystem setup, Data import(Vertical Bullet List)
+
+
+A diagram of a food system
+
+AI-generated content may be incorrect.
+Customer. Register and login. Browse menu by categories. Place orders (dine-in/takeaway). Customize menu items. Track order status in real-time. View order historyKitchen. Manage tables. Create and modify orders. Search and view orders. View kitchen ordersAdmin. View real-time order list. Update order status. Filter orders by statusManagerManage menu items (add/edit/delete). Manage staff permissions (RBAC). View and generate sales reportsStaffSystem administration. Manage restaurants. Import test data(Vertical Bullet List)
+Functional Requirements
+
+
+
+Performance. Order confirmation within 1.0 seconds (98% of the time). Real-time updates within 2 seconds. Menu browsing < 500msReliability. Downtime . 10 minutes/month. 99.9% uptime target. Data consistency across applicationsSecurity. Secure authentication. Encrypted payment data. Protected customer dataUsability. Intuitive customer interface. Fast interface. Clear kitchen displayScalability. Handle increasing users. Maintainable code structure(Vertical Box List)
+NON FunctionalRequirements
+
+
+System implementationAgile Development Plan
+
+Sprint
+
+ Duration
+
+ Sprint Goal
+
+ Key Activities & User Stories to Implement
+
+ Artifacts
+
+ 
+
+Sprint 0
+
+ 1-2 Days
+
+ Project Setup & Planning
+
+ -Establish project architecture (Client-Server, MVC).
+
+ Initial Product Backlog
+
+ 
+-Set up Android Studio and Firebase project.
+
+ 
+-Refine and prioritize the initial Product Backlog.
+
+ 
+Sprint 1
+
+ 2 Weeks
+
+ Core Ordering & Kitchen View
+
+ -UC-1:Customer can view the menu and place an order.
+
+ Sprint 1 Backlog, Potentially Shippable Increment 1
+
+ 
+
+-UC-7:Kitchen staff can see a real-time list of new orders.
+
+ 
+Sprint 2
+
+ 2 Weeks
+
+ Order Management & Status Tracking
+
+ -UC-4:Server can create a table order.
+
+ Sprint 2 Backlog, Potentially Shippable Increment 2
+
+ 
+-UC-5:Server can modify an existing order.
+
+ 
+-UC-3:Customer can track their order status.
+
+ 
+-UC-8:Kitchen staff can update an order's status.
+
+ 
+Sprint 3
+
+ 2 Weeks
+
+ Management Features & Finalization
+
+ -UC-9:Manager can add/edit menu items.
+
+ Sprint 3 Backlog, Final Product
+
+ 
+-UC-10:Manager can generate a daily sales report.
+
+ 
+-Final testing, bug fixing, and UI polish.
+
+ 
+-Prepare for deployment.
+
+ 
+Future Sprint
+
+ TBD
+
+ Payment & Billing Integration
+
+ -UC-2:Customer can pay for an online order.
+
+ Future Sprint Backlog 
+
+ 
+-UC-6:Server can process a bill (including splits/discounts).
+
+ 
+-Implement secure payment gateway integration.
+
+ 
+
+
+A diagram of a process
+
+AI-generated content may be incorrect.
+
+System implementation
+
+.
+FRONTEND
+
+.
+━━━━━━━━━━━━━━━━━━━
+
+.
+Platform:Android Native
+
+.
+Language:Java
+
+.
+SDK:Min 24 | Target 36
+
+.
+IDE:Android Studio
+
+.
+UI Framework:Material Design Components
+
+.
+Jetpack:AppCompat, RecyclerView, ConstraintLayout
+
+
+
+.
+BACKEND & DATABASE
+
+.
+━━━━━━━━━━━━━━━━━━━━━━━━━Backend:Firebase (BaaS)
+
+.
+Database:Cloud Firestore (NoSQL)
+
+.
+Authentication:Firebase Auth
+
+.
+Real-time:Firestore Listeners
+
+
+
+
+System modelling
+
+
+
+Use ordering function as an example:
+Customer → 
+Browse menu → 
+Select items →
+ Make order → 
+Payment → 
+Order Confirmed
+
+
+一張含有 文字, 螢幕.取畫面, 軟體, 作業系統 的圖片
+
+AI .生的.容可能不正確。
+
+
+
+
+
+一張含有 文字, 螢幕.取畫面, 字型, 設計 的圖片
+
+AI .生的.容可能不正確。
+
+System design
+
+
+Software Testing/ Validation
+
+.
+Acceptance Testing: Customer place order successful
+
+.
+Unit Test: Verified the price calculation
+
+.
+Performance Testing: Testing the system response time and make sure the system can run every function within 2 seconds
+
+
+
+一張含有 文字, 螢幕.取畫面, 字型 的圖片
+
+AI .生的.容可能不正確。
+一張含有 文字, 螢幕.取畫面, 字型 的圖片
+
+AI .生的.容可能不正確。
+Test Case ID
+
+ Description
+
+ Expected Result
+
+ Status
+
+ 
+
+TC-01
+
+ User can select the restaurant and ordering
+
+  PASS
+
+ 
+TC-02
+
+ Verified price calculation
+
+ Correct price
+
+  PASS
+
+ 
+TC-03
+
+ Ordering status update
+
+  PASS
+
+ 
+TC-04
+
+ Generate order code & details
+
+ Show all order details
+
+  PASS
+
+ 
+TC-05
+
+ Member login function
+
+ Member/admin can login successfully
+
+  PASS
+
+ 
+
+
+
+

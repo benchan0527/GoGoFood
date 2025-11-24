@@ -1,0 +1,337 @@
+﻿Lecture 2 Software Processes
+Software Engineering 
+DR. NDUDI EZEAMUZIE
+SCHOOL OF SCIENCE AND TECHNOLOGY
+Materials are modified from “Software Engineering”, 10th Edition. by Ian Sommerville
+
+Topics covered
+² Software process models 
+² Process activities 
+² Coping with change
+² Process improvement
+The software process
+² Astructured set of activities required to develop a software system.
+² Many different software processes but all involve:
+▪ Specification – defining what the system should do;
+▪ Design and implementation – defining the organization of the system and implementing the system;
+▪ Validation – checking that it does what the customer wants;
+▪ Evolution – changing the system in response to changing customer needs.
+² Asoftware process model is an abstract representation of a process. It presents a description of a process from some particular perspective.
+Software process descriptions
+² When we describe and discuss processes, we usually talk about the activities in these processes such as specifying a data model, designing a user interface, etc. and the ordering of these activities.
+² Process descriptions may also include:
+▪ Products, which are the outcomes of a process activity;
+▪ Roles, which reflect the responsibilities of the people involved in the process;
+▪ Pre- and post-conditions are statements that are true before and after a process activity has been enacted or a product produced.
+Plan-driven and agile processes
+² Plan-driven processes are processes where all of the process activities are planned in advance and progress is measured against this plan.
+² In agile processes (敏捷流 程), planning is incremental and it is easier to change the process to reflect changing customer requirements.
+² In practice, most practical processes include elements of both plan-driven and agile approaches.
+² There are no right or wrong software processes.
+
+Chapter2 Software Processes 5
+
+Software process models
+
+Chapter2 Software Processes 7
+
+Software process models 
+² 1. The waterfall model (瀑布模 型) antlive
+▪ Plan-driven model. Separate and distinct phases of specification and development.
+² 2. Incremental development 
+插入
+▪ Specification, development and validation are interleaved. May be plan-driven or agile.
+² 3. Integration and configuration
+▪ The system is assembled from existing configurable components. May be plan-driven or agile.
+² In practice, most large systems are developed using a process that incorporates elements from all of these models.
+
+Chapter2 Software Processes 9
+The waterfall model 
+whole process 
+ 七
+
+Waterfall model phases
+² There are separate identified phases in the waterfall model:
+▪ Requirements analysis and definition
+⑤ ▪ System and software design
+▪ Implementation and unit testing
+▪ Integration and system testing
+▪ Operation and maintenance
+² The main drawback of the waterfall model is the difficulty of accommodating change after the process is underway. In principle, a phase has to be complete before moving onto the next phase.
+Waterfall model problems
+² Inflexible partitioning of the project into distinct stages makes it difficult to respond to changing customer requirements.
+▪ Therefore, this model is only appropriate when the requirements are well-understood and changes will be fairly limited during the design process.
+▪ Few business systems have stable requirements.
+² The waterfall model is mostly used for large systems engineering projects where a system is developed at several sites.
+▪ In those circumstances, the plan-driven nature of the waterfall model helps coordinate the work.
+04 :03 代式 
+Incremental development 
+
+ 
+Incremental development benefits
+² The cost of accommodating changing customer requirements is reduced.
+▪ The amount of analysis and documentation that has to be redone is much less than is required with the waterfall model.
+² It is easier to get customer feedback on the development work that has been done.
+▪ Customers can comment on demonstrations of the software and see how much has been implemented.
+² More rapid delivery and deployment of useful software to the customer is possible.
+▪ Customers are able to use and gain value from the software earlier than is possible with a waterfall process.
+Incremental development problems
+² The process is not visible.
+▪ Managers need regular deliverables to measure progress. If systems are developed quickly, it is not cost-effective to produce documents that reflect every version of the system.
+² System structure tends to degrade as new increments are added.
+▪ Unless time and money is spent on refactoring to improve the software, regular change tends to corrupt its structure. Incorporating further software changes becomes increasingly difficult and costly.
+Integration and configuration
+² Based on software reuse where systems are integrated from existing components or application systems (sometimes called COTS -Commercial-off-the-shelf) systems).
+² Reused elements may be configured to adapt their behaviour and functionality to a user’s requirements
+² Reuse is now the standard approach for building many types of business system
+▪ Reuse covered in more depth in later chapter.
+Types of reusable software
+² Stand-alone application systems (sometimes called COTS) that are configured for use in a particular environment.
+² Collections of objects that are developed as a package to be integrated with a component framework such as .NET or J2EE.
+² Web services that are developed according to service standards and which are available for remote invocation.
+Reuse-oriented software engineering
+
+Key process stages
+² Requirements specification
+² Software discovery and evaluation
+² Requirements refinement
+² Application system configuration
+² Component adaptation and integration
+Advantages and disadvantages
+² Reduced costs and risks as less software is developed from scratch
+² Faster delivery and deployment of system But
+² Requirements compromises are inevitable so system may not meet real needs of users
+² Loss of control over evolution of reused system elements
+
+Chapter2 Software Processes 21
+
+Process activities
+
+Chapter2 Software Processes 
+
+Process activities
+² Real software processes are inter-leaved sequences of technical, collaborative and managerial activities with the overall goal of specifying, designing, implementing and testing a software system.
+² The four basic process activities of specification, development, validation and evolution are organized differently in different development processes.
+² For example, in the waterfall model, they are organized in sequence, whereas in incremental development they are interleaved.
+
+Chapter2 Software Processes 23
+The requirements engineering process
+ 
+Software specification
+² The process of establishing what services are required and the constraints on the system’s operation and development.
+² Requirements engineering process
+▪ Requirements elicitation and analysis
+• What do the system stakeholders require or expect from the system?
+▪ Requirements specification
+• Defining the requirements in detail
+▪ Requirements validation
+• Checking the validity of the requirements
+Software design and implementation
+² The process of converting the system specification into an executable system.
+² Software design
+▪ Design a software structure that realises the specification;
+² Implementation
+▪ Translate this structure into an executable program;
+² The activities of design and implementation are closely related and may be inter-leaved.
+
+Chapter2 Software Processes 25
+Ageneral model of the design process
+ 
+
+
+30/10/2014 Chapter2 Software Processes 27
+Design activities doaumen
+² Architectural design, where you identify the overall structure of the system, the principal components (subsystems or modules), their relationships and how they are distributed.
+² Database design, where you design the system data structures and how these are to be represented in a database.
+² Interface design, where you define the interfaces between system components.
+² Component selection and design, where you search for reusable components. If unavailable, you design how it will operate.
+System implementation
+² The software is implemented either by developing a program or programs or by configuring an application system.
+² Design and implementation are interleaved activities for most types of software system.
+² Programming is an individual activity with no standard process.
+² Debugging is the activity of finding program faults and correcting these faults.
+Software validation
+² Verification and validation (V & V) is intended to show that a system conforms to its specification and meets the requirements of the system customer.
+² Involves checking and review processes and system testing.
+² System testing involves executing the system with test cases that are derived from the specification of the real data to be processed by the system.
+² Testing is the most commonly used V & V activity.
+Stages of testing
+
+Testing stages
+² Component testing
+▪ Individual components are tested independently;
+▪ Components may be functions or objects or coherent groupings of these entities.
+² System testing
+▪ Testing of the system as a whole. Testing of emergent properties is particularly important.
+² Customer testing
+▪ Testing with customer data to check that the system meets the customer’s needs.
+Testing phases in a plan-driven software  process (V-model) 
+
+Software evolution
+² Software is inherently flexible and can change.
+² As requirements change through changing business circumstances, the software that supports the business must also evolve and change.
+² Although there has been a demarcation between development and evolution (maintenance) this is increasingly irrelevant as fewer and fewer systems are completely new.
+System evolution
+ 
+
+Chapter2 Software Processes 37
+
+Coping with change
+
+Chapter2 Software Processes 
+
+Coping with change
+² Change is inevitable in all large software projects.
+▪ Business changes lead to new and changed system requirements
+▪ New technologies open up new possibilities for improving implementations
+▪ Changing platforms require application changes
+² Change leads to rework so the costs of change include both rework (e.g. re-analysing requirements) as well as the costs of implementing new functionality
+
+Chapter2 Software Processes 39
+Reducing the costs of rework
+² Change anticipation, where the software process includes activities that can anticipate possible changes before significant rework is required.
+▪ For example, a prototype system may be developed to show some key features of the system to customers.
+² Change tolerance, where the process is designed so that changes can be accommodated at relatively low cost.
+▪ This normally involves some form of incremental development. Proposed changes may be implemented in increments that have not yet been developed. If this is impossible, then only a single increment (a small part of the system) may have be altered to incorporate the change.
+Coping with changing requirements
+² System prototyping, where a version of the system or part of the system is developed quickly to check the customer’s requirements and the feasibility of design decisions. This approach supports change anticipation.
+² Incremental delivery, where system increments are delivered to the customer for comment and experimentation. This supports both change anticipation and change tolerance.
+Software prototyping
+² Aprototype is an initial version of a system used to demonstrate concepts and try out design options.
+² Aprototype can be used in:
+▪ The requirements engineering process to help with requirements elicitation and validation;
+▪ In design processes to explore options and develop a UI design;
+▪ In the testing process to run back-to-back tests.
+Benefits of prototyping
+² Improved system usability.
+² Acloser match to users’real needs.
+² Improved design quality.
+² Improved maintainability.
+² Reduced development effort.
+The process of prototype development
+
+   
+Prototype development
+² May be based on rapid prototyping languages or tools
+² May involve leaving out functionality
+▪ Prototype should focus on areas of the product that are not well- understood;
+▪ Error checking and recovery may not be included in the prototype;
+▪ Focus on functional rather than non-functional requirements such as reliability and security
+Throw-away prototypes
+² Prototypes should be discarded after development as they are not a good basis for a production system:
+▪ It may be impossible to tune the system to meet non-functional requirements;
+▪ Prototypes are normally undocumented;
+▪ The prototype structure is usually degraded through rapid change;
+▪ The prototype probably will not meet normal organizational quality standards.
+
+Chapter2 Software Processes 45
+Incremental delivery
+² Rather than deliver the system as a single delivery, the development and delivery is broken down into increments with each increment delivering part of the required functionality.
+² User requirements are prioritised and the highest priority requirements are included in early increments.
+² Once the development of an increment is started, the requirements are frozen though requirements for later increments can continue to evolve.
+
+Chapter2 Software Processes 47
+
+Incremental development and delivery
+² Incremental development
+▪ Develop the system in increments and evaluate each increment before proceeding to the development of the next increment;
+▪ Normal approach used in agile methods (will cover that later);
+▪ Evaluation done by user/customer proxy.
+² Incremental delivery
+▪ Deploy an increment for use by end-users;
+▪ More realistic evaluation about practical use of software;
+▪ Difficult to implement for replacement systems as increments have less functionality than the system being replaced.
+
+
+Chapter2 Software Processes 49
+
+Incremental delivery advantages
+² Customer value can be delivered with each increment so system functionality is available earlier.
+² Early increments act as a prototype to help elicit requirements for later increments.
+² Lower risk of overall project failure.
+² The highest priority system services tend to receive the most testing.
+
+Chapter2 Software Processes 
+Incremental delivery problems
+² Most systems require a set of basic facilities that are used by different parts of the system.
+▪ As requirements are not defined in detail until an increment is to be implemented, it can be hard to identify common facilities that are needed by all increments.
+² The essence of iterative processes is that the specification is developed in conjunction with the software.
+▪ However, this conflicts with the procurement model of many organizations, where the complete system specification is part of the system development contract.
+
+Chapter2 Software Processes 51
+
+Process improvement
+
+Chapter2 Software Processes 
+
+Process improvement
+² Many software companies have turned to software process improvement as a way of enhancing the quality of their software, reducing costs or accelerating their development processes.
+² Process improvement means understanding existing processes and changing these processes to increase product quality and/or reduce costs and development time.
+
+Chapter2 Software Processes 53
+Approaches to improvement
+² The process maturity approach, which focuses on improving process and project management and introducing good software engineering practice.
+▪ The level of process maturity reflects the extent to which good technical and management practice has been adopted in organizational software development processes.
+² The agile approach, which focuses on iterative development and the reduction of overheads in the software process.
+▪ The primary characteristics of agile methods are rapid delivery of functionality and responsiveness to changing customer requirements.
+The process improvement cycle
+
+Process improvement activities
+² Process measurement
+▪ You measure one or more attributes of the software process or product. These measurements forms a baseline that helps you decide if process improvements have been effective.
+² Process analysis
+▪ The current process is assessed, and process weaknesses and bottlenecks are identified. Process models (sometimes called process maps) that describe the process may be developed.
+² Process change
+▪ Process changes are proposed to address some of the identified process weaknesses.These are introduced and the cycle resumes to collect data about the effectiveness of the changes.
+Process measurement
+² Wherever possible, quantitative process data should be collected
+▪ However, where organisations do not have clearly defined process standards this is very difficult as you don’t know what to measure.Aprocess may have to be defined before any measurement is possible.
+² Process measurements should be used to assess process improvements
+▪ But this does not mean that measurements should drive the improvements.The improvement driver should be the organizational objectives.
+Process metrics
+² Time taken for process activities to be completed
+▪ E.g. Calendar time or effort to complete an activity or process.
+² Resources required for processes or activities
+▪ E.g. Total effort in person-days.
+² Number of occurrences of a particular event
+▪ E.g. Number of defects discovered.
+Capability maturity levels
+
+The SEI capability maturity model
+² Initial
+▪ Essentially uncontrolled
+² Repeatable
+▪ Product management procedures defined and used
+² Defined
+▪ Process management procedures and strategies defined and used
+² Managed
+▪ Quality management strategies defined and used
+² Optimising
+▪ Process improvement strategies defined and used
+
+Chapter2 Software Processes 61
+Key points
+² Software processes are the activities involved in producing a software system. Software process models are abstract representations of these processes.
+² General process models describe the organization of software processes.
+▪ Examples of these general models include the ‘waterfall’model, incremental development, and reuse-oriented development.
+² Requirements engineering is the process of developing a software specification.
+² Design and implementation processes are concerned with transforming a requirements specification into an executable software system.
+² Software validation is the process of checking that the system conforms to its specification and that it meets the real needs of the users of the system.
+² Software evolution takes place when you change existing software systems to meet new requirements. The software must evolve to remain useful.
+² Processes should include activities such as prototyping and incremental delivery to cope with change.
+² Processes may be structured for iterative development and delivery so that changes may be made without disrupting the system as a whole.
+² The principal approaches to process improvement are agile approaches, geared to reducing process overheads, and maturity-based approaches based on better process management and the use of good software engineering practice.
+² The SEI process maturity framework identifies maturity levels that essentially correspond to the use of good software engineering practice.
+
+Chapter2 Software Processes 63
+Key points
+² Processes may be structured for iterative development and delivery so that changes may be made without disrupting the system as a whole.
+² The principal approaches to process improvement are agile approaches, geared to reducing process overheads, and maturity-based approaches based on better process management and the use of good software engineering practice.
+² The SEI process maturity framework identifies maturity levels that essentially correspond to the use of good software engineering practice.
+
+Chapter2 Software Processes 
+Key points
+² Processes may be structured for iterative development and delivery so that changes may be made without disrupting the system as a whole.
+² The principal approaches to process improvement are agile approaches, geared to reducing process overheads, and maturity-based approaches based on better process management and the use of good software engineering practice.
+² The SEI process maturity framework identifies maturity levels that essentially correspond to the use of good software engineering practice.
+Chapter2 Software Processes 

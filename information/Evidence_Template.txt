@@ -1,0 +1,165 @@
+==============================================
+EVIDENCE TEMPLATE FOR SECTION 3
+Group 14 - Assignment 2
+==============================================
+
+Copy this template and fill in your actual evidence links and descriptions.
+Then paste it into Section 3 of your Word document.
+
+==============================================
+
+EVIDENCE FROM SYSTEM MODELING
+
+Our group conducted comprehensive system modeling sessions to develop the Restaurant Ordering System use cases. Below is the evidence of our collaborative process:
+
+---
+
+1. GROUP MEETING VIDEO RECORDING
+
+Description: 15-minute video recording of our modeling session held on [DATE], where we discussed:
+- Identification of system actors (Customer, Server, Kitchen Staff, Manager)
+- Definition of use case boundaries and scope
+- Discussion of functional requirements for each use case
+- Decision-making process for system features
+
+Evidence Link: [INSERT GOOGLE DRIVE / YOUTUBE LINK HERE]
+
+Access: Public (Anyone with the link can view)
+
+---
+
+2. BRAINSTORMING AND WHITEBOARD SESSIONS
+
+Description: Photos of our whiteboard sessions showing:
+- Initial actor identification diagrams
+- Mind maps of system features
+- Draft use case list with notes
+- System boundary discussions
+
+Evidence Links:
+- Brainstorming Session 1: [INSERT LINK]
+- Whiteboard Sketches: [INSERT LINK]
+- Initial Diagrams: [INSERT LINK]
+
+Access: Public (Anyone with the link can view)
+
+---
+
+3. COLLABORATIVE DOCUMENT REVISION HISTORY
+
+Description: Google Docs showing our iterative refinement process:
+- Initial use case list (v1.0)
+- Peer review comments and suggestions
+- Revisions based on group discussion
+- Final version with all 10 use cases defined
+
+Evidence Link: [INSERT GOOGLE DOCS LINK WITH REVISION HISTORY ENABLED]
+
+To view revision history: File → Version History → See version history
+
+Access: Public (Anyone with the link can view)
+
+---
+
+4. COMMUNICATION LOGS
+
+Description: Screenshots of our team communication showing:
+- Discussion about requirement priorities
+- Debates on use case delimitation
+- Decision rationale for system features
+- Coordination of diagram creation
+
+Evidence Links:
+- WhatsApp/Slack Discussions: [INSERT LINK TO SCREENSHOTS]
+- Email Thread Summary: [INSERT LINK]
+- Meeting Minutes: [INSERT LINK]
+
+Access: Public (Anyone with the link can view)
+
+---
+
+5. PRELIMINARY DIAGRAMS AND SKETCHES
+
+Description: Evolution of our use case diagram showing:
+- Hand-drawn initial concepts
+- First digital draft with 8 use cases
+- Revised version with 10 use cases
+- Final version with all relationships defined
+
+Evidence Links:
+- Initial Hand Sketches: [INSERT LINK]
+- Draft v1: [INSERT LINK]
+- Draft v2: [INSERT LINK]
+- Final Diagram: [Included in Section 1]
+
+Access: Public (Anyone with the link can view)
+
+---
+
+SUMMARY OF MODELING PROCESS
+
+Our group followed a systematic approach to system modeling:
+
+1. Requirements Analysis (Session 1, [DATE]):
+   - Reviewed the Restaurant Ordering System requirements document
+   - Identified stakeholders and their needs
+   - Listed potential system features
+
+2. Actor Identification (Session 2, [DATE]):
+   - Brainstormed all possible users of the system
+   - Grouped users into 4 primary actors
+   - Defined roles and responsibilities for each actor
+
+3. Use Case Development (Session 3, [DATE]):
+   - Generated comprehensive list of system functions
+   - Applied use case delimitation principles
+   - Selected 10 core use cases that cover major system functionality
+   - Ensured balanced distribution across actors
+
+4. Diagram Creation (Session 4, [DATE]):
+   - Created use case diagram using draw.io
+   - Added relationships (include, extend) where appropriate
+   - Reviewed and refined the diagram as a group
+
+5. Individual Sequence Diagrams (Week [X]):
+   - Each member selected one use case
+   - Created detailed sequence diagrams
+   - Documented interaction flows and system components
+
+This evidence demonstrates our collaborative system modeling process and shows how we arrived at our final design through group discussion, iteration, and refinement.
+
+---
+
+GROUP MEMBER CONTRIBUTIONS
+
+All 10 members actively participated in the modeling process:
+
+Member 1 (Shing Kit Lui): Requirements analysis, UC-1 sequence diagram
+Member 2 (On Tai Hung): Actor identification, UC-2 sequence diagram
+Member 3 (Ching Hong Chan): Use case delimitation, UC-3 sequence diagram
+Member 4 (Holly Lei Stephenson): Diagram coordination, UC-4 sequence diagram
+Member 5 (Siu Hin Chak): Documentation, UC-5 sequence diagram
+Member 6 (Kai Ho Wan): Evidence collection, UC-6 sequence diagram
+Member 7 (Tsz Fung Wong): Technical implementation, UC-7 sequence diagram
+Member 8 (Ching Lo): Review and quality control, UC-8 sequence diagram
+Member 9 (Ho Him Cheung): Presentation preparation, UC-9 sequence diagram
+Member 10 (Ho Ching Yu): Final assembly, UC-10 sequence diagram
+
+All members contributed equally to group discussions and decision-making throughout the modeling process.
+
+==============================================
+END OF EVIDENCE TEMPLATE
+==============================================
+
+INSTRUCTIONS FOR USE:
+
+1. Hold your group meetings and collect actual evidence
+2. Upload all evidence to cloud storage (Google Drive, OneDrive, etc.)
+3. Set sharing permissions to "Anyone with the link can view"
+4. Copy the links and paste them into the [INSERT LINK HERE] placeholders above
+5. Fill in the dates of your actual meetings
+6. Adjust descriptions to match your actual activities
+7. Copy the completed template into Section 3 of your Word document
+8. Test all links in an incognito browser to ensure they work
+
+Remember: The instructor is looking for evidence of your GROUP PROCESS, not perfection! Show that you worked together, discussed the system, and made collaborative decisions.

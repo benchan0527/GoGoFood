@@ -1,0 +1,513 @@
+﻿
+COMP S350F Software Engineering
+Materials are modified  from “Software Engineering”, 10th Edition. by Ian Sommerville
+Chapter 4 – Requirements Engineering
+
+Chapter 1 Requirements Engineering 1
+
+Topics covered
+² Functional and non-functional requirements
+² Requirements engineering processes
+² Requirements elicitation
+² Requirements specification
+² Requirements validation
+² Requirements change
+
+Chapter 2 Requirements Engineering 2
+Requirements engineering
+² The process of establishing the services that customer requires from a system and the constraints under which it operates and is developed.
+² The system requirements are the descriptions of the system services and constraints that are generated during the requirements engineering process.
+What is a requirement?
+² It may range from a high-level abstract statement of a service or of a system constraint to a detailed mathematical functional specification.
+² This is inevitable as requirements may serve a dual function
+▪ May be the basis for a bid for a contract - therefore must be open to interpretation;
+▪ May be the basis for the contract itself - therefore must be defined in detail;
+▪ Both these statements may be called requirements.
+Requirements abstraction (Davis)
+“If a company wishes to let a contract for a large software development project, it must define its needs in a sufficiently abstract way that a solution is not pre-defined. The requirements must be written so that several contractors can bid for the contract, offering, perhaps, different ways of meeting the client organization’s needs. Once a contract has been awarded, the contractor must write a system definition for the client in more detail so that the client understands and can validate what the software will do. Both of these documents may be called the requirements document for the system.”
+Types of requirement
+² User requirements
+▪ Statements in natural language plus diagrams of the services the system provides and its operational constraints. Written for customers.
+² System requirements
+▪ A structured document setting out detailed descriptions of the system’s functions, services and operational constraints. Defines what should be implemented so may be part of a contract between client and contractor.
+User and system requirements 
+
+Readers of different types of requirements  specification  
+
+
+System stakeholders
+² Any person or organization who is affected by the system in some way and so who has a legitimate interest
+² Stakeholder types
+▪ End users
+▪ System managers
+▪ System owners
+▪ External stakeholders
+
+Chapter 10 Requirements Engineering 10
+Stakeholders in the Mentcare system
+² Patients whose information is recorded in the system.
+² Doctors who are responsible for assessing and treating patients.
+² Nurses who coordinate the consultations with doctors and administer some treatments.
+² Medical receptionists who manage patients’ appointments.
+² IT staff who are responsible for installing and maintaining the system.
+² A medical ethics manager who must ensure that the system meets current ethical guidelines for patient care.
+² Health care managers who obtain management information from the system.
+² Medical records staff who are responsible for ensuring that system information can be maintained and preserved, and that record keeping procedures have been properly implemented.
+
+Chapter 12 Requirements Engineering 12
+
+Agile methods and requirements
+² Many agile methods argue that producing detailed system requirements is a waste of time as requirements change so quickly.
+² The requirements document is therefore always out of date.
+² Agile methods usually use incremental requirements engineering and may express requirements as ‘user stories’ (discussed in Chapter 3).
+² This is practical for business systems but problematic for systems that require pre-delivery analysis (e.g. critical systems) or systems developed by several teams.
+
+Chapter 13 Requirements Engineering 13
+
+Functional and non-functional requirements
+
+30/10/2014 Chapter 14 Requirements Engineering 14
+
+Functional and non-functional requirements
+² Functional requirements
+▪ Statements of services the system should provide, how the system should react to particular inputs and how the system should behave in particular situations.
+▪ May state what the system should not do.
+² No▪ nCo-functionalnstraintsFon requithe seremrvicesentsor functions offered by the system such as timing constraints, constraints on the development 
+process, standards, etc.
+▪ Often apply to the system as a whole rather than individual features or services.
+² Domain requirements
+▪ Constraints on the system from the domain of operation
+
+Chapter 16 Requirements Engineering 16
+Functional requirements
+² Describe functionality or system services.
+² Depend on the type of software, expected users and the type of system where the software is used.
+² Functional user requirements may be high-level statements of what the system should do.
+² Functional system requirements should describe the system services in detail.
+Mentcare system: functional requirements
+² A user shall be able to search the appointments lists for all clinics.
+² The system shall generate each day, for each clinic, a list of patients who are expected to attend appointments that day. 
+² Each staff member using the system shall be uniquely identified by his or her 8-digit employee number. 
+Requirements imprecision
+² Problems arise when functional requirements are not precisely stated.
+² Ambiguous requirements may be interpreted in different ways by developers and users.
+² Consider the term ‘search’ in requirement 1
+▪ User intention – search for a patient name across all appointments in all clinics;
+▪ Developer interpretation – search for a patient name in an individual clinic. User chooses clinic then search.
+Requirements completeness and consistency
+² In principle, requirements should be both complete and consistent.
+² Complete
+▪ They should include descriptions of all facilities required.
+² Consistent
+▪ There should be no conflicts or contradictions in the descriptions of the system facilities.
+² In practice, because of system and environmental complexity, it is impossible to produce a complete and consistent requirements document.
+Non-functional requirements
+² These define system properties and constraints e.g. reliability, response time and storage requirements. Constraints are I/O device capability, system representations, etc.
+² Process requirements may also be specified mandating a particular IDE, programming language or development method.
+² Non-functional requirements may be more critical than functional requirements. If these are not met, the system may be useless.
+Types of nonfunctional requirement 
+
+Non-functional requirements implementation
+² Non-functional requirements may affect the overall architecture of a system rather than the individual components. 
+▪ For example, to ensure that performance requirements are met, you may have to organize the system to minimize communications between components.
+² A single non-functional requirement, such as a security requirement, may generate a number of related functional requirements that define system services that are required. 
+▪ It may also generate requirements that restrict existing requirements. 
+Non-functional classifications
+² Product requirements
+▪ Requirements which specify that the delivered product must behave in a particular way e.g. execution speed, reliability, etc.
+² Organisational requirements
+▪ Requirements which are a consequence of organisational policies and procedures e.g. process standards used, implementation requirements, etc.
+² External requirements
+▪ Requirements which arise from factors which are external to the system and its development process e.g. interoperability requirements, legislative requirements, etc.
+Examples of nonfunctional requirements in the  Mentcare system 
+Product requirement
+The Mentcare system shall be available to all clinics during normal working hours (Mon–Fri, 0830–17.30). Downtime within normal working hours shall not exceed five seconds in any one day.
+Organizational requirement
+Users of the Mentcare system shall authenticate themselves using their health authority identity card.
+External requirement
+The system shall implement patient privacy provisions as set out in HStan-03-2006-priv. 
+Goals and requirements
+² Non-functional requirements may be very difficult to state precisely and imprecise requirements may be difficult to verify. 
+² Goal
+▪ A general intention of the user such as ease of use.
+² Verifiable non-functional requirement
+▪ A statement using some measure that can be objectively tested.
+² Goals are helpful to developers as they convey the intentions of the system users.
+Usability requirements
+² The system should be easy to use by medical staff and should be organized in such a way that user errors are minimized. (Goal)
+² Medical staff shall be able to use all the system functions after four hours of training. After this training, the average number of errors made by experienced users shall not exceed two per hour of system use. (Testable non-functional requirement)
+Metrics for specifying nonfunctional  requirements 
+
+Chapter 28 Requirements Engineering 28
+Property Speed
+Size
+Ease of use Reliability
+Robustness Portability
+Measure
+Processed transactions/second User/event response time Screen refresh time
+Mbytes
+Number of ROM chips
+Training time
+Number of help frames
+Mean time to failure Probability of unavailability Rate of failure occurrence Availability
+Time to restart after failure Percentage of events causing failure Probability of data corruption on failure
+Percentage of target dependent statements Number of target systems
+
+Chapter 29 Requirements Engineering 29
+
+Requirements engineering processes
+
+Chapter 30 Requirements Engineering 30
+
+Requirements engineering processes
+² The processes used for RE vary widely depending on the application domain, the people involved and the organisation developing the requirements.
+² However, there are a number of generic activities common to all processes
+▪ Requirements elicitation;
+▪ Requirements analysis;
+▪ Requirements validation;
+▪ Requirements management.
+² In practice, RE is an iterative activity in which these processes are interleaved.
+
+Chapter 31 Requirements Engineering 31
+A spiral view of the requirements engineering  process  
+
+
+Chapter 32 Requirements Engineering 32
+
+Requirements elicitation
+
+30/10/2014 Chapter 33 Requirements Engineering 33
+Requirements elicitation
+² Sometimes called requirements elicitation or requirements discovery.
+² Involves technical staff working with customers to find out about the application domain, the services that the system should provide and the system’s operational constraints.
+² May involve end-users, managers, engineers involved in maintenance, domain experts, trade unions, etc. These are called stakeholders.
+² Software engineers work with a range of system stakeholders to find out about the application domain, the services that the system should provide, the required system performance, hardware constraints, other systems, etc.
+² Stages include:
+▪ Requirements discovery,
+▪ Requirements classification and organization,
+▪ Requirements prioritization and negotiation,
+▪ Requirements specification.
+
+Chapter 35 Requirements Engineering 35
+
+Problems of requirements elicitation
+² Stakeholders don’t know what they really want.
+² Stakeholders express requirements in their own terms.
+² Different stakeholders may have conflicting requirements.
+² Organisational and political factors may influence the system requirements.
+² The requirements change during the analysis process. New stakeholders may emerge and the business environment may change.
+
+Chapter 36 Requirements Engineering 36
+The requirements elicitation and analysis  process  
+
+Process activities
+² Requirements discovery
+▪ Interacting with stakeholders to discover their requirements. Domain requirements are also discovered at this stage.
+² Requirements classification and organisation
+▪ Groups related requirements and organises them into coherent clusters.
+² Prioritisation and negotiation
+▪ Prioritising requirements and resolving requirements conflicts.
+² Requirements specification
+▪ Requirements are documented and input into the next round of the spiral.
+Requirements discovery
+² The process of gathering information about the required and existing systems and distilling the user and system requirements from this information.
+² Interaction is with system stakeholders from managers to external regulators.
+² Systems normally have a range of stakeholders.
+Interviewing
+² Formal or informal interviews with stakeholders are part of most RE processes.
+² Types of interview
+▪ Closed interviews based on pre-determined list of questions
+▪ Open interviews where various issues are explored with stakeholders.
+² Effective interviewing
+▪ Be open-minded, avoid pre-conceived ideas about the requirements and are willing to listen to stakeholders. 
+▪ Prompt the interviewee to get discussions going using a springboard question, a requirements proposal, or by working together on a prototype system. 
+Interviews in practice
+² Normally a mix of closed and open-ended interviewing.
+² Interviews are good for getting an overall understanding of what stakeholders do and how they might interact with the system.
+² Interviewers need to be open-minded without pre- conceived ideas of what the system should do
+² You need to prompt the user to talk about the system by suggesting requirements rather than simply asking them what they want.
+Problems with interviews
+² Application specialists may use language to describe their work that isn’t easy for the requirements engineer to understand.
+² Interviews are not good for understanding domain requirements
+▪ Requirements engineers cannot understand specific domain terminology;
+▪ Some domain knowledge is so familiar that people find it hard to articulate or think that it isn’t worth articulating.
+Ethnography
+² A social scientist spends a considerable time observing and analysing how people actually work.
+² People do not have to explain or articulate their work.
+² Social and organisational factors of importance may be observed.
+² Ethnographic studies have shown that work is usually richer and more complex than suggested by simple system models.
+Scope of ethnography
+² Requirements that are derived from the way that people actually work rather than the way I which process definitions suggest that they ought to work.
+² Requirements that are derived from cooperation and awareness of other people’s activities.
+▪ Awareness of what other people are doing leads to changes in the ways in which we do things.
+² Ethnography is effective for understanding existing processes but cannot identify new features that should be added to a system.
+Focused ethnography
+² Developed in a project studying the air traffic control process
+² Combines ethnography with prototyping
+² Prototype development results in unanswered questions which focus the ethnographic analysis.
+² The problem with ethnography is that it studies existing practices which may have some historical basis which is no longer relevant.
+Ethnography and prototyping for requirements  analysis  
+
+Stories and scenarios
+² Scenarios and user stories are real-life examples of how a system can be used.
+² Stories and scenarios are a description of how a system may be used for a particular task.
+² Because they are based on a practical situation, stakeholders can relate to them and can comment on their situation with respect to the story.
+Photo sharing in the classroom (iLearn)
+² Jack is a primary school teacher in Ullapool (a village in northern Scotland). He has decided that a class project should be focused around the fishing industry in the area, looking at the history, development and economic impact of fishing. As part of this, pupils are asked to gather and share reminiscences from relatives, use newspaper archives and collect old photographs related to fishing and fishing communities in the area. Pupils use an iLearn wiki to gather together fishing stories and SCRAN (a history resources site) to access newspaper archives and photographs. However, Jack also needs a photo sharing site as he wants pupils to take and comment on each others’ photos and to upload scans of old photographs that they may have in their families.
+Jack sends an email to a primary school teachers group, which he is a member of to see if anyone can recommend an appropriate system. Two teachers reply and both suggest that he uses KidsTakePics, a photo sharing site that allows teachers to check and moderate content. As KidsTakePics is not integrated with the iLearn authentication service, he sets up a teacher and a class account. He uses the iLearn setup service to add KidsTakePics to the services seen by the pupils in his class so that when they log in, they can immediately use the system to upload photos from their mobile devices and class computers.
+Scenarios
+² A structured form of user story
+² Scenarios should include
+▪ A description of the starting situation;
+▪ A description of the normal flow of events;
+▪ A description of what can go wrong;
+▪ Information about other concurrent activities;
+▪ A description of the state when the scenario finishes.
+Uploading photos (iLearn)
+² Initial assumption: A user or a group of users have one or more digital photographs to be uploaded to the picture sharing site. These are saved on either a tablet or laptop computer. They have successfully logged on to KidsTakePics.
+² Normal:  The user chooses upload photos and they are prompted to select the photos to be uploaded on their computer and to select the project name under which the photos will be stored. They should also be given the option of inputting keywords that should be associated with each uploaded photo. Uploaded photos are named by creating a conjunction of the user name with the filename of the photo on the local computer.
+² On completion of the upload, the system automatically sends an email to the project moderator asking them to check new content and generates an on-screen message to the user that this has been done. 
+Uploading photos
+² What can go wrong: 
+² No moderator is associated with the selected project. An email is automatically generated to the school administrator asking them to nominate a project moderator. Users should be informed that there could be a delay in making their photos visible.
+² Photos with the same name have already been uploaded by the same user.  The user should be asked if they wish to re-upload the photos with the same name, rename the photos or cancel the upload. If they chose to re-upload the photos, the originals are overwritten. If they chose to rename the photos, a new name is automatically generated by adding a number to the existing file name.
+² Other activities:  The moderator may be logged on to the system and may approve photos as they are uploaded.
+² System state on completion: User is logged on. The selected photos have been uploaded and assigned a status ‘awaiting moderation’.  Photos are visible to the moderator and to the user who uploaded them.
+
+Chapter 51 Requirements Engineering 51
+
+Requirements specification
+
+
+Chapter 52 Requirements Engineering 52
+
+Requirements specification
+² The process of writing down the user and system requirements in a requirements document.
+² User requirements have to be understandable by end- users and customers who do not have a technical background.
+² System requirements are more detailed requirements and may include more technical information.
+² The requirements may be part of a contract for the system development
+▪ It is therefore important that these are as complete as possible.
+
+Chapter 53 Requirements Engineering 53
+Ways of writing a system requirements  specification  
+Notation Description
+Natural language The requirements are written using numbered sentences in natural language. 
+Each sentence should express one requirement.
+Structured  natural  The  requirements  are  written  in  natural  language  on  a  standard  form  or language  template.  Each  field  provides  information  about  an  aspect  of  the 
+requirement.
+Design  description  This approach uses a language like a programming language, but with more languages abstract  features  to  specify  the  requirements  by  defining  an  operational 
+model of the system. This approach is now rarely used although it can be useful for interface specifications.
+Graphical notations Graphical models, supplemented by text annotations, are used to define the 
+functional  requirements  for  the  system;  UML  use  case  and  sequence diagrams are commonly used.
+Mathematical  These notations are based on mathematical concepts such as finite-state specifications machines or sets. Although these unambiguous specifications can reduce 
+the ambiguity in a requirements document, most customers don’t understand a formal specification. They cannot check that it represents what they want and are reluctant to accept it as a system contract
+Requirements and design
+² In principle, requirements should state what the system should do and the design should describe how it does this.
+² In practice, requirements and design are inseparable
+▪ A system architecture may be designed to structure the requirements;
+▪ The system may inter-operate with other systems that generate design requirements;
+▪ The use of a specific architecture to satisfy non-functional requirements may be a domain requirement.
+▪ This may be the consequence of a regulatory requirement.
+Natural language specification
+² Requirements are written as natural language sentences supplemented by diagrams and tables.
+² Used for writing requirements because it is expressive, intuitive and universal. This means that the requirements  can be understood by users and customers.
+Guidelines for writing requirements
+² Invent a standard format and use it for all requirements.
+² Use language in a consistent way. Use shall for mandatory requirements, should for desirable requirements.
+² Use text highlighting to identify key parts of the requirement.
+² Avoid the use of computer jargon.
+² Include an explanation (rationale) of why a requirement is necessary.
+Problems with natural language
+² Lack of clarity 
+▪ Precision is difficult without making the document difficult to read.
+² Requirements confusion
+▪ Functional and non-functional requirements tend to be mixed-up.
+² Requirements amalgamation
+▪ Several different requirements may be expressed together.
+Example requirements for the insulin pump  software system  
+3.2 The system shall measure the blood sugar and deliver insulin, if required, every 10 minutes. (Changes in blood sugar are relatively slow so more frequent measurement is unnecessary; less frequent measurement could lead to unnecessarily high sugar levels.)
+3.6 The system shall run a self-test routine every minute with the conditions to be tested and the associated actions defined in Table 1. (A self-test routine can discover hardware and software problems and alert the user to the fact the normal operation may be impossible.)
+Structured specifications
+² An approach to writing requirements where the freedom of the requirements writer is limited and requirements are written in a standard way.
+² This works well for some types of requirements e.g. requirements for embedded control system but is sometimes too rigid for writing business system requirements.
+Form-based specifications
+² Definition of the function or entity.
+² Description of inputs and where they come from.
+² Description of outputs and where they go to.
+² Information about the information needed for the computation and other entities used.
+² Description of the action to be taken.
+² Pre and post conditions (if appropriate).
+² The side effects (if any) of the function.
+
+Chapter 62 Requirements Engineering 62
+A structured specification of a requirement for  an insulin pump  
+
+
+
+Chapter 64 Requirements Engineering 64
+
+Tabular specification
+² Used to supplement natural language.
+² Particularly useful when you have to define a number of possible alternative courses of action.
+² For example, the insulin pump systems bases its computations on the rate of change of blood sugar level and the tabular specification explains how to calculate the insulin requirement for different scenarios.
+
+Chapter 65 Requirements Engineering 65
+Tabular specification of computation for an  insulin pump  
+Condition Action
+Sugar level falling (r2 < r1) CompDose = 0 Sugar level stable (r2 = r1) CompDose = 0
+Sugar  level  increasing  and  rate  of  CompDose = 0 increase  decreasing 
+((r2 – r1) < (r1 – r0))
+Sugar  level  increasing  and  rate  of  CompDose  = increase  stable  or  increasing       round ((r2 – r1)/4)
+((r2 – r1) ≥ (r1 – r0)) If rounded result = 0 then 
+CompDose  = MinimumDose
+Use cases
+² Use-cases are a kind of scenario that are included in the UML. 
+² Use cases identify the actors in an interaction and which describe the interaction itself.
+² A set of use cases should describe all possible interactions with the system.
+² High-level graphical model supplemented by more detailed tabular description (will discuss in Chapter 5).
+² UML sequence diagrams may be used to add detail to use-cases by showing the sequence of event processing in the system.
+Use cases for the Mentcare system
+
+The software requirements document
+² The software requirements document is the official statement of what is required of the system developers.
+² Should include both a definition of user requirements and a specification of the system requirements.
+² It is NOT a design document. As far as possible, it should set of WHAT the system should do rather than HOW it should do it.
+Users of a requirements document 
+
+
+
+
+
+Requirements document variability
+² Information in requirements document depends on type of system and the approach to development used.
+² Systems developed incrementally will, typically, have less detail in the requirements document.
+² Requirements documents standards have been designed e.g. IEEE standard. These are mostly applicable to the requirements for large systems engineering projects.
+The structure of a requirements document 
+Chapter Description
+Preface This should define the expected readership of the document and describe 
+its version history, including a rationale for the creation of a new version and a summary of the changes made in each version. 
+Introduction This should describe the need for the system. It should briefly describe the 
+system’s  functions  and  explain  how  it  will  work  with  other  systems.  It 
+should  also  describe  how  the  system  fits  into  the  overall  business  or 
+strategic objectives of the organization commissioning the software. Glossary This should define the technical terms used in the document. You should 
+not make assumptions about the experience or expertise of the reader.
+User  requirements  Here, you describe the services provided for the user. The nonfunctional definition system  requirements  should  also  be  described  in  this  section.  This 
+description may use natural language, diagrams, or other notations that are understandable to customers. Product and process standards that must be followed should be specified.
+System architecture This chapter should present a high-level overview of the anticipated system 
+architecture, showing the distribution of functions across system modules. Architectural components that are reused should be highlighted.
+The structure of a requirements document 
+Chapter Description
+System  This should describe the functional and nonfunctional requirements in more detail. requirements  If necessary, further detail may also be added to the nonfunctional requirements. specification Interfaces to other systems may be defined.
+System models This might include graphical system models showing the relationships between 
+the  system  components  and  the  system  and  its  environment.  Examples  of 
+possible models are object models, data-flow models, or semantic data models. System evolution This should describe the fundamental assumptions on which the system is based, 
+and any anticipated changes due to hardware evolution, changing user needs, 
+and so on. This section is useful for system designers as it may help them avoid 
+design decisions that would constrain likely future changes to the system.
+Appendices These  should  provide  detailed,  specific  information  that  is  related  to  the 
+application being developed; for example, hardware and database descriptions. Hardware  requirements  define  the  minimal  and  optimal  configurations  for  the system. Database requirements define the logical organization of the data used by the system and the relationships between data. 
+Index Several indexes to the document may be included. As well as a normal alphabetic 
+index, there may be an index of diagrams, an index of functions, and so on.
+
+Chapter 73 Requirements Engineering 73
+
+Requirements validation
+
+Chapter 74 Requirements Engineering 74
+
+Requirements validation
+² Concerned with demonstrating that the requirements define the system that the customer really wants.
+² Requirements error costs are high so validation is very important
+▪ Fixing a requirements error after delivery may cost up to 100 times the cost of fixing an implementation error.
+
+Chapter 75 Requirements Engineering 75
+Requirements checking
+² Validity. Does the system provide the functions which best support the customer’s needs?
+² Consistency. Are there any requirements conflicts?
+² Completeness. Are all functions required by the customer included?
+² Realism. Can the requirements be implemented given available budget and technology
+² Verifiability. Can the requirements be checked?
+Requirements validation techniques
+² Requirements reviews
+▪ Systematic manual analysis of the requirements.
+² Prototyping
+▪ Using an executable model of the system to check requirements. Covered in Chapter 2.
+² Test-case generation
+▪ Developing tests for requirements to check testability.
+Requirements reviews
+² Regular reviews should be held while the requirements definition is being formulated.
+² Both client and contractor staff should be involved in reviews.
+² Reviews may be formal (with completed documents) or informal. Good communications between developers, customers and users can resolve problems at an early stage.
+Review checks
+² Verifiability
+▪ Is the requirement realistically testable?
+² Comprehensibility
+▪ Is the requirement properly understood?
+² Traceability
+▪ Is the origin of the requirement clearly stated?
+² Adaptability
+▪ Can the requirement be changed without a large impact on other requirements?
+
+Chapter 79 Requirements Engineering 79
+
+Requirements change
+
+Chapter 80 Requirements Engineering 80
+Changing requirements
+² The business and technical environment of the system always changes after installation. 
+▪ New hardware may be introduced, it may be necessary to interface the system with other systems, business priorities may change (with consequent changes in the system support required), and new legislation and regulations may be introduced that the system must necessarily abide by. 
+² The people who pay for a system and the users of that system are rarely the same people. 
+▪ System customers impose requirements because of organizational and budgetary constraints. These may conflict with end-user requirements and, after delivery, new features may have to be added for user support if the system is to meet its goals.
+² Large systems usually have a diverse user community, with many users having different requirements and priorities that may be conflicting or contradictory. 
+▪ The final system requirements are inevitably a compromise between them and, with experience, it is often discovered that the balance of support given to different users has to be changed.
+
+Chapter 82 Requirements Engineering 82
+
+Requirements evolution 
+
+
+
+Chapter 83 Requirements Engineering 83
+Requirements management
+² Requirements management is the process of managing changing requirements during the requirements engineering process and system development.
+² New requirements emerge as a system is being developed and after it has gone into use.
+² You need to keep track of individual requirements and maintain links between dependent requirements so that you can assess the impact of requirements changes. You need to establish a formal process for making change proposals and linking these to system requirements. 
+Requirements management planning
+² Establishes the level of requirements management detail that is required.
+² Requirements management decisions:
+▪ Requirements identification Each requirement must be uniquely identified so that it can be cross-referenced with other requirements. 
+▪ A change management process This is the set of activities that assess the impact and cost of changes. I discuss this process in more detail in the following section.
+▪ Traceability policies These policies define the relationships between each requirement and between the requirements and the system design that should be recorded. 
+▪ Tool support Tools that may be used range from specialist requirements management systems to spreadsheets and simple database systems.
+
+Chapter 85 Requirements Engineering 85
+Requirements change management
+² Deciding if a requirements change should be accepted
+▪ Problem analysis and change specification 
+• During this stage, the problem or the change proposal is analyzed to check that it is valid. This analysis is fed back to the change requestor who may respond with a more specific requirements change proposal, or decide to withdraw the request.
+▪ Change analysis and costing 
+• The effect of the proposed change is assessed using traceability information and general knowledge of the system requirements. Once this analysis is completed, a decision is made whether or not to proceed with the requirements change.
+▪ Change implementation 
+• The requirements document and, where necessary, the system design and implementation, are modified. Ideally, the document should be organized so that changes can be easily implemented.
+
+Chapter 87 Requirements Engineering 87
+Requirements change management 
+
+
+Chapter 88 Requirements Engineering 88
+Key points
+² Requirements for a software system set out what the system should do and define constraints on its operation and implementation.
+² Functional requirements are statements of the services that the system must provide or are descriptions of how some computations must be carried out. 
+² Non-functional requirements often constrain the system being developed and the development process being used. 
+² They often relate to the emergent properties of the system and therefore apply to the system as a whole.
+² The requirements engineering process is an iterative process that includes requirements elicitation, specification and validation.
+² Requirements elicitation is an iterative process that can be represented as a spiral of activities – requirements discovery, requirements classification and organization, requirements negotiation and requirements documentation. 
+² You can use a range of techniques for requirements elicitation including interviews and ethnography. User stories and scenarios may be used to facilitate discussions.
+² Requirements specification is the process of formally documenting the user and system requirements and creating a software requirements document.
+² The software requirements document is an agreed statement of the system requirements. It should be organized so that both system customers and software developers can use it.
+
+Chapter 91 Requirements Engineering 91
+Key points
+² Requirements validation is the process of checking the requirements for validity, consistency, completeness, realism and verifiability. 
+² Business, organizational and technical changes inevitably lead to changes to the requirements for a software system. Requirements management is the process of managing and controlling these changes.
+Chapter 4 Requirements Engineering 92
