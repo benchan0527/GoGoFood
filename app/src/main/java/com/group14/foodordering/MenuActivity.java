@@ -947,7 +947,6 @@ public class MenuActivity extends AppCompatActivity {
                     }
                 }
 
-                order.setTax(order.getSubtotal() * 0.1); // Assume 10% tax
                 order.setServiceCharge(0.0);
 
                 // Validate order has items before saving

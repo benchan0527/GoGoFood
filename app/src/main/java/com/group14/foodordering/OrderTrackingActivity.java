@@ -144,9 +144,6 @@ public class OrderTrackingActivity extends AppCompatActivity {
         // Display price breakdown
         StringBuilder totalText = new StringBuilder();
         totalText.append(String.format("Subtotal: $%.2f\n", order.getSubtotal()));
-        if (order.getTax() > 0) {
-            totalText.append(String.format("Tax (10%%): $%.2f\n", order.getTax()));
-        }
         if (order.getServiceCharge() > 0) {
             totalText.append(String.format("Service Charge: $%.2f\n", order.getServiceCharge()));
         }

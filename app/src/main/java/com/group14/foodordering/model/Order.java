@@ -18,7 +18,6 @@ public class Order {
     private List<OrderItem> items;
     private String status; // "pending", "preparing", "ready", "completed", "cancelled"
     private double subtotal;
-    private double tax;
     private double serviceCharge;
     private double discount;
     private double total;
@@ -44,7 +43,6 @@ public class Order {
         this.status = "pending";
         this.paymentStatus = "pending";
         this.subtotal = 0.0;
-        this.tax = 0.0;
         this.serviceCharge = 0.0;
         this.discount = 0.0;
         this.total = 0.0;
@@ -129,14 +127,6 @@ public class Order {
         this.subtotal = subtotal;
     }
 
-    public double getTax() {
-        return tax;
-    }
-
-    public void setTax(double tax) {
-        this.tax = tax;
-    }
-
     public double getServiceCharge() {
         return serviceCharge;
     }
@@ -199,7 +189,7 @@ public class Order {
         for (OrderItem item : items) {
             subtotal += item.getTotalPrice();
         }
-        total = subtotal + tax + serviceCharge - discount;
+        total = subtotal + serviceCharge - discount;
         this.updatedAt = System.currentTimeMillis();
     }
 
@@ -221,7 +211,6 @@ public class Order {
         
         map.put("status", status);
         map.put("subtotal", subtotal);
-        map.put("tax", tax);
         map.put("serviceCharge", serviceCharge);
         map.put("discount", discount);
         map.put("total", total);

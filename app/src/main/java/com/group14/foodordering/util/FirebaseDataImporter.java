@@ -626,7 +626,6 @@ public class FirebaseDataImporter {
         try {
             AppConfig config = new AppConfig();
             config.setConfigId(configJson.getString("configId"));
-            config.setTaxRate(configJson.getDouble("taxRate"));
             config.setServiceChargeRate(configJson.getDouble("serviceChargeRate"));
             config.setCurrency(configJson.getString("currency"));
             config.setCurrencySymbol(configJson.getString("currencySymbol"));
@@ -685,10 +684,12 @@ public class FirebaseDataImporter {
         String[] collections = {
             "users",
             "admins",
+            "restaurants",
             "branches",
             "tables",
             "menuCategories",
             "menuItems",
+            "itemModifiers",
             "appConfig"
         };
         

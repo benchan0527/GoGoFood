@@ -433,7 +433,6 @@ public class TableOrderActivity extends AppCompatActivity {
                     order.addItem(item);
                 }
 
-                order.setTax(order.getSubtotal() * 0.1);
                 order.setServiceCharge(0.0);
 
                 // Validate order has items before saving
@@ -494,7 +493,6 @@ public class TableOrderActivity extends AppCompatActivity {
                 for (OrderItem item : currentOrderItems) {
                     order.addItem(item);
                 }
-                order.setTax(order.getSubtotal() * 0.1);
 
                 // Validate order has items before updating
                 if (order.getItems() == null || order.getItems().isEmpty()) {

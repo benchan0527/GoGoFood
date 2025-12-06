@@ -10,7 +10,6 @@ import java.util.Map;
  */
 public class AppConfig {
     private String configId;
-    private double taxRate;
     private double serviceChargeRate;
     private List<String> supportedPaymentMethods;
     private String currency;
@@ -23,7 +22,6 @@ public class AppConfig {
     // Default constructor
     public AppConfig() {
         this.configId = "settings";
-        this.taxRate = 0.08;
         this.serviceChargeRate = 0.10;
         this.currency = "USD";
         this.currencySymbol = "$";
@@ -36,14 +34,6 @@ public class AppConfig {
 
     public void setConfigId(String configId) {
         this.configId = configId;
-    }
-
-    public double getTaxRate() {
-        return taxRate;
-    }
-
-    public void setTaxRate(double taxRate) {
-        this.taxRate = taxRate;
     }
 
     public double getServiceChargeRate() {
@@ -114,7 +104,6 @@ public class AppConfig {
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("configId", configId);
-        map.put("taxRate", taxRate);
         map.put("serviceChargeRate", serviceChargeRate);
         map.put("supportedPaymentMethods", supportedPaymentMethods);
         map.put("currency", currency);

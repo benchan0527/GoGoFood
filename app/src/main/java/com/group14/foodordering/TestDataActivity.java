@@ -171,7 +171,6 @@ public class TestDataActivity extends AppCompatActivity {
         item2.setCookingDetails("Less salt");
         order.addItem(item2);
         
-        order.setTax(5.0);
         order.setServiceCharge(3.0);
         
         dbService.createOrder(order, new FirebaseDatabaseService.DatabaseCallback() {
